@@ -6,8 +6,8 @@ var layer = L.tileLayer('http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
 
 
 var icon = L.icon({
-    iconUrl: '/static/images/icon.png',
-    iconSize: [16, 16],
+    iconUrl: '/static/images/pyvo-marker.png',
+    iconSize: [32, 32],
     shadowSize: [0, 0],
     iconAnchor: [8, 8],
     popupAnchor: [0, 0]

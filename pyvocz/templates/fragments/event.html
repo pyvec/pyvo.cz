@@ -1,6 +1,15 @@
 <time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}. {{event.date.year}}</time>:
 <em>{{event.title}}</em>
 
+{% if show_map %}
+    <div id="map" style="height: 350px"
+        data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+        data-zoom="14"
+        data-lat="{{event.venue.latitude}}"
+        data-lng="{{event.venue.longitude}}"
+    ></div>
+{% endif %}
+
 <div>
     {{event.venue.name}}{% if event.venue.address %},
         {{event.venue.short_address}}

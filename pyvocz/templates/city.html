@@ -13,14 +13,9 @@
          <h2>Nadcházející sraz</h2>
     {% endif %}
 
-    <div id="map" style="height: 350px"
-        data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
-        data-zoom="13"
-        data-lat="{{event.venue.latitude}}"
-        data-lng="{{event.venue.longitude}}"
-    ></div>
-
+    {% set show_map = True %}
     {% include "fragments/event.html" %}
+    {% set show_map = False %}
 
     {% block contact %}{% endblock contact %}
 
