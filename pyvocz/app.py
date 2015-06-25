@@ -1,11 +1,13 @@
 import os
 import datetime
+import re
 
 from sqlalchemy import func, and_
 from sqlalchemy.orm import joinedload
 from flask import Flask
 from flask import render_template
 from flask.ext.sqlalchemy import SQLAlchemy
+from jinja2 import evalcontextfilter, escape
 from jinja2.exceptions import TemplateNotFound
 from markupsafe import Markup
 
@@ -17,7 +19,7 @@ app.config.setdefault('SQLALCHEMY_DATABASE_URI', os.environ['SQLALCHEMY_DATABASE
 app.config.setdefault('SQLALCHEMY_ECHO', True)
 db = SQLAlchemy(app)
 
-@app.template_filter('mail_link')
+@app.template_filter()
 def mail_link(address):
     address = address.replace('a', '&#97;')
     address = address.replace('c', '&#99;')
@@ -25,6 +27,16 @@ def mail_link(address):
     a = address.replace('@', '&#64;')
     b = address.replace('@', '&#64;<!--==≡≡==-->')
     return Markup('<a href="m&#97;ilto://{}">{}</a>'.format(a, b))
+
+_paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
+@app.template_filter()
+@evalcontextfilter
+def nl2br(eval_ctx, value):
+    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', '<br>\n') \
+        for p in _paragraph_re.split(escape(value)))
+    if eval_ctx.autoescape:
+        result = Markup(result)
+    return result
 
 @app.before_first_request
 def setup():
@@ -66,11 +78,14 @@ def index():
 
 @app.route('/<cityslug>')
 def city(cityslug):
+    today = datetime.date.today()
+
     query = db.session.query(tables.City)
     query = query.filter(tables.City.slug == cityslug)
     city = query.one()
 
+    args = dict(city=city, today=today)
     try:
-        return render_template('cities/{}.html'.format(cityslug), city=city)
+        return render_template('cities/{}.html'.format(cityslug), **args)
     except TemplateNotFound:
-        return render_template('city.html', city=city)
+        return render_template('city.html', **args)
