@@ -1,0 +1,25 @@
+<time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}. {{event.date.year}}</time>:
+<em>{{event.title}}</em>
+
+<div>
+    {{event.venue.name}}{% if event.venue.address %},
+        {{event.venue.short_address}}
+    {% endif %}
+    <a class="maplink" href="http://mapy.cz/zakladni?q={{event.venue.name}}, {{ event.venue.latitude }}N+{{ event.venue.longitude }}E ">(mapa)</a>
+</div>
+
+{% if event.description %}
+    <blockquote>
+    {{event.description | nl2br}}
+    </blockquote>
+{% endif %}
+
+{% if event.talks %}
+    <ul class="talks">
+        {% for talk in event.talks %}
+            <li>
+                {% include "fragments/talk.html" %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

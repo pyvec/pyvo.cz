@@ -12,33 +12,8 @@
     {% else %}
          <h2>Nadcházející sraz</h2>
     {% endif %}
-    <time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}. {{event.date.year}}</time>:
-    <em>{{event.title}}</em>
 
-    {% if event.description %}
-        <blockquote>
-        {{event.description | nl2br}}
-        </blockquote>
-    {% endif %}
-
-    {% if event.talks %}
-        <div class="talks">
-            <ul>
-                {% for talk in event.talks %}
-                    <li>
-                        {% if talk.is_lightning %}<span class="lightning">⚡</span>{% endif %}
-                        <em>{{talk.title}}</em>
-                        {% if talk.speakers %}
-                            –
-                            {% for speaker in talk.speakers %}
-                                {{speaker.name}}{% if not loop.last %},{% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
+    {% include "fragments/event.html" %}
 
     {% block contact %}{% endblock contact %}
 
@@ -76,8 +51,7 @@
     <ul>
         {% for event in city.events[1:] %}
             <li>
-                <time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}. {{event.date.year}}</time>:
-                <em>{{event.title}}</em>
+                {% include "fragments/event.html" %}
             </li>
         {% endfor %}
     </ul>

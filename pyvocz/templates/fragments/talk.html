@@ -1,0 +1,8 @@
+{% if talk.is_lightning %}<span class="lightning">⚡</span>{% endif %}
+<em>{{talk.title}}</em>
+{% if talk.speakers %}
+    –
+    {% for speaker in talk.speakers %}
+        {{speaker.name}}{% if not loop.last %},{% endif %}
+    {% endfor %}
+{% endif %}

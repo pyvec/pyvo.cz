@@ -3,11 +3,11 @@ import datetime
 import re
 
 from sqlalchemy import func, and_
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, joinedload_all, subqueryload
 from flask import Flask
 from flask import render_template
 from flask.ext.sqlalchemy import SQLAlchemy
-from jinja2 import evalcontextfilter, escape
+from jinja2 import evalcontextfilter, escape, StrictUndefined
 from jinja2.exceptions import TemplateNotFound
 from markupsafe import Markup
 
@@ -17,6 +17,7 @@ from pyvodb import tables
 app = Flask(__name__)
 app.config.setdefault('SQLALCHEMY_DATABASE_URI', os.environ['SQLALCHEMY_DATABASE_URI'])
 app.config.setdefault('SQLALCHEMY_ECHO', True)
+app.jinja_env.undefined = StrictUndefined
 db = SQLAlchemy(app)
 
 @app.template_filter()
@@ -82,6 +83,11 @@ def city(cityslug):
 
     query = db.session.query(tables.City)
     query = query.filter(tables.City.slug == cityslug)
+    query = query.options(joinedload(tables.City.events, 'talks'))
+    query = query.options(joinedload(tables.City.events))
+    query = query.options(joinedload(tables.City.events, 'venue'))
+    query = query.options(joinedload(tables.City.events, 'talks', 'talk_speakers'))
+    query = query.options(subqueryload(tables.City.events, 'talks', 'talk_speakers', 'speaker'))
     city = query.one()
 
     args = dict(city=city, today=today)
