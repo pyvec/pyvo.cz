@@ -8,10 +8,39 @@
     a spřízněných technologií.
     Pravidelně jsou pořádány v Praze, Brně a Ostravě.
 </div>
+
+<div class="map">
+    <img src="{{ url_for('static', filename='map.png') }}">
+    <ul>
+    {% for event in latest_events %}
+        <li class="map-city map-city-{{event.city.slug}}
+            {% if event.date == today %}
+                today
+            {% elif event.date < today %}
+                past
+            {% else %}
+                future
+            {% endif %}
+            "
+        >
+            <a href="{{ url_for('city', cityslug=event.city.slug) }}">
+                {% if event.date == today and event.start_time %}
+                    <div class="date"><time datetime="{{event.date}}">{{ event.start_time.strftime('%H:%M') }}</time></div>
+                {% else %}
+                    <div class="date"><time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}.</time></div>
+                {% endif %}
+                <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.png') }}">
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
 <h2>Kdy a kde?</h2>
 <div>
     {% for event in latest_events %}
         <h3>
+            <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.png') }}">
             <a href="{{ url_for('city', cityslug=event.city.slug) }}">
                 {{event.city.name}}
             </a>

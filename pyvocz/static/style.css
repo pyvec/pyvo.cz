@@ -1,0 +1,50 @@
+div.map {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 409px;
+}
+
+div.map .map-city {
+    display: none;
+    position: absolute;
+    width: 50px;
+    text-align: center;
+}
+
+div.map .map-city .date {
+    display: block;
+    position: absolute;
+    background-color: white;
+    top: -1.2em;
+    left: -6px;
+    width: 60px;
+    z-index: 0;
+}
+
+div.map .map-city img {
+    position: relative;
+    z-index: 1;
+}
+
+div.map .map-city-praha {
+    display: block;
+    left: 115px;
+    top: 75px;
+}
+
+div.map .map-city-brno {
+    display: block;
+    left: 250px;
+    top: 160px;
+}
+
+div.map .map-city-ostrava {
+    display: block;
+    left: 330px;
+    top: 100px;
+}
+
+div.map .map-city.past a { color: gray; }
+div.map .map-city.today a { color: blue; font-weight: bold; }
+div.map .map-city.future a { color: black; }
