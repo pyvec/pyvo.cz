@@ -6,3 +6,11 @@
         {{speaker.name}}{% if not loop.last %},{% endif %}
     {% endfor %}
 {% endif %}
+
+{% if talk.links %}
+    <div>
+        {% for link in talk.links %}
+            →<a href="{{link.url}}">{{link.kind}} ({{link.hostname}})</a>
+        {% endfor %}
+    </div>
+{% endif %}

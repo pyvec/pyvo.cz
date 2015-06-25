@@ -88,6 +88,7 @@ def city(cityslug):
     query = query.options(joinedload(tables.City.events, 'venue'))
     query = query.options(joinedload(tables.City.events, 'talks', 'talk_speakers'))
     query = query.options(subqueryload(tables.City.events, 'talks', 'talk_speakers', 'speaker'))
+    query = query.options(subqueryload(tables.City.events, 'talks', 'links'))
     city = query.one()
 
     args = dict(city=city, today=today)
