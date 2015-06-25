@@ -58,7 +58,7 @@ def index():
 
     subquery = db.session.query(
         tables.Event.city_id,
-        func.max(tables.Event.date).label('latest_date')
+        func.max(tables.Event.date).label('latest_date'),
     )
     subquery = subquery.group_by(tables.Event.city_id)
     subquery = subquery.subquery()
@@ -69,8 +69,9 @@ def index():
                             subquery.c.city_id == tables.Event.city_id,
                             ))
     # order: upcoming first, then by distance from today
-    query = query.order_by(subquery.c.latest_date < today,
-                           func.abs(subquery.c.latest_date - today))
+    jd = func.julianday
+    query = query.order_by(jd(subquery.c.latest_date) < jd(today),
+                           func.abs(jd(subquery.c.latest_date) - jd(today)))
     query = query.options(joinedload(tables.Event.city))
     query = query.options(joinedload(tables.Event.venue))
     latest_events = query.all()
