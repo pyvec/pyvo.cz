@@ -6,6 +6,7 @@ from sqlalchemy.orm import joinedload
 from flask import Flask
 from flask import render_template
 from flask.ext.sqlalchemy import SQLAlchemy
+from jinja2.exceptions import TemplateNotFound
 
 from pyvodb.load import get_db
 from pyvodb import tables
@@ -29,7 +30,7 @@ def setup():
     print('Database loaded')
 
 @app.route('/')
-def hello_world():
+def index():
     today = datetime.date.today()
 
     subquery = db.session.query(
@@ -52,3 +53,14 @@ def hello_world():
     latest_events = query.all()
 
     return render_template('index.html', latest_events=latest_events, today=today)
+
+@app.route('/<cityslug>')
+def city(cityslug):
+    query = db.session.query(tables.City)
+    query = query.filter(tables.City.slug == cityslug)
+    city = query.one()
+
+    try:
+        return render_template('cities/{}.html'.format(cityslug), city=city)
+    except TemplateNotFound:
+        return render_template('city.html', city=city)
