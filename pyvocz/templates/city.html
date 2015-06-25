@@ -2,6 +2,7 @@
 {% block title %}Pyvo {{ city.name }}{% endblock title %}
 
 {% block bodycontent %}
+<div class="container">
     <h1>{{ self.title() }}</h1>
 
     {% block plan %}{% endblock plan %}
@@ -57,7 +58,7 @@
             </li>
         {% endfor %}
     </ul>
-
+</div>
 {% endblock bodycontent %}
 
 {% block styles %}

@@ -1,8 +1,93 @@
+@import url("http://fonts.googleapis.com/css?family=Bree+Serif|Oxygen&subset=latin,latin-ext");
+
+body {
+    font-family: Oxygen, sans-serif;
+    background-color: #CCC;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Bree Serif", serif;
+}
+
+h2 {
+    margin-top: 2em;
+}
+
+.container {
+    background-color: #FFF;
+}
+
+body > .container:last-child {
+    padding-bottom: 5em;
+}
+
+/******************** Homepage header ********************/
+
+body.homepage #header {
+    text-align: center;
+    padding-bottom: 2em;
+}
+
+body.homepage #header h1 {
+    margin-top: 0;
+}
+
+body.homepage #header img { width: 200px; }
+@media(max-width: 768px) { body.homepage #header img { width: 100px; } }
+@media(max-width: 450px) { body.homepage #header img { display: none; } }
+
+/******************** Homepage events ********************/
+
+body.homepage #events img {
+    width: 3em;
+    position: absolute;
+    left: -4em;
+    top: 0.3em;
+}
+
+body.homepage #events .event {
+    position: relative;
+    clear: left;
+    margin-left: 7em;
+    min-height: 6em;
+}
+
+body.homepage #events .event em.title {
+    font-weight: bold;
+    font-style: normal;
+}
+
+body.homepage #events .event em time {
+    font-style: normal;
+}
+
+
+/******************** Homepage map ********************/
+
+div.map-container {
+    background-color: #8888FF;
+}
+
+div.map-container .container {
+    background-color: blue;
+}
+
 div.map {
     position: relative;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
     width: 409px;
+}
+
+div.map ul {
+    height: 0;
+    margin: 0;
+}
+
+@media(max-width: 450px) {
+    div.map { display: none; }
 }
 
 div.map .map-city {
@@ -15,16 +100,17 @@ div.map .map-city {
 div.map .map-city .date {
     display: block;
     position: absolute;
-    background-color: white;
     top: -1.2em;
     left: -6px;
     width: 60px;
     z-index: 0;
+    font-family: "Bree Serif", serif;
 }
 
 div.map .map-city img {
     position: relative;
     z-index: 1;
+    width: 40px;
 }
 
 div.map .map-city-praha {
@@ -45,6 +131,7 @@ div.map .map-city-ostrava {
     top: 100px;
 }
 
-div.map .map-city.past a { color: gray; }
-div.map .map-city.today a { color: blue; font-weight: bold; }
-div.map .map-city.future a { color: black; }
+div.map .map-city.past { opacity: 0.75; }
+div.map .map-city.past a { color: white; }
+div.map .map-city.today a { color: yellow; font-weight: bold; }
+div.map .map-city.future a { color: white; }

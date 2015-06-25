@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Pyvo – Pravidelné programátorské srazy{% endblock title %}
 
+{% block bodyclass %}homepage{% endblock %}
+
 {% block bodycontent %}
-<h1>Pyvo</h1>
-<div>
-    Pyva jsou setkání příznivců programovacího jazyka <a href="http://python.cz">Python</a>
-    a spřízněných technologií.
-    Pravidelně jsou pořádány v Praze, Brně a Ostravě.
+<div class="container" id="header">
+    <img src="{{ url_for('static', filename="images/krygl.png") }}">
+    <h1>Pyvo</h1>
+    <div>
+        Pyva jsou setkání příznivců programovacího jazyka <a href="http://python.cz">Python</a>
+        a spřízněných technologií.
+        Pravidelně jsou pořádány v Praze, Brně a Ostravě.
+    </div>
 </div>
 
+<div class="map-container">
+<div class="container">
 <div class="map">
-    <img src="{{ url_for('static', filename='map.png') }}">
+    <img src="{{ url_for('static', filename='images/czech_republic.svg') }}">
     <ul>
     {% for event in latest_events %}
         <li class="map-city map-city-{{event.city.slug}}
@@ -29,73 +36,88 @@
                 {% else %}
                     <div class="date"><time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}.</time></div>
                 {% endif %}
-                <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.png') }}">
+                <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}" width="50">
             </a>
         </li>
     {% endfor %}
     </ul>
 </div>
-
-<h2>Kdy a kde?</h2>
-<div>
-    {% for event in latest_events %}
-        <h3>
-            <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.png') }}">
-            <a href="{{ url_for('city', cityslug=event.city.slug) }}">
-                {{event.city.name}}
-            </a>
-        </h3>
-        <div>
-            <em><time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}.</time></em>
-            {% if event.date < today %}
-                bylo
-            {% else %}
-                bude
-            {% endif %}
-            <em>{{event.title}}</em>
-        </div>
-        <span>
-            {{event.venue.name}}{% if event.venue.address %},
-                {{event.venue.short_address}}
-            {% endif %}
-        </span>
-    {% endfor %}
 </div>
-<h2>Co očekávat na Pyvu?</h2>
-<ul>
-    <li>
-        Srazy jsou většinou velice neformální a konají se v nějakém restauračním zařízení.
-        Nejdřív jsou přednášky, pak volná zábava.
-    </li>
-    <li>
-        I když nebudeš některým přednáškám rozumět, poznáš alespoň
-        spoustu lidí, kteří ti mohou v budoucnu pomoci a z nichž se
-        jednou mohou vyklubat noví kamarádi.
-    </li>
-    <li>
-        Většinou se předem vybere nějaké téma a účastníci pak dobrovolně
-        přihlašují související přednášky.
-    </li>
-    <li>
-        Je úplně v pořádku přijít na Pyvo a bez ohlášení na konci přidat
-        pětiminutovou přednášku (“lightning talk”) o čemkoliv.
-    </li>
-    <!-- XXX
-        <li>Pyva se snaží být vlídným a přátelským prostředím. Přečti si naše <a href="">pravidla chování</a>.</li>
-    -->
-</ul>
+</div>
 
-<h2>Kamarádi</h2>
-<ul>
-    <li>
-        <a href="http://blog.pykonik.org/">Pykonik</a> – Srazy Pythonistů z Krakówa
-    </li>
-    <li>
-        <a href="http://rubyslava.sk/">Rubyslava</a> – Bratislavské združenie priateľov elegantného programovania všeho druhu.
-    </li>
-    <li>
-        <a href="http://www.meetup.com/vienna-rb/">vienna.rb</a> – Vídeňský sraz kolem jazyka Ruby
-    </li>
-</ul>
+<div class="container" id="events">
+    <h2>Kdy a kde?</h2>
+    <div>
+        {% for event in latest_events %}
+        <div class="event">
+            <h3>
+                <a href="{{ url_for('city', cityslug=event.city.slug) }}">
+                    <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}" width="50">
+                    {{event.city.name}}
+                </a>
+            </h3>
+            <div>
+                {% if event.date == today %}
+                    <em>Dnes</em> v <time datetime="{{event.date}}">{{event.date.hour}}:{{event.date.minute}}</time></em>
+                    je
+                {% else %}
+                    <em><time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}.</time></em>
+                    {% if event.date < today %}
+                        bylo
+                    {% else %}
+                        bude
+                    {% endif %}
+                {% endif %}
+                <em class="title">{{event.title}}</em>
+            </div>
+            <span>
+                {{event.venue.name}}{% if event.venue.address %},
+                    {{event.venue.short_address}}
+                {% endif %}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
+<div class="container" id="about">
+    <h2>Co očekávat na Pyvu?</h2>
+    <ul>
+        <li>
+            Srazy jsou většinou velice neformální a konají se v nějakém restauračním zařízení.
+            Nejdřív jsou přednášky, pak volná zábava.
+        </li>
+        <li>
+            I když nebudeš některým přednáškám rozumět, poznáš alespoň
+            spoustu lidí, kteří ti mohou v budoucnu pomoci a z nichž se
+            jednou mohou vyklubat noví kamarádi.
+        </li>
+        <li>
+            Většinou se předem vybere nějaké téma a účastníci pak dobrovolně
+            přihlašují související přednášky.
+        </li>
+        <li>
+            Je úplně v pořádku přijít na Pyvo a bez ohlášení na konci přidat
+            pětiminutovou přednášku (“lightning talk”) o čemkoliv.
+        </li>
+        <!-- XXX
+            <li>Pyva se snaží být vlídným a přátelským prostředím. Přečti si naše <a href="">pravidla chování</a>.</li>
+        -->
+    </ul>
+</div>
+
+<div class="container" id="friends">
+    <h2>Kamarádi</h2>
+    <ul>
+        <li>
+            <a href="http://blog.pykonik.org/">Pykonik</a> – Srazy Pythonistů z Krakówa
+        </li>
+        <li>
+            <a href="http://rubyslava.sk/">Rubyslava</a> – Bratislavské združenie priateľov elegantného programovania všeho druhu.
+        </li>
+        <li>
+            <a href="http://www.meetup.com/vienna-rb/">vienna.rb</a> – Vídeňský sraz kolem jazyka Ruby
+        </li>
+    </ul>
+</div>
 {% endblock bodycontent %}
