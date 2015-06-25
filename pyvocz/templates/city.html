@@ -13,6 +13,13 @@
          <h2>Nadcházející sraz</h2>
     {% endif %}
 
+    <div id="map" style="height: 350px"
+        data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+        data-zoom="13"
+        data-lat="{{event.venue.latitude}}"
+        data-lng="{{event.venue.longitude}}"
+    ></div>
+
     {% include "fragments/event.html" %}
 
     {% block contact %}{% endblock contact %}
@@ -57,3 +64,14 @@
     </ul>
 
 {% endblock bodycontent %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+{% endblock styles %}
+
+{% block scripts %}
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='maps.js') }}"></script>
+{% endblock %}

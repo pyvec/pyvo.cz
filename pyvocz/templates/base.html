@@ -1,10 +1,13 @@
 <html>
     <head>
         <title>{% block title %}Pyvo – Pravidelné programátorské srazy{% endblock title %}</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        {% block styles %}
+            <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        {% endblock styles %}
     </head>
     <body>
         {% block bodycontent %}
         {% endblock bodycontent %}
+        {% block scripts %}{% endblock %}
     </body>
 </html>

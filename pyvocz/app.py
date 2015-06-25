@@ -5,7 +5,7 @@ import re
 from sqlalchemy import func, and_
 from sqlalchemy.orm import joinedload, joinedload_all, subqueryload
 from flask import Flask
-from flask import render_template
+from flask import render_template, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from jinja2 import evalcontextfilter, escape, StrictUndefined
 from jinja2.exceptions import TemplateNotFound
@@ -96,3 +96,26 @@ def city(cityslug):
         return render_template('cities/{}.html'.format(cityslug), **args)
     except TemplateNotFound:
         return render_template('city.html', **args)
+
+
+@app.route('/api/venue/geojson/<venueslug>')
+def api_venue_geojson(venueslug):
+    query = db.session.query(tables.Venue)
+    query = query.filter(tables.Venue.slug == venueslug)
+    venue = query.one()
+
+    return jsonify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": venue.name,
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [str(venue.longitude), str(venue.latitude)]
+                }
+            },
+        ]
+    })
