@@ -3,4 +3,39 @@
 
 {% block bodycontent %}
     <h1>{{ self.title() }}</h1>
+
+    {% block plan %}{% endblock plan %}
+
+    {% block contact %}{% endblock contact %}
+
+    {% block info_for_speakers %}
+        <h2>Informace pro přednášející</h2>
+        <ul>
+            <li>
+                Chceš-li na Pyvu <em>něco říct</em>,
+                ať už teď nebo v budoucnosti,
+                na deset minut nebo hodinu, k tématu nebo ne,
+                ozvi se organizátorům a domluvíme se.
+            </li>
+            <li>
+                Občas přijde zahraniční návštěva.
+                Je dobré mít slajdy nebo přednášku <em>v angličtině</em>.
+            </li>
+            <li>
+                Podporujeme "<em>lightning talks</em>":
+                Kdokoliv může bez přihlášení předem říct v pěti minutách
+                o jakémkoliv tématu.
+            </li>
+            <li>
+                Přednášky většinou <em>nahráváme</em> a zveřejňujeme.
+                Jestli záznam nechceš, dej vědět na místě organizátorům.
+            </li>
+            <li>
+                Přednášky by se měly vejít <em>do dvaceti minut</em>.
+                Scházíme se večer po práci u piva,
+                chceme slyšet spíš zajímavosti než detaily.
+            </li>
+        </ul>
+    {% endblock info_for_speakers %}
+
 {% endblock bodycontent %}

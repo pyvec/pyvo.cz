@@ -7,6 +7,7 @@ from flask import Flask
 from flask import render_template
 from flask.ext.sqlalchemy import SQLAlchemy
 from jinja2.exceptions import TemplateNotFound
+from markupsafe import Markup
 
 from pyvodb.load import get_db
 from pyvodb import tables
@@ -15,6 +16,15 @@ app = Flask(__name__)
 app.config.setdefault('SQLALCHEMY_DATABASE_URI', os.environ['SQLALCHEMY_DATABASE_URI'])
 app.config.setdefault('SQLALCHEMY_ECHO', True)
 db = SQLAlchemy(app)
+
+@app.template_filter('mail_link')
+def mail_link(address):
+    address = address.replace('a', '&#97;')
+    address = address.replace('c', '&#99;')
+    address = address.replace('.', '&#46;')
+    a = address.replace('@', '&#64;')
+    b = address.replace('@', '&#64;<!--==≡≡==-->')
+    return Markup('<a href="m&#97;ilto://{}">{}</a>'.format(a, b))
 
 @app.before_first_request
 def setup():

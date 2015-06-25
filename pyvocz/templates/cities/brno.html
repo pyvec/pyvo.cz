@@ -1,2 +1,21 @@
 {% extends "city.html" %}
 {% block title %}Brněnské Pyvo{% endblock title %}
+
+{% block plan %}
+    <div class="plan">
+        Brněnské Pyvo bývá každý poslední čtvrtek v měsíci.
+        Srazy jsou spojené s BRUG, komunitou kolem <a href="https://www.ruby-lang.org">Ruby</a>.
+    </div>
+{% endblock plan %}
+
+{% block contact %}
+    <h2>Kontakt na organizátory</h2>
+    <dl>
+        <dt>Petr Viktorin</dt>
+        <dd>Telefon: 77-ENCUKOU</dd>
+        <dd>E-mail: {{ 'encukou@gmail.com' | mail_link }}</dd>
+
+        <dt>Honza Javorek</dt>
+        <dd>E-mail: {{ 'mail@honzajavorek.cz' | mail_link }}</dd>
+    </dl>
+{% endblock contact %}
