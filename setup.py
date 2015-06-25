@@ -37,6 +37,7 @@ setup_args = dict(
     install_requires=[
         'pyvodb',
         'flask >= 0.10, < 1.0',
+        'docopt >= 0.6, < 1.0',
     ],
 
     tests_require=['pytest'],
