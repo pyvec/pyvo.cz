@@ -99,6 +99,11 @@ def city(cityslug):
         return render_template('city.html', **args)
 
 
+@app.route('/code-of-conduct')
+def coc():
+    abort(404)  # XXX
+
+
 @app.route('/api/venue/<venueslug>/geo')
 def api_venue_geojson(venueslug):
     query = db.session.query(tables.Venue)

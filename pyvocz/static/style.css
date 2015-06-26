@@ -17,7 +17,7 @@ h2 {
     background-color: #FFF;
 }
 
-body > .container:last-child {
+body > ._content > .container:last-child {
     padding-bottom: 5em;
 }
 
@@ -61,8 +61,12 @@ body.homepage #events .event em time {
     font-style: normal;
 }
 
+@media(max-width: 480px) {
+    body.homepage #events img { display: none; }
+    body.homepage #events .event { margin-left: 0; }
+}
 
-/******************** Homepage map ********************/
+/******************** Map rows ********************/
 
 body.homepage div.map-container { background-color: #8888FF; }
 body.homepage div.map-container .container { background-color: blue; }
@@ -137,6 +141,67 @@ div.map .map-city.past { opacity: 0.75; }
 div.map .map-city.past a { color: white; }
 div.map .map-city.today a { color: yellow; font-weight: bold; }
 div.map .map-city.future a { color: white; }
+
+/******************** Big points ********************/
+
+.big-points {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    justify-content: space-around;
+    -webkit-justify-content: space-around;
+}
+
+.big-points li {
+    list-style-type: none;
+    flex: 0 0 30%;
+    -webkit-flex: 0 0 30%;
+}
+
+.big-points li img {
+    width: 80%;
+    max-width: 200px;
+    display: block;
+    margin: 0 auto;
+}
+
+@media(max-width: 768px) {
+    .big-points {
+        display: block;
+    }
+    .big-points li {
+        display: flex;
+        display: -webkit-flex;
+        flex-direction: row;
+        -webkit-flex-direction: row;
+        justify-content: flex-start;
+        -webkit-justify-content: flex-start;
+    }
+    .big-points li img {
+        width: 8em;
+        height: 4em;
+        display: block;
+        margin-left: 2em;
+        margin-right: 1em;
+        flex: 0;
+        -webkit-flex: 0;
+    }
+    .big-points li {
+        flex: 1;
+        -webkit-flex: 1;
+    }
+}
+@media(max-width: 480px) {
+    .big-points li {
+        display: block;
+    }
+    .big-points li img {
+        width: 50px;
+    }
+}
 
 /******************** Organizer contacts ********************/
 

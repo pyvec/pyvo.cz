@@ -82,31 +82,88 @@
 
 <div class="container" id="about">
     <h2>Co očekávat na Pyvu?</h2>
-    <ul>
+    <ul class="big-points">
         <li>
-            Srazy jsou většinou velice <em>neformální</em> a konají se v nějakém restauračním zařízení.
-            Nejdřív jsou přednášky, pak volná zábava.
+            <img src="{{ url_for('static', filename='images/beerspeaker.png') }}" alt=""></span>
+            <p>
+                Srazy jsou většinou velice <em>neformální</em> a konají se v nějakém restauračním zařízení.
+                Nejdřív jsou přednášky, pak volná zábava.
+            <p>
         </li>
         <li>
-            I když nebudeš některým přednáškám rozumět, poznáš alespoň
-            <em>spoustu lidí</em>, kteří ti mohou v budoucnu pomoci a z nichž se
-            jednou mohou vyklubat noví kamarádi.
+            <img src="{{ url_for('static', filename='images/topics.png') }}" alt=""></span>
+            <p>
+                I když nebudeš některým přednáškám rozumět, poznáš alespoň
+                <em>spoustu lidí</em>, kteří ti mohou v budoucnu pomoci a z nichž se
+                jednou mohou vyklubat noví kamarádi.
+            </p>
         </li>
         <li>
-            Většinou se předem vybere nějaké <em>téma</em> a účastníci pak dobrovolně
-            přihlašují související přednášky.
+            <img src="{{ url_for('static', filename='images/call-for-talks.png') }}" alt=""></span>
+            <p>
+                Většinou se předem vybere nějaké <em>téma</em> a účastníci pak dobrovolně
+                přihlašují související přednášky.
+            </p>
         </li>
         <li>
-            Je úplně v pořádku přijít na Pyvo a bez ohlášení na konci přidat
-            pětiminutovou přednášku (“<em>lightning talk</em>”) o čemkoliv.
+            <img src="{{ url_for('static', filename='images/lightning-talk.png') }}" alt=""></span>
+            <p>
+                Je úplně v pořádku přijít na Pyvo a bez ohlášení na konci přidat
+                pětiminutovou přednášku (“<em>lightning talk</em>”) o čemkoliv.
+            <p>
         </li>
         <li>
-            Typicky se na srazu dá dobře <em>povečeřet</em>, a tím nejen naplnit žaludek,
-            ale i podpořit hospůdku ve které se Pyvo koná.
+            <img src="{{ url_for('static', filename='images/yummy.png') }}" alt=""></span>
+            <p>
+                Typicky se na srazu dá dobře <em>povečeřet</em>, a tím nejen naplnit žaludek,
+                ale i podpořit hospůdku ve které se Pyvo koná.
+            <p>
         </li>
-        <!-- XXX
-            <li>Pyva se snaží být vlídným a přátelským prostředím. Přečti si naše <a href="">pravidla chování</a>.</li>
-        -->
+        <li>
+            <img src="{{ url_for('static', filename='images/heart.png') }}" alt=""></span>
+            <p>
+                Pyva se snaží být vlídným a přátelským prostředím. Přečti si naše <a href="{{ url_for('coc') }}">pravidla chování</a>.
+            <p>
+        </li>
+    </ul>
+</div>
+
+<div class="container" id="info-for-speakers">
+    <h2>Informace pro přednášející</h2>
+    <ul class="big-points">
+    {% block info_for_speakers %}
+            <li>
+                <img src="{{ url_for('static', filename='images/call-for-talks.png') }}" alt=""></span>
+                <p>
+                    Chceš-li na Pyvu <em>něco říct</em>,
+                    ať už teď nebo v budoucnosti,
+                    na deset minut nebo hodinu, k tématu nebo ne,
+                    ozvi se organizátorům a domluvíme se.
+                <p>
+            </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/english-please.png') }}" alt=""></span>
+                <p>
+                    Občas přijde zahraniční návštěva.
+                    Je dobré mít slajdy nebo přednášku <em>v angličtině</em>.
+                <p>
+            </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/20min.png') }}" alt=""></span>
+                <p>
+                    Standardní přednáška by se měla vejít <em>do dvaceti minut</em>.
+                    Scházíme se večer po práci u piva,
+                    chceme slyšet spíš zajímavosti než detaily.
+                <p>
+            </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/camera.png') }}" alt=""></span>
+                <p>
+                    Přednášky většinou <em>nahráváme</em> a zveřejňujeme.
+                    Jestli záznam nechceš, dej vědět na místě organizátorům.
+                <p>
+            </li>
+    {% endblock info_for_speakers %}
     </ul>
 </div>
 

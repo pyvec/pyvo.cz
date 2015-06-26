@@ -7,8 +7,10 @@
         {% endblock styles %}
     </head>
     <body class="{% block bodyclass %}{% endblock %}">
-        {% block bodycontent %}
-        {% endblock bodycontent %}
+        <div class="_content">
+            {% block bodycontent %}
+            {% endblock bodycontent %}
+        </div>
         {% block scripts %}{% endblock %}
     </body>
 </html>
