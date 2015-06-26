@@ -1,22 +1,38 @@
 {% extends "base.html" %}
 {% block title %}Pyvo {{ city.name }}{% endblock title %}
 
+{% block bodyclass %}citypage{% endblock %}
+
 {% block bodycontent %}
 <div class="container">
     <h1>{{ self.title() }}</h1>
 
     {% block plan %}{% endblock plan %}
+</div>
 
-    {% set event = city.events[0] %}
+{% set event = city.events[0] %}
+
+<div class="map-container">
+<div id="map" class="container" style="height: 350px"
+    data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+    data-zoom="14"
+    data-lat="{{event.venue.latitude}}"
+    data-lng="{{event.venue.longitude}}"
+>
+</div>
+</div>
+
+<div class="container">
+
     {% if event.date < today %}
          <h2>Poslední sraz</h2>
     {% else %}
          <h2>Nadcházející sraz</h2>
     {% endif %}
 
-    {% set show_map = True %}
+    {% set is_header_event = True %}
     {% include "fragments/event.html" %}
-    {% set show_map = False %}
+    {% set is_header_event = False %}
 
     {% block contact %}{% endblock contact %}
 

@@ -7,10 +7,10 @@ var layer = L.tileLayer('http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
 
 var icon = L.icon({
     iconUrl: '/static/images/pyvo-marker.png',
-    iconSize: [32, 32],
+    iconSize: [50, 50],
     shadowSize: [0, 0],
-    iconAnchor: [8, 8],
-    popupAnchor: [0, 0]
+    iconAnchor: [25, 50],
+    popupAnchor: [0, -50]
 });
 
 
@@ -33,7 +33,8 @@ $(function() {
             },
             onEachFeature: function (feature, marker) {
                 if (feature.properties) {
-                    text = '<h3>' + feature.properties.name + '<h3>'
+                    text = '<h3>' + feature.properties.name + '</h3><p>' + feature.properties.address + '</p>' +
+                        '<a class="maplink" href="http://mapy.cz/zakladni?q=' + feature.properties.name + ', ' + feature.geometry.coordinates[1] + 'N+' + feature.geometry.coordinates[0] + 'E ">→mapy.cz</a>';
                     marker.bindPopup(text);
                 }
             }

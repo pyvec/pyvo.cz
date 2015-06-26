@@ -1,20 +1,11 @@
 <time datetime="{{event.date}}">{{event.date.day}}. {{event.date.month}}. {{event.date.year}}</time>:
 <em>{{event.title}}</em>
 
-{% if show_map %}
-    <div id="map" style="height: 350px"
-        data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
-        data-zoom="14"
-        data-lat="{{event.venue.latitude}}"
-        data-lng="{{event.venue.longitude}}"
-    ></div>
-{% endif %}
-
 <div>
     {{event.venue.name}}{% if event.venue.address %},
         {{event.venue.short_address}}
     {% endif %}
-    <a class="maplink" href="http://mapy.cz/zakladni?q={{event.venue.name}}, {{ event.venue.latitude }}N+{{ event.venue.longitude }}E ">(mapa)</a>
+    <a class="{% if is_header_event %}map-alt{% endif %}" href="http://mapy.cz/zakladni?q={{event.venue.name}}, {{ event.venue.latitude }}N+{{ event.venue.longitude }}E ">→ mapa (mapy.cz)</a>
 </div>
 
 {% if event.description %}

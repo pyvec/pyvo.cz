@@ -34,7 +34,7 @@ body.homepage #header h1 {
 
 body.homepage #header img { width: 200px; }
 @media(max-width: 768px) { body.homepage #header img { width: 100px; } }
-@media(max-width: 450px) { body.homepage #header img { display: none; } }
+@media(max-width: 480px) { body.homepage #header img { display: none; } }
 
 /******************** Homepage events ********************/
 
@@ -64,13 +64,11 @@ body.homepage #events .event em time {
 
 /******************** Homepage map ********************/
 
-div.map-container {
-    background-color: #8888FF;
-}
+body.homepage div.map-container { background-color: #8888FF; }
+body.homepage div.map-container .container { background-color: blue; }
 
-div.map-container .container {
-    background-color: blue;
-}
+body.citypage div.map-container { background-color: #88AA88; }
+body.citypage div.map-container .container { background-color: #CCCCCC; }
 
 div.map {
     position: relative;
@@ -86,8 +84,12 @@ div.map ul {
     margin: 0;
 }
 
-@media(max-width: 450px) {
+.map-alt { display: none; }
+@media(max-width: 480px) {
     div.map { display: none; }
+    div#map { display: none; }
+    .map-alt { display: inline; }
+    div.map-alt { display: block; }
 }
 
 div.map .map-city {

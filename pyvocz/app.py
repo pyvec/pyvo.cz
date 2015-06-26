@@ -4,9 +4,11 @@ import re
 
 from sqlalchemy import func, and_
 from sqlalchemy.orm import joinedload, joinedload_all, subqueryload
+from sqlalchemy.orm.exc import NoResultFound
 from flask import Flask
 from flask import render_template, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
+from werkzeug.exceptions import abort
 from jinja2 import evalcontextfilter, escape, StrictUndefined
 from jinja2.exceptions import TemplateNotFound
 from markupsafe import Markup
@@ -31,12 +33,10 @@ def mail_link(address):
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 @app.template_filter()
-@evalcontextfilter
-def nl2br(eval_ctx, value):
+def nl2br(value):
     result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', '<br>\n') \
         for p in _paragraph_re.split(escape(value)))
-    if eval_ctx.autoescape:
-        result = Markup(result)
+    result = Markup(result)
     return result
 
 @app.before_first_request
@@ -99,11 +99,14 @@ def city(cityslug):
         return render_template('city.html', **args)
 
 
-@app.route('/api/venue/geojson/<venueslug>')
+@app.route('/api/venue/<venueslug>/geo')
 def api_venue_geojson(venueslug):
     query = db.session.query(tables.Venue)
     query = query.filter(tables.Venue.slug == venueslug)
-    venue = query.one()
+    try:
+        venue = query.one()
+    except NoResultFound:
+        abort(404)
 
     return jsonify({
         "type": "FeatureCollection",
@@ -112,6 +115,7 @@ def api_venue_geojson(venueslug):
                 "type": "Feature",
                 "properties": {
                     "name": venue.name,
+                    "address": nl2br(venue.address),
                 },
                 "geometry": {
                     "type": "Point",
