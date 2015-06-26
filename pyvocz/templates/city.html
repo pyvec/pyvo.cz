@@ -36,9 +36,9 @@
 
     {% block contact %}{% endblock contact %}
 
+    <h2>Informace pro přednášející</h2>
+    <ul id="info-for-speakers">
     {% block info_for_speakers %}
-        <h2>Informace pro přednášející</h2>
-        <ul>
             <li>
                 Chceš-li na Pyvu <em>něco říct</em>,
                 ať už teď nebo v budoucnosti,
@@ -59,12 +59,15 @@
                 Jestli záznam nechceš, dej vědět na místě organizátorům.
             </li>
             <li>
-                Přednášky by se měly vejít <em>do dvaceti minut</em>.
+                Standardní přednáška by se měla vejít <em>do dvaceti minut</em>.
                 Scházíme se večer po práci u piva,
                 chceme slyšet spíš zajímavosti než detaily.
             </li>
-        </ul>
+        <!-- XXX
+            <li>Pyva se snaží být vlídným a přátelským prostředím. Přečti si naše <a href="">pravidla chování</a>.</li>
+        -->
     {% endblock info_for_speakers %}
+    </ul>
 
     <h2>Historie srazů</h2>
     <ul>

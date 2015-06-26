@@ -12,12 +12,19 @@
 
 {% block contact %}
     <h2>Kontakt na organizátory</h2>
-    <dl>
-        <dt>Petr Viktorin</dt>
-        <dd>Telefon: 77-ENCUKOU</dd>
-        <dd>E-mail: {{ 'encukou@gmail.com' | mail_link }}</dd>
-
-        <dt>Honza Javorek</dt>
-        <dd>E-mail: {{ 'mail@honzajavorek.cz' | mail_link }}</dd>
-    </dl>
+    <ul id="contacts" class="contacts">
+        <li>
+            <em>Petr Viktorin</em>
+            <dl>
+                <dt>Telefon<dt><dd>77-ENCUKOU</dd>
+                <dt>E-mail<dt><dd>{{ 'encukou@gmail.com' | mail_link }}</dd>
+            </dl>
+        </li>
+        <li>
+            <em>Honza Javorek</em>
+            <dl>
+                <dt>E-mail<dt><dd>{{ 'mail@honzajavorek.cz' | mail_link }}</dd>
+            </dl>
+        </li>
+    </ul>
 {% endblock contact %}

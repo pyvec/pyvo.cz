@@ -137,3 +137,49 @@ div.map .map-city.past { opacity: 0.75; }
 div.map .map-city.past a { color: white; }
 div.map .map-city.today a { color: yellow; font-weight: bold; }
 div.map .map-city.future a { color: white; }
+
+/******************** Organizer contacts ********************/
+
+ul.contacts {
+    margin: 0;
+    padding: 0;
+}
+
+.contacts li {
+    list-style-type: none;
+}
+
+.contacts em {
+    font-size: 100%;
+    font-weight: bold;
+    font-style: normal;
+}
+
+.contacts dt {
+    font-weight: normal;
+    font-style: normal;
+    display: inline;
+}
+
+.contacts dd {
+    display: inline;
+}
+
+.contacts dd::before {
+    content: ": ";
+    display: inline;
+}
+
+.contacts dd::after {
+    content: " ";
+    height: 0;
+    display: block;
+}
+
+/******************** Info for speakers ********************/
+
+#about em,
+#info-for-speakers em {
+    font-weight: bold;
+    font-style: normal;
+}
