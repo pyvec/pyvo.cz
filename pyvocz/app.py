@@ -11,10 +11,11 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
 from jinja2 import evalcontextfilter, escape, StrictUndefined
 from jinja2.exceptions import TemplateNotFound
-from markupsafe import Markup
 
 from pyvodb.load import get_db
 from pyvodb import tables
+
+from . import filters
 
 app = Flask(__name__)
 app.config.setdefault('SQLALCHEMY_DATABASE_URI', os.environ['SQLALCHEMY_DATABASE_URI'])
@@ -22,24 +23,8 @@ app.config.setdefault('SQLALCHEMY_ECHO', True)
 app.jinja_env.undefined = StrictUndefined
 db = SQLAlchemy(app)
 
-
-@app.template_filter()
-def mail_link(address):
-    address = address.replace('a', '&#97;')
-    address = address.replace('c', '&#99;')
-    address = address.replace('.', '&#46;')
-    a = address.replace('@', '&#64;')
-    b = address.replace('@', '&#64;<!--==≡≡==-->')
-    return Markup('<a href="m&#97;ilto://{}">{}</a>'.format(a, b))
-
-
-_paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
-@app.template_filter()
-def nl2br(value):
-    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', '<br>\n') \
-        for p in _paragraph_re.split(escape(value)))
-    result = Markup(result)
-    return result
+for filter_name in filters.__all__:
+    app.jinja_env.filters[filter_name] = getattr(filters, filter_name)
 
 
 @app.before_first_request
@@ -129,7 +114,7 @@ def coc():
     abort(404)  # XXX
 
 
-@app.route('/api/venue/<venueslug>/geo')
+@app.route('/api/venues/<venueslug>/geo')
 def api_venue_geojson(venueslug):
     query = db.session.query(tables.Venue)
     query = query.filter(tables.Venue.slug == venueslug)
@@ -145,7 +130,7 @@ def api_venue_geojson(venueslug):
                 "type": "Feature",
                 "properties": {
                     "name": venue.name,
-                    "address": nl2br(venue.address),
+                    "address": filters.nl2br(venue.address),
                 },
                 "geometry": {
                     "type": "Point",
