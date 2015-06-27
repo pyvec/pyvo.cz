@@ -2,10 +2,10 @@ import os
 import datetime
 import re
 
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, desc
 from sqlalchemy.orm import joinedload, joinedload_all, subqueryload
 from sqlalchemy.orm.exc import NoResultFound
-from flask import Flask
+from flask import Flask, request
 from flask import render_template, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
@@ -22,6 +22,7 @@ app.config.setdefault('SQLALCHEMY_ECHO', True)
 app.jinja_env.undefined = StrictUndefined
 db = SQLAlchemy(app)
 
+
 @app.template_filter()
 def mail_link(address):
     address = address.replace('a', '&#97;')
@@ -31,6 +32,7 @@ def mail_link(address):
     b = address.replace('@', '&#64;<!--==≡≡==-->')
     return Markup('<a href="m&#97;ilto://{}">{}</a>'.format(a, b))
 
+
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 @app.template_filter()
 def nl2br(value):
@@ -38,6 +40,7 @@ def nl2br(value):
         for p in _paragraph_re.split(escape(value)))
     result = Markup(result)
     return result
+
 
 @app.before_first_request
 def setup():
@@ -55,6 +58,8 @@ def setup():
 @app.route('/')
 def index():
     today = datetime.date.today()
+
+    # Latest talk query
 
     subquery = db.session.query(
         tables.Event.city_id,
@@ -76,7 +81,27 @@ def index():
     query = query.options(joinedload(tables.Event.venue))
     latest_events = query.all()
 
-    return render_template('index.html', latest_events=latest_events, today=today)
+    # Video query
+
+    query = db.session.query(tables.TalkLink)
+    query = query.filter(tables.TalkLink.url.startswith('http://www.youtube.com'))
+    query = query.join(tables.TalkLink.talk)
+    query = query.join(tables.Talk.event)
+    query = query.options(joinedload(tables.TalkLink.talk))
+    query = query.options(joinedload(tables.TalkLink.talk, 'event'))
+    query = query.options(joinedload(tables.TalkLink.talk, 'event', 'city'))
+    query = query.options(subqueryload(tables.TalkLink.talk, 'talk_speakers'))
+    query = query.options(joinedload(tables.TalkLink.talk, 'talk_speakers', 'speaker'))
+    query = query.order_by(desc(tables.Event.date), tables.Talk.index)
+    videos = []
+    for link in query[:12]:
+        prefix = 'http://www.youtube.com/watch?v='
+        match = re.match(re.escape(prefix) + '([-1-9a-zA-Z]+)', link.url)
+        if match:
+            videos.append((link, match.group(1)))
+
+    return render_template('index.html', latest_events=latest_events,
+                           today=today, videos=videos)
 
 @app.route('/<cityslug>')
 def city(cityslug):

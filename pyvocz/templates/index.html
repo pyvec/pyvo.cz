@@ -128,6 +128,41 @@
     </ul>
 </div>
 
+<div class="container" id="videos">
+    <h2>Videa ze srazů</h2>
+    <ul class="video-gallery">
+        {% for link, videoid in videos %}
+            <li>
+                <a href="http://www.youtube.com/watch?v={{ videoid }}">
+                    <div class="image-holder">
+                        <img src="http://img.youtube.com/vi/{{ videoid }}/hqdefault.jpg">
+                    </div>
+                    <p>
+                        <div class="speakers">
+                            {% for speaker in link.talk.speakers %}
+                                <span class="speaker">{{ speaker.name }}</span>{% if not loop.last %},{% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="title">
+                            {% if link.talk.is_lightning %}<span class="lightning">⚡</span>{% endif %}
+                            {{ link.talk.title }}
+                        </div>
+                        {% set date = link.talk.event.date %}
+                        <div class="info">
+                            <time datetime="{{date}}">{{ date.day }}. {{ date.month }}. {{ date.year }}</time>, {{ link.talk.event.city.name }}
+                        </div>
+                    </p>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <ul>
+        <li><a href="https://www.youtube.com/user/pyvec/videos">Videa z Prahy</a></li>
+        <li><a href="https://www.youtube.com/channel/UCzE1AyBbdp8_fbDvnrW5GgA/videos">Videa z Brna</a></li>
+        <li><a href="https://www.youtube.com/channel/UCXAJzEDUm-eO0KP8YEaKW8w/videos">Videa z Ostravy</a></li>
+    </ul>
+</div>
+
 <div class="container" id="info-for-speakers">
     <h2>Informace pro přednášející</h2>
     <ul class="big-points">

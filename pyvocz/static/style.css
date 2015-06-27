@@ -41,7 +41,7 @@ body.homepage #header img { width: 200px; }
 body.homepage #events img {
     width: 3em;
     position: absolute;
-    left: -4em;
+    left: -3.75em;
     top: 0.3em;
 }
 
@@ -202,6 +202,107 @@ div.map .map-city.future a { color: white; }
         width: 50px;
     }
 }
+
+/******************** Video gallery ********************/
+
+.video-gallery {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    justify-content: center;
+    -webkit-justify-content: center;
+}
+
+.video-gallery li {
+    list-style-type: none;
+    flex: 0 0 240px;
+    -webkit-flex: 0 0 240px;
+    margin: 1em;
+    text-align: center;
+}
+
+.video-gallery .image-holder {
+    width: 200px;
+    height: 112px;
+    overflow: hidden;
+    background-color: #888;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.video-gallery .image-holder img {
+    position: relative;
+    top: -19px;
+    width: 200px;
+}
+
+.video-gallery li a {
+    text-decoration: none;
+}
+
+.video-gallery li a .speakers,
+.video-gallery li a .lightning,
+.video-gallery li a .info {
+    color: black;
+}
+
+.video-gallery li a:hover .title {
+    text-decoration: underline;
+}
+
+.video-gallery li .speaker:last-child::after {
+    content: ":";
+}
+
+.video-gallery li .title {
+    font-weight: bold;
+}
+
+@media(max-width: 768px) {
+    .video-gallery {
+        display: block;
+    }
+    .video-gallery li {
+        display: block;
+        margin-left: 7em;
+        position: relative;
+        text-align: left;
+        min-height: 4.4em;
+    }
+    .video-gallery .image-holder {
+        position: absolute;
+        display: block;
+        left: -7em;
+        top: 0.35em;
+        width: 6.5em;
+        height: 3.65em;
+    }
+    .video-gallery .image-holder img {
+        width: 6.5em;
+        top: -0.55em;
+    }
+    .video-gallery li {
+        flex: 1;
+        -webkit-flex: 1;
+    }
+}
+
+@media(max-width: 350px) {
+    .video-gallery li {
+        margin-left: 0;
+    }
+    .video-gallery .image-holder {
+        display: block;
+        position: relative;
+        left: 0;
+        top: 0;
+        margin-left: 0;
+    }
+}
+
 
 /******************** Organizer contacts ********************/
 
