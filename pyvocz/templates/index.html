@@ -88,7 +88,14 @@
             {% include "fragments/calendar.html" %}
         </div>
     {% endfor %}
-    <div class="export-link">Přidej si pyvní kalendář: <a href="{{ url_for('api_ics') }}">iCal</a></div>
+    <div class="export-links">
+        Přidej si pyvní kalendář:
+        <ul>
+            <li><a href="{{ url_for('api_ics') }}">iCal</a></li>
+            <li><a href="{{ url_for('api_rss') }}">RSS</a></li>
+            <li><a href="{{ url_for('api_atom') }}">Atom</a></li>
+        </ul>
+    </div>
 </div>
 </div>
 

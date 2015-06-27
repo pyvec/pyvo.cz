@@ -41,6 +41,7 @@ setup_args = dict(
         'docopt >= 0.6, < 1.0',
         'czech-holidays',
         'ics >= 0.3.1, < 1.0',
+        'feedgen >= 0.3.1, < 1.0',
     ],
 
     tests_require=['pytest'],

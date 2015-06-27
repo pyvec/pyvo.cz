@@ -5,7 +5,7 @@ import re
 from sqlalchemy import func, and_, desc
 from sqlalchemy.orm import joinedload, joinedload_all, subqueryload
 from sqlalchemy.orm.exc import NoResultFound
-from flask import Flask, request, Response
+from flask import Flask, request, Response, url_for
 from flask import render_template, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
@@ -214,3 +214,41 @@ def api_ics():
         print(event.start)
         calendar.events.append(cal_event)
     return Response(str(calendar), mimetype='text/calendar')
+
+
+def make_feed(query, url):
+    query = query.options(joinedload(tables.Event.city))
+    query = query.options(joinedload(tables.Event.venue))
+    query = query.order_by(desc(tables.Event.date))
+    from feedgen.feed import FeedGenerator
+    fg = FeedGenerator()
+    fg.id('http://pyvo.cz')
+    fg.title('Pyvo')
+    fg.logo('http://ex.com/logo.jpg')
+    fg.link(href=url, rel='self')
+    fg.subtitle('Srazy Pyvo.cz')
+    for event in query:
+        fe = fg.add_entry()
+        url = url_for('city', cityslug=event.city.slug, _external=True) + '#{}'.format(event.date)
+        fe.id(url)
+        fe.link(href=url, rel='alternate')
+        fe.title(event.title)
+        fe.summary(event.description)
+        fe.published(event.start)
+        fe.updated(event.start)
+        # XXX: Put talks into fe.dscription(), videos in link(..., rel='related')
+    return fg
+
+
+@app.route('/api/pyvo.rss')
+def api_rss():
+    query = db.session.query(tables.Event)
+    feed = make_feed(query, request.url)
+    return Response(feed.rss_str(pretty=True), mimetype='application/rss+xml')
+
+
+@app.route('/api/pyvo.atom')
+def api_atom():
+    query = db.session.query(tables.Event)
+    feed = make_feed(query, request.url)
+    return Response(feed.atom_str(pretty=True), mimetype='application/atom+xml')
