@@ -2,7 +2,7 @@
     <head>
         <title>{% block title %}Pyvo – Pravidelné programátorské srazy{% endblock title %}</title>
         {% block styles %}
-            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+            <link rel="stylesheet" href="{{ url_for('static', filename='third-party/bootstrap.min.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         {% endblock styles %}
     </head>
