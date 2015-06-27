@@ -5,13 +5,15 @@ import re
 from sqlalchemy import func, and_, desc
 from sqlalchemy.orm import joinedload, joinedload_all, subqueryload
 from sqlalchemy.orm.exc import NoResultFound
-from flask import Flask, request
+from flask import Flask, request, Response
 from flask import render_template, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
 from jinja2 import evalcontextfilter, escape, StrictUndefined
 from jinja2.exceptions import TemplateNotFound
 from czech_holidays import Holidays
+import ics
+import arrow
 
 from pyvodb.load import get_db
 from pyvodb import tables
@@ -187,3 +189,28 @@ def api_venue_geojson(venueslug):
             },
         ]
     })
+
+
+@app.route('/api/pyvo.ics')
+def api_ics():
+    query = db.session.query(tables.Event)
+    query = query.options(joinedload(tables.Event.city))
+    query = query.options(joinedload(tables.Event.venue))
+    calendar = ics.Calendar()
+    for event in query:
+        location = '{}, {}, {}'.format(
+            event.venue.name,
+            event.venue.short_address,
+            event.city.name,
+        )
+        cal_event = ics.Event(
+            name=event.title,
+            location=location,
+            begin=event.start,
+            uid='{}-{}@pyvo.cz'.format(event.city.slug, event.date),
+        )
+        cal_event.geo = '{}:{}'.format(event.venue.latitude,
+                                       event.venue.longitude)
+        print(event.start)
+        calendar.events.append(cal_event)
+    return Response(str(calendar), mimetype='text/calendar')

@@ -40,6 +40,7 @@ setup_args = dict(
         'flask-sqlalchemy >= 2.0, <3.0',
         'docopt >= 0.6, < 1.0',
         'czech-holidays',
+        'ics >= 0.3.1, < 1.0',
     ],
 
     tests_require=['pytest'],

@@ -226,6 +226,7 @@ div.map .map-city.future a { color: black; }
 .calendar table {
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 1em;
 }
 
 .calendar table caption {
@@ -264,6 +265,12 @@ div.map .map-city.future a { color: black; }
     width: 1.3em;
     position: relative;
     top: 2px;
+}
+
+.export-link a {
+    display: inline-block;
+    background-color: white;
+    padding: 0 1ex;
 }
 
 /******************** Video gallery ********************/
