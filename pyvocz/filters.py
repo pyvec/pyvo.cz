@@ -3,7 +3,7 @@ import re
 from jinja2 import escape
 from markupsafe import Markup
 
-__all__ = 'mail_link', 'nl2br'
+__all__ = 'mail_link', 'nl2br', 'monthname', 'shortdayname'
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
@@ -21,3 +21,12 @@ def nl2br(value):
         for p in _paragraph_re.split(escape(value)))
     result = Markup(result)
     return result
+
+
+def monthname(value):
+    return ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec',
+            'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'][value - 1]
+
+
+def shortdayname(value):
+    return ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'][value % 7]

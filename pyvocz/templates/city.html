@@ -23,7 +23,6 @@
 </div>
 
 <div class="container">
-
     {% if event.date < today %}
          <h2>Poslední sraz</h2>
     {% else %}
@@ -34,8 +33,11 @@
     {% include "fragments/event.html" %}
     {% set is_header_event = False %}
 
-    {% block contact %}{% endblock contact %}
+</div>
 
+{% block contact %}{% endblock contact %}
+
+<div class="container">
     <h2>Historie srazů</h2>
     <ul>
         {% for event in city.events[1:] %}

@@ -11,20 +11,22 @@
 {% endblock plan %}
 
 {% block contact %}
+<div class="container">
     <h2>Kontakt na organizátory</h2>
     <ul id="contacts" class="contacts">
         <li>
             <em>Petr Viktorin</em>
             <dl>
-                <dt>Telefon<dt><dd>77-ENCUKOU</dd>
-                <dt>E-mail<dt><dd>{{ 'encukou@gmail.com' | mail_link }}</dd>
+                <dt>Telefon</dt><dd>77-ENCUKOU</dd>
+                <dt>E-mail</dt><dd>{{ 'encukou@gmail.com' | mail_link }}</dd>
             </dl>
         </li>
         <li>
             <em>Honza Javorek</em>
             <dl>
-                <dt>E-mail<dt><dd>{{ 'mail@honzajavorek.cz' | mail_link }}</dd>
+                <dt>E-mail</dt><dd>{{ 'mail@honzajavorek.cz' | mail_link }}</dd>
             </dl>
         </li>
     </ul>
+</div>
 {% endblock contact %}

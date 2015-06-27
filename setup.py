@@ -39,6 +39,7 @@ setup_args = dict(
         'flask >= 0.10, < 1.0',
         'flask-sqlalchemy >= 2.0, <3.0',
         'docopt >= 0.6, < 1.0',
+        'czech-holidays',
     ],
 
     tests_require=['pytest'],

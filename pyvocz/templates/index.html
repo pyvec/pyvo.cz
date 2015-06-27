@@ -80,6 +80,17 @@
     </div>
 </div>
 
+<div class="calendar-container">
+<div class="calendar container" id="calendar">
+    <h2>Kalendář</h2>
+    {% for calendar in calendars %}
+        <div class="col-sm-4 col">
+            {% include "fragments/calendar.html" %}
+        </div>
+    {% endfor %}
+</div>
+</div>
+
 <div class="container" id="about">
     <h2>Co očekávat na Pyvu?</h2>
     <ul class="big-points">
@@ -128,6 +139,7 @@
     </ul>
 </div>
 
+<div class="videos-container">
 <div class="container" id="videos">
     <h2>Videa ze srazů</h2>
     <ul class="video-gallery">
@@ -161,6 +173,7 @@
         <li><a href="https://www.youtube.com/channel/UCzE1AyBbdp8_fbDvnrW5GgA/videos">Videa z Brna</a></li>
         <li><a href="https://www.youtube.com/channel/UCXAJzEDUm-eO0KP8YEaKW8w/videos">Videa z Ostravy</a></li>
     </ul>
+</div>
 </div>
 
 <div class="container" id="info-for-speakers">
@@ -202,6 +215,7 @@
     </ul>
 </div>
 
+<div class="friends-container">
 <div class="container" id="friends">
     <h2>Kamarádi</h2>
     <ul>
@@ -215,5 +229,6 @@
             <a href="http://www.meetup.com/vienna-rb/">vienna.rb</a> – Vídeňský sraz kolem jazyka Ruby
         </li>
     </ul>
+</div>
 </div>
 {% endblock bodycontent %}

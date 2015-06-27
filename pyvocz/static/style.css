@@ -2,19 +2,18 @@
 
 body {
     font-family: Oxygen, sans-serif;
-    background-color: #CCC;
+    background-color: #dcd7d1;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: "Bree Serif", serif;
-}
-
-h2 {
-    margin-top: 2em;
+    margin-top: 0;
 }
 
 .container {
-    background-color: #FFF;
+    background-color: #fdfeff;
+    padding-top: 1em;
+    padding-bottom: 1em;
 }
 
 body > ._content > .container:last-child {
@@ -36,6 +35,23 @@ body.homepage #header img { width: 200px; }
 @media(max-width: 768px) { body.homepage #header img { width: 100px; } }
 @media(max-width: 480px) { body.homepage #header img { display: none; } }
 
+/******************** Color strips ********************/
+
+body.homepage div.map-container { background-color: #8485C2; }
+body.homepage div.map-container .container { background-color: #ECECFF; }
+
+body.homepage .calendar-container { background-color: #C2AE84; }
+body.homepage #calendar { background-color: #FFF9EC; }
+
+body.homepage .videos-container { background-color: #848CA4; }
+body.homepage #videos { background-color: #ECF0F2; }
+
+body.homepage .friends-container { background-color: #C2AE84; }
+body.homepage #friends { background-color: #FFF9EC; }
+
+body.citypage div.map-container { background-color: #86A58E; }
+body.citypage div.map-container .container { background-color: #CCC; }
+
 /******************** Homepage events ********************/
 
 body.homepage #events img {
@@ -49,7 +65,7 @@ body.homepage #events .event {
     position: relative;
     clear: left;
     margin-left: 7em;
-    min-height: 6em;
+    min-height: 7em;
 }
 
 body.homepage #events .event em.title {
@@ -67,12 +83,6 @@ body.homepage #events .event em time {
 }
 
 /******************** Map rows ********************/
-
-body.homepage div.map-container { background-color: #8888FF; }
-body.homepage div.map-container .container { background-color: blue; }
-
-body.citypage div.map-container { background-color: #88AA88; }
-body.citypage div.map-container .container { background-color: #CCCCCC; }
 
 div.map {
     position: relative;
@@ -138,9 +148,9 @@ div.map .map-city-ostrava {
 }
 
 div.map .map-city.past { opacity: 0.75; }
-div.map .map-city.past a { color: white; }
-div.map .map-city.today a { color: yellow; font-weight: bold; }
-div.map .map-city.future a { color: white; }
+div.map .map-city.past a { color: black; }
+div.map .map-city.today a { color: red; font-weight: bold; }
+div.map .map-city.future a { color: black; }
 
 /******************** Big points ********************/
 
@@ -201,6 +211,51 @@ div.map .map-city.future a { color: white; }
     .big-points li img {
         width: 50px;
     }
+}
+
+/******************** Calendar ********************/
+
+.calendar table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.calendar table caption {
+    color: #C2AE84;
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5ex;
+}
+
+.calendar table tr {
+    height: 2em;
+}
+
+.calendar table th {
+    text-align: center;
+    font-weight: normal;
+    padding: 0.5ex;
+}
+
+.calendar table td {
+    color: #C2AE84;
+    text-align: center;
+    min-width: 2em;
+}
+
+.calendar table tr .nowork {
+    background-color: white;
+}
+
+.calendar table td.today {
+    background-color: #C2AE84;
+    color: white;
+}
+
+.calendar table img {
+    width: 1.3em;
+    position: relative;
+    top: 2px;
 }
 
 /******************** Video gallery ********************/
@@ -303,7 +358,6 @@ div.map .map-city.future a { color: white; }
     }
 }
 
-
 /******************** Organizer contacts ********************/
 
 ul.contacts {
@@ -313,12 +367,21 @@ ul.contacts {
 
 .contacts li {
     list-style-type: none;
+    margin-bottom: 1em;
+}
+
+.contacts li:last-child {
+    margin-bottom: 0;
 }
 
 .contacts em {
     font-size: 100%;
     font-weight: bold;
     font-style: normal;
+}
+
+.contacts dl {
+    margin-bottom: 0;
 }
 
 .contacts dt {
@@ -331,7 +394,7 @@ ul.contacts {
     display: inline;
 }
 
-.contacts dd::before {
+.contacts dt::after {
     content: ": ";
     display: inline;
 }
