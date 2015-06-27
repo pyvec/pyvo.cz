@@ -52,6 +52,14 @@ body.homepage #friends { background-color: #FFF9EC; }
 body.citypage div.map-container { background-color: #86A58E; }
 body.citypage div.map-container .container { background-color: #CCC; }
 
+/******************** Footer ********************/
+
+footer.container {
+    font-size: 80%;
+    padding-top: 4em;
+    color: #78797A;
+}
+
 /******************** Homepage events ********************/
 
 body.homepage #events img {
