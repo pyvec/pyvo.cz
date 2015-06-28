@@ -111,8 +111,6 @@ def index():
     for days in holiday_dict.values():
         for day in days:
             holidays.add(day + datetime.timedelta())
-    print(holidays)
-    print(datetime.date(2015, 5, 1) in holidays)
 
     return render_template('index.html', latest_events=latest_events,
                            today=today, videos=videos, calendars=months,
@@ -191,7 +189,6 @@ def api_ics():
         )
         cal_event.geo = '{}:{}'.format(event.venue.latitude,
                                        event.venue.longitude)
-        print(event.start)
         calendar.events.append(cal_event)
     return Response(str(calendar), mimetype='text/calendar')
 

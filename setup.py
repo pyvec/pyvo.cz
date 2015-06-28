@@ -16,6 +16,7 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
+tests_require = ['pytest', 'pytest-flask']
 
 setup_args = dict(
     name='pyvocz',
@@ -44,7 +45,11 @@ setup_args = dict(
         'feedgen >= 0.3.1, < 1.0',
     ],
 
-    tests_require=['pytest', 'pytest-flask'],
+    extras_require={
+        'test': tests_require,
+    },
+
+    tests_require=tests_require,
     cmdclass={'test': PyTest},
 )
 

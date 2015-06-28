@@ -37,4 +37,4 @@ def app():
                     os.path.join(src, name),
                     os.path.join(tempdir, name),
                 )
-        yield create_app(db_uri='sqlite://', datadir=tempdir)
+        yield create_app(db_uri='sqlite://', datadir=tempdir, echo=False)
