@@ -586,10 +586,6 @@ ul.contacts {
         left: 0;
     }
 
-    .event-entry .event-head time .date {
-        display: inline;
-    }
-
     .event-entry .talk-entry .youtube-link {
         display: none;
     }
@@ -610,4 +606,9 @@ ul.contacts {
     .event-entry .talk-entry .head ul.speakers > li::after {
         content: "" !important;
     }
+}
+
+.event-entry div.description {
+    font-size: 100%;
+    margin: 1em 0;
 }

@@ -44,7 +44,7 @@ setup_args = dict(
         'feedgen >= 0.3.1, < 1.0',
     ],
 
-    tests_require=['pytest'],
+    tests_require=['pytest', 'pytest-flask'],
     cmdclass={'test': PyTest},
 )
 

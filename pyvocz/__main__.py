@@ -6,17 +6,22 @@ Usage: pyvocz [options]
 Options:
   --debug       Run in debug mode
   --db=URI      SQLAlchemy database URI
+  --data=DIR    Data directory
 """
 
 import os
 
 import docopt
 
+from pyvocz.app import create_app, DEFAULT_DATA_DIR
 
-arguments = docopt.docopt(__doc__, version='Naval Fate 2.0')
-os.environ['SQLALCHEMY_DATABASE_URL'] = arguments['--db'] or 'sqlite://'
 
-from pyvocz.app import app
+arguments = docopt.docopt(__doc__)
+
+
+db_uri = arguments['--db'] or 'sqlite://'
+datadir = arguments['--data'] or DEFAULT_DATA_DIR
+app = create_app(db_uri=db_uri, datadir=datadir)
 
 if arguments['--debug']:
     app.run(debug=True)

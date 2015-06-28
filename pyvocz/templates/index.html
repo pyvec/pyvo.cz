@@ -153,11 +153,11 @@
 <div class="container" id="videos">
     <h2>Videa ze srazů</h2>
     <ul class="video-gallery">
-        {% for link, videoid in videos %}
+        {% for link in videos %}
             <li>
-                <a href="http://www.youtube.com/watch?v={{ videoid }}">
+                <a href="http://www.youtube.com/watch?v={{ link.youtube_id }}">
                     <div class="image-holder">
-                        <img src="http://img.youtube.com/vi/{{ videoid }}/hqdefault.jpg">
+                        <img src="http://img.youtube.com/vi/{{ link.youtube_id }}/hqdefault.jpg">
                     </div>
                     <p>
                         <div class="speakers">
