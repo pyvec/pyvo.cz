@@ -25,6 +25,14 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True):
         args['lang_code'] = lang_code
         return url_for(request.endpoint, **args)
 
+    @app.template_global()
+    def tr(cs, en):
+        if g.lang_code == 'cs':
+            return cs
+        elif g.lang_code == 'en':
+            return en
+        raise ValueError(g.lang_code)
+
     @app.before_first_request
     def setup():
         db_setup(app, datadir)

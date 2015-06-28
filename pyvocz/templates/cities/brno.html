@@ -1,23 +1,28 @@
 {% extends "city.html" %}
-{% block title %}Brněnské Pyvo{% endblock title %}
+{% block title %}{{ tr('Brněnské Pyvo', 'Brno Pyvo') }}{% endblock title %}
 
 {% block plan %}
     <div class="plan">
         <p>
-            Brněnské Pyvo bývá každý poslední čtvrtek v měsíci.
-            Srazy jsou spojené s BRUG – Brno Ruby User Group, komunitou kolem <a href="https://www.ruby-lang.org">Ruby</a>.
+            {% if g.lang_code == 'cs' %}
+                Brněnské Pyvo bývá každý poslední čtvrtek v měsíci.
+                Srazy jsou spojené s BRUG – Brno Ruby User Group, komunitou kolem <a href="https://www.ruby-lang.org">Ruby</a>.
+            {% else %}
+                Pyvo Brno is traditionally held on the last Thursday of each month.
+                Our friends from BRUG, the Brno <a href="https://www.ruby-lang.org">Ruby</a> User Group, often join us for a common meetup.
+            {% endif %}
         </p>
     </div>
 {% endblock plan %}
 
 {% block contact %}
 <div class="container">
-    <h2>Kontakt na organizátory</h2>
+    <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>
     <ul id="contacts" class="contacts">
         <li>
             <em>Petr Viktorin</em>
             <dl>
-                <dt>Telefon</dt><dd>77-ENCUKOU</dd>
+                <dt>{{ tr('Telefon', 'Phone') }}</dt><dd>77-ENCUKOU</dd>
                 <dt>E-mail</dt><dd>{{ 'encukou@gmail.com' | mail_link }}</dd>
             </dl>
         </li>

@@ -19,8 +19,8 @@
                             <a href="{{ url_for('city', cityslug=event.city.slug) }}">
                                 <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}"
                                      width="20"
-                                     alt="{{date.day}}. {{date.month}}. – {{ event.title }}"
-                                     title="{{date.day}}. {{date.month}}. – {{ event.title }}"
+                                     alt="{{date | shortday}} – {{ event.title }}"
+                                     title="{{date | shortday}} – {{ event.title }}"
                                 >
                             </a>
                         {% else %}

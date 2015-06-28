@@ -11,7 +11,7 @@
         <div class="event-head">
             <a href="#{{event.date}}">
                 <time datetime="{{event.start}}">
-                    <span class="date">{{event.start.day}}. {{event.start.month}}.</span>
+                    <span class="date">{{event.start | shortday}}.</span>
                     <span class="year">{{event.start.year}}</span> · <span class="time">{{event.start.strftime('%H:%M')}}</span>
                 </time>
             </a>

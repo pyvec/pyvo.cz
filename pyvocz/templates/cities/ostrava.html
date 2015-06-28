@@ -1,10 +1,14 @@
 {% extends "city.html" %}
-{% block title %}Ostravské Pyvo{% endblock title %}
+{% block title %}{{ tr('Ostravské Pyvo', 'Ostrava Pyvo') }}{% endblock title %}
 
 {% block plan %}
     <div class="plan">
         <p>
-            Ostravské Pyvo bývá každé první pondělí v měsíci.
+            {% if g.lang_code == 'cs' %}
+                Ostravské Pyvo bývá každé první pondělí v měsíci.
+            {% else %}
+                Ostrava Pyvo is traditionally held on the first Thursday of each month.
+            {% endif %}
         </p>
     </div>
 {% endblock plan %}
