@@ -11,10 +11,19 @@ def test_homepage_ok(client):
 
 
 def test_spider(client, monkeypatch, app, check_external_links):
+    """Check that all links work
+
+    Spiders the site, making sure all internal links point to existing pages.
+    Includes fragments: any #hash in a link must
+
+    If check_external_links is true, checks external links as well.
+    """
     to_visit = {'http://localhost/'}
     visited = set()
+    external = set()
 
-    wanted_fragments = collections.defaultdict(list)
+    wanted_fragments = collections.defaultdict(set)
+    page_ids = {}
 
     def recording_url_for(*args, **kwargs):
         url = flask.url_for(*args, **kwargs)
@@ -31,33 +40,45 @@ def test_spider(client, monkeypatch, app, check_external_links):
         parsed = urlparse(url)
         if parsed.netloc == 'localhost':
             print('visit', url)
-            check_url(client, url, links)
+            page_ids[url] = []
+            check_url(client, url, links, page_ids[url])
             for link in links:
                 fullurl = urljoin('http://localhost/', url)
                 fullurl = urljoin(fullurl, link)
                 result = urldefrag(fullurl)
                 defrag = result.url
                 fragment = result.fragment
-                wanted_fragments[defrag].append(fragment)
+                if fragment:
+                    wanted_fragments[defrag].add(fragment)
                 if defrag not in visited:
                     to_visit.add(defrag)
         else:
-            if check_external_links and parsed.scheme in ('http', 'https'):
-                print('check', url)
-                check_external_link(url)
+            if parsed.scheme in ('http', 'https'):
+                external.add(url)
             else:
                 print('ignore', url)
 
+    for url, fragments in wanted_fragments.items():
+        assert fragments <= set(page_ids[url])
 
-def check_url(client, url, links_out=None):
+    if check_external_links:
+        for url in external:
+            print('check', url)
+            check_external_link(url)
+
+
+def check_url(client, url, links_out=None, ids_out=None):
     if url == 'http://localhost/static/':
         return
     result = client.get(url)
     assert result.status_code == 200
     tree = lxml.html.document_fromstring(result.data)
-    for element, attribute, link, pos in tree.iterlinks():
-        if links_out is not None:
+    if links_out is not None:
+        for element, attribute, link, pos in tree.iterlinks():
             links_out.append(link)
+    if ids_out is not None:
+        for element in tree.cssselect('*[id]'):
+            ids_out.append(element.attrib['id'])
 
 
 def check_external_link(url):
