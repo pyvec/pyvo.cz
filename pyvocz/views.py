@@ -18,9 +18,14 @@ from .db import db
 
 routes = {}
 
-def route(url):
+def route(url, translate=True):
     def decorator(func):
-        routes[url] = func
+        assert url.startswith('/')
+        if translate:
+            routes[url] = func, {'defaults': {'lang_code': 'cs'}}
+            routes['/en' + url] = func, {'defaults': {'lang_code': 'en'}}
+        else:
+            routes[url] = func, {}
         return func
     return decorator
 
@@ -142,7 +147,7 @@ def coc():
     abort(404)  # XXX
 
 
-@route('/api/venues/<venueslug>/geo')
+@route('/api/venues/<venueslug>/geo', translate=False)
 def api_venue_geojson(venueslug):
     query = db.session.query(tables.Venue)
     query = query.filter(tables.Venue.slug == venueslug)

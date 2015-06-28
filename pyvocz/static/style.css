@@ -20,6 +20,25 @@ body > ._content > .container:last-child {
     padding-bottom: 5em;
 }
 
+nav.container {
+    padding: 0;
+    height: 0;
+    position: relative;
+}
+
+nav.container a.lang_switch {
+    display: block;
+    float: right;
+    padding: 1em 1em 1ex 1ex;
+}
+
+body.homepage nav.container a.lang_switch {
+    float: none;
+    position: absolute;
+    right: 0;
+}
+@media(max-width: 480px) { nav.container { height: 2em; } }
+
 /******************** Homepage header ********************/
 
 body.homepage #header {
