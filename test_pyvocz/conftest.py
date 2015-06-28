@@ -7,6 +7,15 @@ import pytest_flask as pt_flask
 
 from pyvocz.app import create_app, DEFAULT_DATA_DIR
 
+def pytest_addoption(parser):
+    parser.addoption("--check-external-links", action="store_true",
+        help="Check external links when running the tests.")
+
+
+@pytest.fixture
+def check_external_links(pytestconfig):
+    return pytestconfig.getoption('check_external_links')
+
 
 @pytest.yield_fixture
 def app():

@@ -16,7 +16,7 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
-tests_require = ['pytest', 'pytest-flask']
+tests_require = ['pytest', 'pytest-flask', 'lxml', 'requests']
 
 setup_args = dict(
     name='pyvocz',
