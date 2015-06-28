@@ -435,3 +435,179 @@ ul.contacts {
     font-weight: bold;
     font-style: normal;
 }
+
+/******************** Event lists ********************/
+
+.event-list > ul {
+    padding: 0;
+}
+
+.event-list > ul > li {
+    list-style-type: none;
+    min-height: 5em;
+}
+
+.event-entry {
+    margin-left: 8em;
+}
+
+.event-entry .event-common {
+    min-height: 4.5em;
+}
+
+.event-entry .event-head {
+    position: relative;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.event-entry .event-head time {
+    display: block;
+    position: absolute;
+    left: -8em;
+    width: 7.1em;
+    height: 4em;
+    text-align: center;
+    background-color: #EFF0EF;
+    color: black;
+}
+
+.event-entry.future .event-head time { background-color: #DFE0FF; }
+.event-entry.today .event-head time { background-color: #F1EFC4; }
+.event-entry:target .event-head time { background-color: #EDECBC; }
+
+.event-entry .event-head time .date {
+    font-family: "Bree Serif", serif;
+    font-size: 150%;
+    display: block;
+}
+
+.event-entry .event-head em {
+    font-family: "Bree Serif", serif;
+    font-size: 150%;
+    display: block;
+    font-style: normal;
+}
+
+.event-entry > ul {
+    padding: 0;
+}
+
+.event-entry > ul > li {
+    list-style-type: none;
+}
+
+.event-entry .talk-entry {
+    min-height: 3.5em;
+    position: relative;
+}
+
+.event-entry .talk-entry .youtube-link {
+    order: 2;
+    display: block;
+    position: absolute;
+    left: -6em;
+    width: 5em;
+    height: 2.8125em;
+    margin: 0;
+    overflow: hidden;
+}
+
+.event-entry .talk-entry .youtube-link img {
+    width: 5em;
+    position: absolute;
+    top: -0.45em;
+}
+
+.event-entry .talk-entry .youtube-link .overlay {
+    width: 5em;
+    height: 3em;
+    position: absolute;
+    background: #EEE;
+    opacity: 0.6;
+}
+
+.event-entry .talk-entry .youtube-link .overlay:hover {
+    opacity: 0;
+}
+
+.event-entry .talk-entry .youtube-link.no-yt {
+    background-color: #F4F4F4;
+}
+
+.event-entry .talk-entry .head {
+    order: 3;
+}
+
+.event-entry .talk-entry .head em {
+    font-weight: bold;
+    font-style: normal;
+}
+
+.event-entry .talk-entry .head ul.speakers {
+    padding: 0;
+}
+
+.event-entry .talk-entry .head ul.speakers > li {
+    list-style-type: none;
+    display: inline;
+}
+
+.event-entry .talk-entry .head ul.speakers > li:first-child::before { content: "― "; }
+.event-entry .talk-entry .head ul.speakers > li::after { content: ", "; }
+.event-entry .talk-entry .head ul.speakers > li:last-child::after { content: ""; }
+
+.event-entry .talk-entry.lightning {
+    min-height: 2em;
+}
+
+.event-entry .talk-entry.lightning .youtube-link {
+    width: 2.6em;
+    height: 1.5em;
+    left: -3.6em;
+}
+
+.event-entry .talk-entry.lightning .youtube-link img {
+    width: 2.6em;
+    top: -0.2em;
+}
+
+.event-entry .talk-entry.lightning .head ul.speakers {
+    display: inline;
+}
+
+@media(max-width: 480px) {
+    .event-entry {
+        margin-left: 0;
+    }
+
+    .event-entry .event-head time {
+        position: relative;
+        left: 0;
+    }
+
+    .event-entry .event-head time .date {
+        display: inline;
+    }
+
+    .event-entry .talk-entry .youtube-link {
+        display: none;
+    }
+
+    .event-entry .talk-entry .head ul.speakers {
+        display: block !important;
+        padding-left: 1em;
+    }
+
+    .event-entry .talk-entry .head ul.speakers > li {
+        display: block !important;
+    }
+
+    .event-entry .talk-entry .head ul.speakers > li::before {
+        content: "" !important;
+    }
+
+    .event-entry .talk-entry .head ul.speakers > li::after {
+        content: "" !important;
+    }
+}

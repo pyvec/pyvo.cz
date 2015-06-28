@@ -1,16 +1,25 @@
-{% if talk.is_lightning %}<span class="lightning">⚡</span>{% endif %}
-<em>{{talk.title}}</em>
-{% if talk.speakers %}
-    –
-    {% for speaker in talk.speakers %}
-        {{speaker.name}}{% if not loop.last %},{% endif %}
-    {% endfor %}
-{% endif %}
+<div class="talk-entry
+    {% if talk.is_lightning %}lightning{% endif %}
+">
 
-{% if talk.links %}
-    <div>
-        {% for link in talk.links %}
-            →<a href="{{link.url}}">{{link.kind}} ({{link.hostname}})</a>
-        {% endfor %}
+    {% if talk.youtube_id %}
+        <a class="youtube-link yt" href="http://www.youtube.com/watch?v={{talk.youtube_id}}">
+            <img src="http://img.youtube.com/vi/{{talk.youtube_id}}/hqdefault.jpg" width="20">
+            <span class="overlay"></span>
+        </a>
+    {% else %}
+        <span class="youtube-link no-yt">
+            <span class="overlay"></span>
+        </span>
+    {% endif %}
+
+    <div class="head">
+        <em class="talk-title">{{talk.title}}</em>
+        <ul class="speakers">
+            {% for speaker in talk.speakers %}
+                <li>{{speaker.name}}</li>
+            {% endfor %}
+        </ul>
     </div>
-{% endif %}
+
+</div>

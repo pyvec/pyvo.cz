@@ -83,10 +83,9 @@ def index():
     query = query.order_by(desc(tables.Event.date), tables.Talk.index)
     videos = []
     for link in query[:12]:
-        prefix = 'http://www.youtube.com/watch?v='
-        match = re.match(re.escape(prefix) + '([-1-9a-zA-Z_]+)', link.url)
-        if match:
-            videos.append((link, match.group(1)))
+        yid = link.youtube_id
+        if yid:
+            videos.append((link, yid))
 
     # Calendar
 

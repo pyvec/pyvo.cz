@@ -25,8 +25,10 @@
 <div class="container">
     {% if event.date < today %}
          <h2>Poslední sraz</h2>
-    {% else %}
+    {% elif event.date > today %}
          <h2>Nadcházející sraz</h2>
+    {% else %}
+         <h2>Dnešní sraz</h2>
     {% endif %}
 
     {% set is_header_event = True %}
@@ -37,7 +39,7 @@
 
 {% block contact %}{% endblock contact %}
 
-<div class="container">
+<div class="container event-list">
     <h2>Historie srazů</h2>
     <ul>
         {% for event in city.events[1:] %}
