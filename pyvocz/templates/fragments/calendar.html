@@ -1,36 +1,39 @@
 <table>
-    <caption>{{ calendar[1][-1][0].month | monthname }}</caption>
+    <caption>{{ month | monthname }}</caption>
     <tr>
         {% for day in range(7) %}
             <th {% if day >= 5 %}class="nowork"{% endif %}>{{ day | shortdayname }}</th>
         {% endfor %}
     </tr>
-    {% for row in calendar %}
-        <tr>
-            {% for date, event in row %}
-                {% if date %}
-                    <td class="
-                        {% if date == today %}today{% endif %}
-                        {% if loop.index > 5 or (date in holidays) %}nowork{% endif %}
-                        {% if event %}has-event{% endif %}
-                        "
-                    >
-                        {% if event %}
-                            <a href="{{ url_for('city', cityslug=event.city.slug) }}">
-                                <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}"
-                                     width="20"
-                                     alt="{{date | shortday}} – {{ event.title }}"
-                                     title="{{date | shortday}} – {{ event.title }}"
-                                >
-                            </a>
-                        {% else %}
-                            {{ date.day }}
-                        {% endif %}
-                    </td>
-                {% else %}
-                    <td {% if loop.index > 5 %}class="nowork"{% endif %}>&nbsp;</td>
-                {% endif %}
-            {% endfor %}
-        </tr>
+    {% for week in weeks %}
+        {% if (week[0]['day'].year, week[0]['day'].month) <= (year, month) %}
+            <tr>
+                {% for day in week %}
+                    {% if day['alien'] %}
+                        <td {% if loop.index > 5 %}class="nowork"{% endif %}>&nbsp;</td>
+                    {% else %}
+                        <td class="
+                            {% if day['day'] == today %}today{% endif %}
+                            {% if loop.index > 5 or (day['holiday']) %}nowork{% endif %}
+                            {% if day['events'] %}has-event{% endif %}
+                            "
+                        >
+                            {% if day['events'] %}
+                                {% set event = day['events'][0] %}
+                                <a href="{{ url_for('city', cityslug=event.city.slug) }}">
+                                    <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}"
+                                         width="20"
+                                         alt="{{day['day'] | shortday}} – {{ event.title }}"
+                                         title="{{day['day'] | shortday}} – {{ event.title }}"
+                                    >
+                                </a>
+                            {% else %}
+                                {{ day['day'].day }}
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endif %}
     {% endfor %}
 </table>

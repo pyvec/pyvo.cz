@@ -7,10 +7,10 @@ from flask import request, Response, url_for
 from flask import render_template, jsonify
 from werkzeug.exceptions import abort
 from jinja2.exceptions import TemplateNotFound
-from czech_holidays import Holidays
 import ics
 
 from pyvodb import tables
+from pyvodb.calendar import get_calendar
 
 from . import filters
 from .db import db
@@ -73,53 +73,11 @@ def index():
         if link.youtube_id:
             videos.append(link)
 
-    # Calendar
-
-    month_start = today.replace(day=1)
-    last_month_start = month_start.replace(month=month_start.month - 1)
-    next_month_end = last_month_start.replace(month=month_start.month + 2)
-    query = db.session.query(tables.Event)
-    query = query.filter(tables.Event.date >= last_month_start)
-    query = query.filter(tables.Event.date < next_month_end)
-    events_by_date = {e.date: e for e in query}
-    week = []
-    month = [week]
-    months = []
-    current = last_month_start
-    prev_month = None
-    holiday_dict = {}
-    while current < next_month_end:
-        if current.year not in holiday_dict:
-            holiday_dict[current.year] = Holidays(current.year)
-        if current.month != prev_month:
-            while len(week) < 7:
-                week.append((None, None))
-            week = [(None, None)] * current.weekday()
-            month = [week]
-            months.append(month)
-            prev_month = current.month
-        if week and current.weekday() == 0:
-            week = []
-            month.append(week)
-        week.append((current, events_by_date.get(current)))
-        current += datetime.timedelta(days=1)
-    max_weeks = max(len(m) for m in months)
-    for month in months:
-        if month[0][3][0] is not None and len(month) < max_weeks:
-            month.insert(0, [(None, None)] * 7)
-        if len(month) < max_weeks:
-            month.append([(None, None)] * 7)
-        for week in month:
-            while len(week) < 7:
-                week.append((None, None))
-    holidays = set()
-    for days in holiday_dict.values():
-        for day in days:
-            holidays.add(day + datetime.timedelta())
+    calendar = get_calendar(db.session, first_year=today.year,
+                            first_month=today.month - 1, num_months=3)
 
     return render_template('index.html', latest_events=latest_events,
-                           today=today, videos=videos, calendars=months,
-                           holidays=holidays)
+                           today=today, videos=videos, calendar=calendar)
 
 @route('/<cityslug>')
 def city(cityslug):

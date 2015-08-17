@@ -107,18 +107,22 @@
 <div class="calendar-container">
 <div class="calendar container" id="calendar">
     <h2>{{ tr('Kalendář', 'Calendar') }}</h2>
-    {% for calendar in calendars %}
-        <div class="col-sm-4 col">
-            {% include "fragments/calendar.html" %}
+    <div class="row">
+        {% for (year, month), weeks in calendar.items() %}
+            <div class="col-sm-4 col">
+                {% include "fragments/calendar.html" %}
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="export-links col-lg-12">
+            {{ tr('Přidej si pyvní kalendář:', 'Add the Pyvo calendar:') }}
+            <ul>
+                <li><a href="{{ url_for('api_ics') }}">iCal</a></li>
+                <li><a href="{{ url_for('api_rss') }}">RSS</a></li>
+                <li><a href="{{ url_for('api_atom') }}">Atom</a></li>
+            </ul>
         </div>
-    {% endfor %}
-    <div class="export-links">
-        {{ tr('Přidej si pyvní kalendář:', 'Add the Pyvo calendar:') }}
-        <ul>
-            <li><a href="{{ url_for('api_ics') }}">iCal</a></li>
-            <li><a href="{{ url_for('api_rss') }}">RSS</a></li>
-            <li><a href="{{ url_for('api_atom') }}">Atom</a></li>
-        </ul>
     </div>
 </div>
 </div>
