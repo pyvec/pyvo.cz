@@ -36,7 +36,7 @@ setup_args = dict(
     ],
 
     install_requires=[
-        'pyvodb >= 0.0.2',
+        'pyvodb >= 0.0.3',
         'flask >= 0.10, < 1.0',
         'flask-sqlalchemy >= 2.0, <3.0',
         'docopt >= 0.6, < 1.0',

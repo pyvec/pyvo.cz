@@ -631,3 +631,8 @@ ul.contacts {
     font-size: 100%;
     margin: 1em 0;
 }
+
+.event-entry div.talk-description {
+    font-size: 100%;
+    margin: 0 0 1em;
+}

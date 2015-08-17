@@ -20,6 +20,11 @@
                 <li>{{speaker.name}}</li>
             {% endfor %}
         </ul>
+        {% if talk.description %}
+            <div class="talk-description">
+                {{talk.description}}
+            </div>
+        {% endif %}
     </div>
 
 </div>
