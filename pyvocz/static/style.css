@@ -176,7 +176,7 @@ div.map .map-city-ostrava {
 
 div.map .map-city.past { opacity: 0.75; }
 div.map .map-city.past a { color: black; }
-div.map .map-city.today a { color: red; font-weight: bold; }
+div.map .map-city.today a { color: black; text-shadow: 0px 0px 3px white, 0 0 2px white; }
 div.map .map-city.future a { color: black; }
 
 /******************** Big points ********************/

@@ -78,10 +78,10 @@
                 {% if event.date == today %}
                     {% if g.lang_code == 'cs' %}
                         <em>Dnes</em>
-                        v <time datetime="{{event.date}}">{{event.date.hour}}:{{event.date.minute}}</time> je
+                        v <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time> je
                     {% else %}
                         <em>Today</em>
-                        at <time datetime="{{event.date}}">{{event.date.hour}}:{{event.date.minute}}</time>:
+                        at <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time>:
                     {% endif %}
                 {% else %}
                     {{ tr('', 'On') }}
