@@ -1,4 +1,5 @@
 
+import os
 import sys
 
 from setuptools import setup, find_packages
@@ -17,6 +18,16 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 tests_require = ['pytest', 'pytest-flask', 'lxml', 'requests', 'cssselect']
+
+def data_file_names():
+    for top in 'pyvocz/static', 'pyvocz/templates':
+        for dirname, dirs, files in os.walk(top):
+            for filename in files:
+                fullname = os.path.join(dirname, filename)
+                if filename not in dirs and fullname.endswith((
+                        '.png', '.svg', '.jpg', '.css', '.html',
+                        )):
+                    yield os.path.relpath(fullname, 'pyvocz')
 
 setup_args = dict(
     name='pyvocz',
@@ -44,6 +55,8 @@ setup_args = dict(
         'ics >= 0.3.1, < 1.0',
         'feedgen >= 0.3.1, < 1.0',
     ],
+
+    package_data={'pyvocz': list(data_file_names())},
 
     extras_require={
         'test': tests_require,
