@@ -5,6 +5,7 @@ from sqlalchemy.orm import joinedload, subqueryload
 from sqlalchemy.orm.exc import NoResultFound
 from flask import request, Response, url_for
 from flask import render_template, jsonify
+from flask import current_app as app
 from werkzeug.exceptions import abort
 from jinja2.exceptions import TemplateNotFound
 import ics
@@ -13,17 +14,19 @@ from pyvodb import tables
 from pyvodb.calendar import get_calendar
 
 from . import filters
-from .db import db
+from .db import db, db_setup
 
 
 routes = {}
 
-def route(url, translate=True):
+def route(url, methods=['GET'], translate=True):
     def decorator(func):
         assert url.startswith('/')
         if translate:
-            routes[url] = func, {'defaults': {'lang_code': 'cs'}}
-            routes['/en' + url] = func, {'defaults': {'lang_code': 'en'}}
+            routes[url] = func, {'defaults': {'lang_code': 'cs'},
+                                 'methods': methods}
+            routes['/en' + url] = func, {'defaults': {'lang_code': 'en'},
+                                         'methods': methods}
         else:
             routes[url] = func, {}
         return func
@@ -192,3 +195,11 @@ def api_atom():
     query = db.session.query(tables.Event)
     feed = make_feed(query, request.url)
     return Response(feed.atom_str(pretty=True), mimetype='application/atom+xml')
+
+@route('/api/reload_hook', methods=['POST'])
+def reload_hook():
+    for table in reversed(tables.metadata.sorted_tables):
+        db.session.execute(table.delete())
+    db_setup(app.config['PYVO_DATADIR'])
+    db.session.commit()
+    return jsonify({'result': 'OK'})

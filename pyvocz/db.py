@@ -5,7 +5,7 @@ from pyvodb import tables
 
 db = SQLAlchemy()
 
-def db_setup(app, datadir):
+def db_setup(datadir):
     # Workaround for https://github.com/mitsuhiko/flask-sqlalchemy/pull/250
     tables.metadata.create_all(db.engine)
     if db.session.query(tables.Event).count():

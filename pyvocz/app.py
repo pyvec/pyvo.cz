@@ -13,6 +13,7 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True):
     app = Flask(__name__)
     app.config.setdefault('SQLALCHEMY_DATABASE_URI', db_uri)
     app.config.setdefault('SQLALCHEMY_ECHO', echo)
+    app.config.setdefault('PYVO_DATADIR', datadir)
     app.jinja_env.undefined = StrictUndefined
     db.init_app(app)
 
@@ -35,7 +36,7 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True):
 
     @app.before_first_request
     def setup():
-        db_setup(app, datadir)
+        db_setup(datadir)
 
     @app.url_value_preprocessor
     def pull_lang_code(endpoint, values):
