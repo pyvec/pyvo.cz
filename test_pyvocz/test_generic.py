@@ -35,6 +35,8 @@ def test_spider(client, monkeypatch, app, check_external_links):
 
     while to_visit:
         url = to_visit.pop()
+        if url in visited:
+            continue
         visited.add(url)
         links = []
         parsed = urlparse(url)
