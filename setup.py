@@ -26,6 +26,7 @@ setup_args = dict(
     description="""Website with information about Pyvo meetups (pyvo.cz)""",
     author='Petr Viktorin',
     author_email='encukou@gmail.com',
+    url='https://github.com/pyvec/pyvo.cz',
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
