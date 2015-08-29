@@ -10,337 +10,333 @@
 {% block bodyclass %}homepage{% endblock %}
 
 {% block bodycontent %}
-<div class="container" id="header">
-    <img src="{{ url_for('static', filename="images/krygl.png") }}">
-    <h1>Pyvo</h1>
-    {% if g.lang_code == 'cs' %}
-        <div>
-            Pyva jsou setkání příznivců programovacího jazyka <a href="http://python.cz">Python</a>
-            a spřízněných technologií.
-            Pravidelně jsou pořádány v Praze, Brně a Ostravě.
-        </div>
-    {% else %}
-        <div>
-            Pyvo is a meetups for fans of the <a href="http://python.cz">Python</a> programming language
-            and related technologies.
-            These meetups are held regularly in Prague, Brno, and Ostrava.
-        </div>
-    {% endif %}
-</div>
-
-<div class="map-container">
 <div class="container">
-<div class="map">
-    <img src="{{ url_for('static', filename='images/czech_republic.svg') }}" alt="">
-    <ul>
-    {% for event in latest_events %}
-        <li class="map-city map-city-{{event.city.slug}}
-            {% if event.date == today %}
-                today
-            {% elif event.date < today %}
-                past
-            {% else %}
-                future
-            {% endif %}
-            "
-        >
-            <a href="{{ url_for('city', cityslug=event.city.slug) }}">
-                {% if event.date == today and event.start_time %}
-                    <div class="date"><time datetime="{{event.date}}">{{ event.start_time.strftime('%H:%M') }}</time></div>
-                {% else %}
-                    <div class="date"><time datetime="{{event.date}}">{{event.date | shortday}}</time></div>
-                {% endif %}
-                <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}"
-                     width="50"
-                     alt=""
-                     title="{{event.date | shortday}} – {{event.title}}"
-                >
-            </a>
-        </li>
-    {% endfor %}
-    </ul>
-</div>
-</div>
-</div>
-
-<div class="container" id="events">
-    <h2>{{ tr('Kdy a kde?', 'When & Where?') }}</h2>
-    <div>
-        {% for event in latest_events %}
-        <div class="event">
-            <h3>
-                <a href="{{ url_for('city', cityslug=event.city.slug) }}">
-                    <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}" width="50">
-                    {{event.city.name}}
-                </a>
-            </h3>
+    <div id="header">
+        <img src="{{ url_for('static', filename="images/krygl.png") }}">
+        <h1>Pyvo</h1>
+        {% if g.lang_code == 'cs' %}
             <div>
-                {% if event.date == today %}
-                    {% if g.lang_code == 'cs' %}
-                        <em>Dnes</em>
-                        v <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time> je
-                    {% else %}
-                        <em>Today</em>
-                        at <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time>:
-                    {% endif %}
-                {% else %}
-                    {{ tr('', 'On') }}
-                    <em><time datetime="{{event.date}}">{{event.date | shortday}}</time></em>
-                    {% if event.date < today %}
-                        {{ tr('bylo', 'was') }}
-                    {% else %}
-                        {{ tr('bude', 'will be') }}
-                    {% endif %}
-                {% endif %}
-                <em class="title">{{event.title}}</em>
+                Pyva jsou setkání příznivců programovacího jazyka <a href="http://python.cz">Python</a>
+                a spřízněných technologií.
+                Pravidelně jsou pořádány v Praze, Brně a Ostravě.
             </div>
-            <span>
-                {{event.venue.name}}{% if event.venue.address %},
-                    {{event.venue.short_address}}
-                {% endif %}
-            </span>
-        </div>
-        {% endfor %}
+        {% else %}
+            <div>
+                Pyvo is a meetups for fans of the <a href="http://python.cz">Python</a> programming language
+                and related technologies.
+                These meetups are held regularly in Prague, Brno, and Ostrava.
+            </div>
+        {% endif %}
     </div>
-</div>
 
-<div class="calendar-container">
-<div class="calendar container" id="calendar">
-    <h2>{{ tr('Kalendář', 'Calendar') }}</h2>
-    <div class="row">
-        {% for (year, month), weeks in calendar.items() %}
-            <div class="col-sm-4 col">
-                {% include "fragments/calendar.html" %}
-            </div>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <div class="export-links col-lg-12">
-            {{ tr('Přidej si pyvní kalendář:', 'Add the Pyvo calendar:') }}
+    <div id="map">
+        <div class="map">
+            <img src="{{ url_for('static', filename='images/czech_republic.svg') }}" alt="">
             <ul>
-                <li><a href="{{ url_for('api_ics') }}">iCal</a></li>
-                <li><a href="{{ url_for('api_rss') }}">RSS</a></li>
-                <li><a href="{{ url_for('api_atom') }}">Atom</a></li>
+            {% for event in latest_events %}
+                <li class="map-city map-city-{{event.city.slug}}
+                    {% if event.date == today %}
+                        today
+                    {% elif event.date < today %}
+                        past
+                    {% else %}
+                        future
+                    {% endif %}
+                    "
+                >
+                    <a href="{{ url_for('city', cityslug=event.city.slug) }}">
+                        {% if event.date == today and event.start_time %}
+                            <div class="date"><time datetime="{{event.date}}">{{ event.start_time.strftime('%H:%M') }}</time></div>
+                        {% else %}
+                            <div class="date"><time datetime="{{event.date}}">{{event.date | shortday}}</time></div>
+                        {% endif %}
+                        <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}"
+                             width="50"
+                             alt=""
+                             title="{{event.date | shortday}} – {{event.title}}"
+                        >
+                    </a>
+                </li>
+            {% endfor %}
             </ul>
         </div>
     </div>
-</div>
-</div>
 
-<div class="container" id="about">
-    <h2>{{ tr('Co očekávat na Pyvu?', 'What to Expect') }}</h2>
-    <ul class="big-points">
-        <li>
-            <img src="{{ url_for('static', filename='images/beerspeaker.png') }}" alt=""></span>
-            <p>
-                {% if g.lang_code == 'cs' %}
-                    Srazy jsou většinou velice <em>neformální</em> a konají se v nějakém restauračním zařízení.
-                    Nejdřív jsou přednášky, pak volná zábava.
-                {% else %}
-                    “Pivo” means “beer” in Czech.
-                    The meetups are quite <em>informal</em>, and they're held in pubs.
-                    First there are some talks and presentations, then we mingle.
-                {% endif %}
-            <p>
-        </li>
-        <li>
-            <img src="{{ url_for('static', filename='images/topics.png') }}" alt=""></span>
-            <p>
-                {% if g.lang_code == 'cs' %}
-                    I když nebudeš některým přednáškám rozumět, poznáš alespoň
-                    <em>spoustu lidí</em>, kteří ti mohou v budoucnu pomoci a z nichž se
-                    jednou mohou vyklubat noví kamarádi.
-                {% else %}
-                    Meetups are in Czech language by default, because most of Czechs are
-                    still uncomfortable to speak in English publicly.
-                    It's OK for you to speak and present in English, though: most people <em>understand</em>.
-                    Many people will be also very happy to have English discussions over a beer with you.
-                {% endif %}
-            </p>
-        </li>
-        <li>
-            <img src="{{ url_for('static', filename='images/call-for-talks.png') }}" alt=""></span>
-            <p>
-                {% if g.lang_code == 'cs' %}
-                    Většinou se předem vybere nějaké <em>téma</em> a účastníci pak dobrovolně
-                    přihlašují související přednášky.
-                {% else %}
-                    Every event usually selects a <em>topic</em> in advance and people volunteer
-                    to give talks on that topic.
-                {% endif %}
-            </p>
-        </li>
-        <li>
-            <img src="{{ url_for('static', filename='images/lightning-talk.png') }}" alt=""></span>
-            <p>
-                {% if g.lang_code == 'cs' %}
-                    Je úplně v pořádku přijít na Pyvo a bez ohlášení na konci přidat
-                    pětiminutovou přednášku („<em>lightning talk</em>”) o čemkoliv.
-                {% else %}
-                    It's encouraged to come to Pyvo and give a <em>lightning talk</em> – a
-                    five-minute presentation about anything at all – after the “main” talks.
-                {% endif %}
-            <p>
-        </li>
-        <li>
-            <img src="{{ url_for('static', filename='images/yummy.png') }}" alt=""></span>
-            <p>
-                {% if g.lang_code == 'cs' %}
-                    Typicky se na srazu dá dobře <em>povečeřet</em>, a tím nejen naplnit žaludek,
-                    ale i podpořit hospůdku ve které se Pyvo koná.
-                {% else %}
-                    Usually, you can have <em>dinner</em> at the meetup.
-                    Not only does this stop hunger, it also supports the restaurant that hosts the meetup.
-                {% endif %}
-            <p>
-        </li>
-        <!--
-        <li>
-            <img src="{{ url_for('static', filename='images/heart.png') }}" alt=""></span>
-            <p>
-                {% if g.lang_code == 'cs' %}
-                    Pyva se snaží být vlídným a přátelským prostředím. Přečti si naše <a href="{ { url_for('coc') } }">pravidla chování</a>.
-                {% else %}
-                    Pyvo is a friendly and welcoming meetup. Please read our <a href="{ { url_for('coc') } }">code of conduct</a>.
-                {% endif %}
-            <p>
-        </li>
-        -->
-    </ul>
-</div>
+    <div id="events">
+        <h2>{{ tr('Kdy a kde?', 'When & Where?') }}</h2>
+        <div>
+            {% for event in latest_events %}
+            <div class="event">
+                <h3>
+                    <a href="{{ url_for('city', cityslug=event.city.slug) }}">
+                        <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}" width="50">
+                        {{event.city.name}}
+                    </a>
+                </h3>
+                <div>
+                    {% if event.date == today %}
+                        {% if g.lang_code == 'cs' %}
+                            <em>Dnes</em>
+                            v <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time> je
+                        {% else %}
+                            <em>Today</em>
+                            at <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time>:
+                        {% endif %}
+                    {% else %}
+                        {{ tr('', 'On') }}
+                        <em><time datetime="{{event.date}}">{{event.date | shortday}}</time></em>
+                        {% if event.date < today %}
+                            {{ tr('bylo', 'was') }}
+                        {% else %}
+                            {{ tr('bude', 'will be') }}
+                        {% endif %}
+                    {% endif %}
+                    <em class="title">{{event.title}}</em>
+                </div>
+                <span>
+                    {{event.venue.name}}{% if event.venue.address %},
+                        {{event.venue.short_address}}
+                    {% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
-<div class="videos-container">
-<div class="container" id="videos">
-    <h2>{{ tr('Videa ze srazů', 'Video Recordings') }}</h2>
-    <ul class="video-gallery">
-        {% for link in videos %}
-            <li>
-                <a href="http://www.youtube.com/watch?v={{ link.youtube_id }}">
-                    <div class="image-holder">
-                        <img src="http://img.youtube.com/vi/{{ link.youtube_id }}/hqdefault.jpg">
+    <div class="calendar" id="calendar">
+        <div class="calendar">
+            <h2>{{ tr('Kalendář', 'Calendar') }}</h2>
+            <div class="row">
+                {% for (year, month), weeks in calendar.items() %}
+                    <div class="col-sm-4 col">
+                        {% include "fragments/calendar.html" %}
                     </div>
-                    <p>
-                        <div class="speakers">
-                            {% for speaker in link.talk.speakers %}
-                                <span class="speaker">{{ speaker.name }}</span>{% if not loop.last %},{% endif %}
-                            {% endfor %}
-                        </div>
-                        <div class="title">
-                            {% if link.talk.is_lightning %}<span class="lightning">⚡</span>{% endif %}
-                            {{ link.talk.title }}
-                        </div>
-                        {% set date = link.talk.event.date %}
-                        <div class="info">
-                            <time datetime="{{date}}">{{ date | longdate }}</time>, {{ link.talk.event.city.name }}
-                        </div>
-                    </p>
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-    <ul>
-        <li><a href="https://www.youtube.com/user/pyvec/videos">{{ tr('Videa z Prahy', 'Videos from Prague') }}</a></li>
-        <li><a href="https://www.youtube.com/channel/UCzE1AyBbdp8_fbDvnrW5GgA/videos">{{ tr('Videa z Brna', 'Videos from Brno') }}</a></li>
-        <li><a href="https://www.youtube.com/channel/UCXAJzEDUm-eO0KP8YEaKW8w/videos">{{ tr('Videa z Ostravy', 'Videos from Ostrava') }}</a></li>
-    </ul>
-</div>
-</div>
+                {% endfor %}
+            </div>
+            <div class="row">
+                <div class="export-links col-lg-12">
+                    {{ tr('Přidej si pyvní kalendář:', 'Add the Pyvo calendar:') }}
+                    <ul>
+                        <li><a href="{{ url_for('api_ics') }}">iCal</a></li>
+                        <li><a href="{{ url_for('api_rss') }}">RSS</a></li>
+                        <li><a href="{{ url_for('api_atom') }}">Atom</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="container" id="info-for-speakers">
-    <h2>{{ tr('Informace pro přednášející', 'Info for Speakers') }}</h2>
-    <ul class="big-points">
-    {% block info_for_speakers %}
+    <div id="about">
+        <h2>{{ tr('Co očekávat na Pyvu?', 'What to Expect') }}</h2>
+        <ul class="big-points">
+            <li>
+                <img src="{{ url_for('static', filename='images/beerspeaker.png') }}" alt=""></span>
+                <p>
+                    {% if g.lang_code == 'cs' %}
+                        Srazy jsou většinou velice <em>neformální</em> a konají se v nějakém restauračním zařízení.
+                        Nejdřív jsou přednášky, pak volná zábava.
+                    {% else %}
+                        “Pivo” means “beer” in Czech.
+                        The meetups are quite <em>informal</em>, and they're held in pubs.
+                        First there are some talks and presentations, then we mingle.
+                    {% endif %}
+                <p>
+            </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/topics.png') }}" alt=""></span>
+                <p>
+                    {% if g.lang_code == 'cs' %}
+                        I když nebudeš některým přednáškám rozumět, poznáš alespoň
+                        <em>spoustu lidí</em>, kteří ti mohou v budoucnu pomoci a z nichž se
+                        jednou mohou vyklubat noví kamarádi.
+                    {% else %}
+                        Meetups are in Czech language by default, because most of Czechs are
+                        still uncomfortable to speak in English publicly.
+                        It's OK for you to speak and present in English, though: most people <em>understand</em>.
+                        Many people will be also very happy to have English discussions over a beer with you.
+                    {% endif %}
+                </p>
+            </li>
             <li>
                 <img src="{{ url_for('static', filename='images/call-for-talks.png') }}" alt=""></span>
                 <p>
-                {% if g.lang_code == 'cs' %}
-                    Chceš-li na Pyvu <em>něco říct</em>,
-                    ať už teď nebo v budoucnosti,
-                    na deset minut nebo hodinu, k tématu nebo ne,
-                    ozvi se organizátorům a domluvíme se.
-                    Kontakty jsou na stránce každého města:
-                {% else %}
-                    If you'd like to <em>speak</em>,
-                    now or in the furure, for 10 minutes or an hour,
-                    on-topic or off, get in touch with the organizers!
-                    Look for contact information on the pages of
-                    individual cities:
-                {% endif %}
-                <a href="{{url_for('city', cityslug='praha')}}">Praha</a>,
-                <a href="{{url_for('city', cityslug='brno')}}">Brno</a>,
-                <a href="{{url_for('city', cityslug='ostrava')}}">Ostrava</a>.
+                    {% if g.lang_code == 'cs' %}
+                        Většinou se předem vybere nějaké <em>téma</em> a účastníci pak dobrovolně
+                        přihlašují související přednášky.
+                    {% else %}
+                        Every event usually selects a <em>topic</em> in advance and people volunteer
+                        to give talks on that topic.
+                    {% endif %}
+                </p>
+            </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/lightning-talk.png') }}" alt=""></span>
+                <p>
+                    {% if g.lang_code == 'cs' %}
+                        Je úplně v pořádku přijít na Pyvo a bez ohlášení na konci přidat
+                        pětiminutovou přednášku („<em>lightning talk</em>”) o čemkoliv.
+                    {% else %}
+                        It's encouraged to come to Pyvo and give a <em>lightning talk</em> – a
+                        five-minute presentation about anything at all – after the “main” talks.
+                    {% endif %}
                 <p>
             </li>
             <li>
-                <img src="{{ url_for('static', filename='images/english-please.png') }}" alt=""></span>
+                <img src="{{ url_for('static', filename='images/yummy.png') }}" alt=""></span>
                 <p>
-                {% if g.lang_code == 'cs' %}
-                    Občas přijde zahraniční návštěva.
-                    Je dobré mít slajdy (nebo i celou přednášku) <em>v angličtině</em>.
-                {% else %}
-                    Almost all programmers understand English, and most can even speak it.
-                    If you can read this text, language shouldn't be a problem!
-                {% endif %}
+                    {% if g.lang_code == 'cs' %}
+                        Typicky se na srazu dá dobře <em>povečeřet</em>, a tím nejen naplnit žaludek,
+                        ale i podpořit hospůdku ve které se Pyvo koná.
+                    {% else %}
+                        Usually, you can have <em>dinner</em> at the meetup.
+                        Not only does this stop hunger, it also supports the restaurant that hosts the meetup.
+                    {% endif %}
                 <p>
             </li>
+            <!--
             <li>
-                <img src="{{ url_for('static', filename='images/20min.png') }}" alt=""></span>
+                <img src="{{ url_for('static', filename='images/heart.png') }}" alt=""></span>
                 <p>
-                {% if g.lang_code == 'cs' %}
-                    Standardní přednáška by se měla vejít <em>do dvaceti minut</em>.
-                    Scházíme se večer po práci u piva,
-                    chceme slyšet spíš zajímavosti než detaily.
-                {% else %}
-                    A normal talk should be up to <em>twenty minutes</em>.
-                    We get together after work for a couple of beers;
-                    we want to hear a bit of interesting stuff rather than all the details.
-                {% endif %}
+                    {% if g.lang_code == 'cs' %}
+                        Pyva se snaží být vlídným a přátelským prostředím. Přečti si naše <a href="{ { url_for('coc') } }">pravidla chování</a>.
+                    {% else %}
+                        Pyvo is a friendly and welcoming meetup. Please read our <a href="{ { url_for('coc') } }">code of conduct</a>.
+                    {% endif %}
                 <p>
             </li>
-            <li>
-                <img src="{{ url_for('static', filename='images/camera.png') }}" alt=""></span>
-                <p>
-                {% if g.lang_code == 'cs' %}
-                    Přednášky většinou <em>nahráváme</em> a zveřejňujeme.
-                    Jestli záznam nechceš, dej vědět na místě organizátorům.
-                {% else %}
-                    We usually <em>record</em> talks, and put videos online.
-                    If you don't want a recording, let the camera operator know.
-                {% endif %}
-                <p>
-            </li>
-    {% endblock info_for_speakers %}
-    </ul>
-</div>
+            -->
+        </ul>
+    </div>
 
-<div class="friends-container">
-<div class="container" id="friends">
-    <h2>{{ tr('Kamarádi', 'Friends') }}</h2>
-    <ul>
-        <li>
-            <a href="http://blog.pykonik.org/">Pykonik</a> –
-            {% if g.lang_code == 'cs' %}
-                Srazy Pythonistů z Krakówa
-            {% else %}
-                Kraków Python meetups
-            {% endif %}
-        </li>
-        <li>
-            {% if g.lang_code == 'cs' %}
-                <a href="http://rubyslava.sk/">Rubyslava</a> – Bratislavské združenie priateľov elegantného programovania všeho druhu.
-            {% else %}
-                <a href="http://rubyslava.sk/english.html">Rubyslava</a> – Language-agnostic meetups in Bratislava
-            {% endif %}
-        </li>
-        <li>
-            <a href="http://www.meetup.com/vienna-rb/">vienna.rb</a> –
-            {% if g.lang_code == 'cs' %}
-                Vídeňský sraz kolem jazyka Ruby
-            {% else %}
-                Viennese Ruby meetups
-            {% endif %}
-        </li>
-    </ul>
-</div>
+    <div id="videos">
+        <h2>{{ tr('Videa ze srazů', 'Video Recordings') }}</h2>
+        <ul class="video-gallery">
+            {% for link in videos %}
+                <li>
+                    <a href="http://www.youtube.com/watch?v={{ link.youtube_id }}">
+                        <div class="image-holder">
+                            <img src="http://img.youtube.com/vi/{{ link.youtube_id }}/hqdefault.jpg">
+                        </div>
+                        <p>
+                            <div class="speakers">
+                                {% for speaker in link.talk.speakers %}
+                                    <span class="speaker">{{ speaker.name }}</span>{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="title">
+                                {% if link.talk.is_lightning %}<span class="lightning">⚡</span>{% endif %}
+                                {{ link.talk.title }}
+                            </div>
+                            {% set date = link.talk.event.date %}
+                            <div class="info">
+                                <time datetime="{{date}}">{{ date | longdate }}</time>, {{ link.talk.event.city.name }}
+                            </div>
+                        </p>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <ul>
+            <li><a href="https://www.youtube.com/user/pyvec/videos">{{ tr('Videa z Prahy', 'Videos from Prague') }}</a></li>
+            <li><a href="https://www.youtube.com/channel/UCzE1AyBbdp8_fbDvnrW5GgA/videos">{{ tr('Videa z Brna', 'Videos from Brno') }}</a></li>
+            <li><a href="https://www.youtube.com/channel/UCXAJzEDUm-eO0KP8YEaKW8w/videos">{{ tr('Videa z Ostravy', 'Videos from Ostrava') }}</a></li>
+        </ul>
+    </div>
+
+    <div id="info-for-speakers">
+        <h2>{{ tr('Informace pro přednášející', 'Info for Speakers') }}</h2>
+        <ul class="big-points">
+        {% block info_for_speakers %}
+                <li>
+                    <img src="{{ url_for('static', filename='images/call-for-talks.png') }}" alt=""></span>
+                    <p>
+                    {% if g.lang_code == 'cs' %}
+                        Chceš-li na Pyvu <em>něco říct</em>,
+                        ať už teď nebo v budoucnosti,
+                        na deset minut nebo hodinu, k tématu nebo ne,
+                        ozvi se organizátorům a domluvíme se.
+                        Kontakty jsou na stránce každého města:
+                    {% else %}
+                        If you'd like to <em>speak</em>,
+                        now or in the furure, for 10 minutes or an hour,
+                        on-topic or off, get in touch with the organizers!
+                        Look for contact information on the pages of
+                        individual cities:
+                    {% endif %}
+                    <a href="{{url_for('city', cityslug='praha')}}">Praha</a>,
+                    <a href="{{url_for('city', cityslug='brno')}}">Brno</a>,
+                    <a href="{{url_for('city', cityslug='ostrava')}}">Ostrava</a>.
+                    <p>
+                </li>
+                <li>
+                    <img src="{{ url_for('static', filename='images/english-please.png') }}" alt=""></span>
+                    <p>
+                    {% if g.lang_code == 'cs' %}
+                        Občas přijde zahraniční návštěva.
+                        Je dobré mít slajdy (nebo i celou přednášku) <em>v angličtině</em>.
+                    {% else %}
+                        Almost all programmers understand English, and most can even speak it.
+                        If you can read this text, language shouldn't be a problem!
+                    {% endif %}
+                    <p>
+                </li>
+                <li>
+                    <img src="{{ url_for('static', filename='images/20min.png') }}" alt=""></span>
+                    <p>
+                    {% if g.lang_code == 'cs' %}
+                        Standardní přednáška by se měla vejít <em>do dvaceti minut</em>.
+                        Scházíme se večer po práci u piva,
+                        chceme slyšet spíš zajímavosti než detaily.
+                    {% else %}
+                        A normal talk should be up to <em>twenty minutes</em>.
+                        We get together after work for a couple of beers;
+                        we want to hear a bit of interesting stuff rather than all the details.
+                    {% endif %}
+                    <p>
+                </li>
+                <li>
+                    <img src="{{ url_for('static', filename='images/camera.png') }}" alt=""></span>
+                    <p>
+                    {% if g.lang_code == 'cs' %}
+                        Přednášky většinou <em>nahráváme</em> a zveřejňujeme.
+                        Jestli záznam nechceš, dej vědět na místě organizátorům.
+                    {% else %}
+                        We usually <em>record</em> talks, and put videos online.
+                        If you don't want a recording, let the camera operator know.
+                    {% endif %}
+                    <p>
+                </li>
+        {% endblock info_for_speakers %}
+        </ul>
+    </div>
+
+    <div id="friends">
+        <h2>{{ tr('Kamarádi', 'Friends') }}</h2>
+        <ul>
+            <li>
+                <a href="http://blog.pykonik.org/">Pykonik</a> –
+                {% if g.lang_code == 'cs' %}
+                    Srazy Pythonistů z Krakówa
+                {% else %}
+                    Kraków Python meetups
+                {% endif %}
+            </li>
+            <li>
+                {% if g.lang_code == 'cs' %}
+                    <a href="http://rubyslava.sk/">Rubyslava</a> – Bratislavské združenie priateľov elegantného programovania všeho druhu.
+                {% else %}
+                    <a href="http://rubyslava.sk/english.html">Rubyslava</a> – Language-agnostic meetups in Bratislava
+                {% endif %}
+            </li>
+            <li>
+                <a href="http://www.meetup.com/vienna-rb/">vienna.rb</a> –
+                {% if g.lang_code == 'cs' %}
+                    Vídeňský sraz kolem jazyka Ruby
+                {% else %}
+                    Viennese Ruby meetups
+                {% endif %}
+            </li>
+        </ul>
+    </div>
 </div>
 {% endblock bodycontent %}

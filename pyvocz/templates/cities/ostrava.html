@@ -1,7 +1,7 @@
 {% extends "city.html" %}
 {% block title %}{{ tr('Ostravské Pyvo', 'Ostrava Pyvo') }}{% endblock title %}
 
-{% block plan %}
+{% block cityinfo %}
     <div class="plan">
         <p>
             {% if g.lang_code == 'cs' %}
@@ -13,4 +13,4 @@
             {% endif %}
         </p>
     </div>
-{% endblock plan %}
+{% endblock cityinfo %}

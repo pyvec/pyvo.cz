@@ -1,7 +1,7 @@
 {% extends "city.html" %}
 {% block title %}{{ tr('Brněnské Pyvo', 'Brno Pyvo') }}{% endblock title %}
 
-{% block plan %}
+{% block cityinfo %}
     <div class="plan">
         <p>
             {% if g.lang_code == 'cs' %}
@@ -13,10 +13,10 @@
             {% endif %}
         </p>
     </div>
-{% endblock plan %}
+{% endblock cityinfo %}
 
 {% block contact %}
-<div class="container">
+<div id="organizer-contacts">
     <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>
     <ul id="contacts" class="contacts">
         <li>

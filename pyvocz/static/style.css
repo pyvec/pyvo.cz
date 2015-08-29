@@ -83,6 +83,30 @@ nav.container a.lang_switch {
     nav.container a.lang_switch { right: 1ex; }
 }
 
+.nav-container + * {
+    border-top-left-radius: 0.25ex;
+    border-top-right-radius: 0.25ex;
+    box-shadow: -10px 0 1px #dcd7d1,
+                10px 0 1px #dcd7d1,
+                0 -1px 5px #a8a8a8;
+}
+
+body.homepage .nav-container + * {
+    border: none;
+    box-shadow: none;
+}
+
+@media(max-width: 768px) {
+    .nav-container + * {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+}
+
+.container > div {
+    margin: 1ex 0;
+}
+
 /******************** Homepage header ********************/
 
 body.homepage #header {
@@ -100,20 +124,50 @@ body.homepage #header img { width: 200px; }
 
 /******************** Color strips ********************/
 
-body.homepage div.map-container { background-color: #8485C2; }
-body.homepage div.map-container .container { background-color: #ECECFF; }
+body.citypage #map {
+    margin: 1ex -15px;
+    padding: 1ex 15px;
+    background-color: #CCC;
+    box-shadow: -750px 0 0 #86A58E,
+                 750px 0 0 #86A58E,
+                0 0 0 #000;
+}
 
-body.homepage .calendar-container { background-color: #C2AE84; }
-body.homepage #calendar { background-color: #FFF9EC; }
+body.homepage #map {
+    margin: 1ex -15px;
+    padding: 1ex 15px;
+    background-color: #ECECFF;
+    box-shadow: -750px 0 0 #8485C2,
+                 750px 0 0 #8485C2,
+                0 0 0 #000;
+}
 
-body.homepage .videos-container { background-color: #848CA4; }
-body.homepage #videos { background-color: #ECF0F2; }
+body.homepage #calendar {
+    margin: 1ex -15px;
+    padding: 1ex 15px;
+    background-color: #FFF9EC;
+    box-shadow: -750px 0 0 #C2AE84,
+                 750px 0 0 #C2AE84,
+                0 0 0 #000;
+}
 
-body.homepage .friends-container { background-color: #C2AE84; }
-body.homepage #friends { background-color: #FFF9EC; }
+body.homepage #videos {
+    margin: 1ex -15px;
+    padding: 1ex 15px;
+    background-color: #ECF0F2;
+    box-shadow: -750px 0 0 #848CA4,
+                 750px 0 0 #848CA4,
+                0 0 0 #000;
+}
 
-body.citypage div.map-container { background-color: #86A58E; }
-body.citypage div.map-container .container { background-color: #CCC; }
+body.homepage #friends {
+    margin: 1ex -15px;
+    padding: 1ex 15px;
+    background-color: #FFF9EC;
+    box-shadow: -750px 0 0 #C2AE84,
+                 750px 0 0 #C2AE84,
+                0 0 0 #000;
+}
 
 /******************** Footer ********************/
 

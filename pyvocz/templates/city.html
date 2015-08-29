@@ -13,47 +13,47 @@
 <div class="container">
     <h1>{{ self.title() }}</h1>
 
-    {% block plan %}{% endblock plan %}
-</div>
+    <div id="cityinfo">
+        {% block cityinfo %}{% endblock cityinfo %}
+    </div>
 
-{% set event = city.events[0] %}
+    {% set event = city.events[0] %}
 
-<div class="map-container">
-<div id="map" class="container" style="height: 350px"
-    data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
-    data-zoom="14"
-    data-lat="{{event.venue.latitude}}"
-    data-lng="{{event.venue.longitude}}"
->
-</div>
-</div>
+    <div id="map" style="height: 350px"
+        data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+        data-zoom="14"
+        data-lat="{{event.venue.latitude}}"
+        data-lng="{{event.venue.longitude}}"
+    >
+    </div>
 
-<div class="container">
-    {% if event.date < today %}
-         <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
-    {% elif event.date > today %}
-         <h2>{{ tr('Nadcházející sraz', 'Next Meetup') }}</h2>
-    {% else %}
-         <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
-    {% endif %}
+    <div id="featured-meetup">
+        {% if event.date < today %}
+             <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
+        {% elif event.date > today %}
+             <h2>{{ tr('Nadcházející sraz', 'Next Meetup') }}</h2>
+        {% else %}
+             <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
+        {% endif %}
 
-    {% set is_header_event = True %}
-    {% include "fragments/event.html" %}
-    {% set is_header_event = False %}
+        {% set is_header_event = True %}
+        {% include "fragments/event.html" %}
+        {% set is_header_event = False %}
 
-</div>
+    </div>
 
-{% block contact %}{% endblock contact %}
+    {% block contact %}{% endblock contact %}
 
-<div class="container event-list">
-    <h2>{{ tr('Historie srazů', 'Meetup History') }}</h2>
-    <ul>
-        {% for event in city.events[1:] %}
-            <li>
-                {% include "fragments/event.html" %}
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="event-list">
+        <h2>{{ tr('Historie srazů', 'Meetup History') }}</h2>
+        <ul>
+            {% for event in city.events[1:] %}
+                <li>
+                    {% include "fragments/event.html" %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock bodycontent %}
 
