@@ -214,7 +214,11 @@ def reload_hook():
         abort(500, "missing password")
 
     datadir = app.config['PYVO_DATADIR']
+
     output = subprocess.check_output(['git', 'pull'], cwd=datadir)
     app.logger.info('Git output: %s', str(output))
     db_reload(datadir)
-    return jsonify({'result': 'OK'})
+
+    output = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=datadir)
+    head_commit = output.decode('ascii').strip()
+    return jsonify({'result': 'OK', 'HEAD': head_commit})
