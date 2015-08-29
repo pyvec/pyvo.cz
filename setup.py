@@ -20,7 +20,7 @@ tests_require = ['pytest', 'pytest-flask', 'lxml', 'requests', 'cssselect']
 
 setup_args = dict(
     name='pyvocz',
-    version='0.1',
+    version='0.2',
     packages=['pyvocz'],
 
     description="""Website with information about Pyvo meetups (pyvo.cz)""",
