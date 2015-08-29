@@ -10,6 +10,8 @@ from .views import routes
 DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'pyvo-data')
 
 def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None):
+    datadir = os.path.abspath(datadir)
+
     app = Flask(__name__)
     app.config.setdefault('SQLALCHEMY_DATABASE_URI', db_uri)
     app.config.setdefault('SQLALCHEMY_ECHO', echo)
