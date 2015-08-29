@@ -15,7 +15,7 @@ def db_setup(datadir):
 
 def db_reload(datadir):
     for table in reversed(tables.metadata.sorted_tables):
-        print('Dropping {}'.format(datadir))
+        print('Deleting {}'.format(table))
         db.session.execute(table.delete())
     print('Loading database from {}'.format(datadir))
     get_db(datadir, engine=db.engine)
