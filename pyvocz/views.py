@@ -94,7 +94,10 @@ def city(cityslug):
     query = query.options(joinedload(tables.City.events, 'talks', 'talk_speakers'))
     query = query.options(subqueryload(tables.City.events, 'talks', 'talk_speakers', 'speaker'))
     query = query.options(subqueryload(tables.City.events, 'talks', 'links'))
-    city = query.one()
+    try:
+        city = query.one()
+    except NoResultFound:
+        abort(404)
 
     args = dict(city=city, today=today)
     try:

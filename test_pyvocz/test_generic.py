@@ -10,7 +10,7 @@ def test_homepage_ok(client):
     assert client.get('/').status_code == 200
 
 
-def test_spider(client, monkeypatch, app, check_external_links):
+def test_spider(client, app, check_external_links):
     """Check that all links work
 
     Spiders the site, making sure all internal links point to existing pages.
