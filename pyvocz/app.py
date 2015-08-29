@@ -9,11 +9,12 @@ from .views import routes
 
 DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
-def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True):
+def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None):
     app = Flask(__name__)
     app.config.setdefault('SQLALCHEMY_DATABASE_URI', db_uri)
     app.config.setdefault('SQLALCHEMY_ECHO', echo)
     app.config.setdefault('PYVO_DATADIR', datadir)
+    app.config.setdefault('PYVO_PULL_PASSWORD', pull_password)
     app.jinja_env.undefined = StrictUndefined
     db.init_app(app)
 

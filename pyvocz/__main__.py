@@ -7,6 +7,8 @@ Options:
   --debug       Run in debug mode
   --db=URI      SQLAlchemy database URI
   --data=DIR    Data directory
+  --pull-password=PWD
+                Password for Git pull webhook
 """
 
 import os
@@ -21,7 +23,8 @@ arguments = docopt.docopt(__doc__)
 
 db_uri = arguments['--db'] or 'sqlite://'
 datadir = arguments['--data'] or DEFAULT_DATA_DIR
-app = create_app(db_uri=db_uri, datadir=datadir)
+pull_password = arguments['--pull-password']
+app = create_app(db_uri=db_uri, datadir=datadir, pull_password=pull_password)
 
 if arguments['--debug']:
     app.run(debug=True)

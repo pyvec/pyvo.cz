@@ -1,4 +1,6 @@
 import datetime
+import subprocess
+import time
 
 from sqlalchemy import func, and_, desc
 from sqlalchemy.orm import joinedload, subqueryload
@@ -14,8 +16,9 @@ from pyvodb import tables
 from pyvodb.calendar import get_calendar
 
 from . import filters
-from .db import db, db_setup
+from .db import db, db_reload
 
+RELOAD_HOOK_TIME = 0
 
 routes = {}
 
@@ -201,8 +204,17 @@ def api_atom():
 
 @route('/api/reload_hook', methods=['POST'])
 def reload_hook():
-    for table in reversed(tables.metadata.sorted_tables):
-        db.session.execute(table.delete())
-    db_setup(app.config['PYVO_DATADIR'])
-    db.session.commit()
+    # Some really lame password protection (against DoS)
+    if app.config['PYVO_PULL_PASSWORD'] is None:
+        abort(404, "pull hook not configured")
+    try:
+        if request.args['password'] != app.config['PYVO_PULL_PASSWORD']:
+            abort(500, "bad password")
+    except (TypeError, KeyError):
+        abort(500, "missing password")
+
+    datadir = app.config['PYVO_DATADIR']
+    output = subprocess.check_output(['git', 'pull'], cwd=datadir)
+    app.logger.info('Git output: %s', str(output))
+    db_reload(datadir)
     return jsonify({'result': 'OK'})

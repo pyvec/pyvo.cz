@@ -11,6 +11,12 @@ def db_setup(datadir):
     if db.session.query(tables.Event).count():
         print('Skipping DB reload')
         return
+    db_reload(datadir)
+
+def db_reload(datadir):
+    for table in reversed(tables.metadata.sorted_tables):
+        print('Dropping {}'.format(datadir))
+        db.session.execute(table.delete())
     print('Loading database from {}'.format(datadir))
     get_db(datadir, engine=db.engine)
     print('Database loaded')
