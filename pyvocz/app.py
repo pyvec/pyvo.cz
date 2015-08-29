@@ -7,7 +7,7 @@ from . import filters
 from .db import db, db_setup
 from .views import routes
 
-DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'pyvo-data')
 
 def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None):
     app = Flask(__name__)

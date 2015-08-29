@@ -9,9 +9,12 @@ Options:
   --data=DIR    Data directory
   --pull-password=PWD
                 Password for Git pull webhook
+
+If the data directory does not exists, clones a default repo into it.
 """
 
 import os
+import subprocess
 
 import docopt
 
@@ -25,6 +28,10 @@ db_uri = arguments['--db'] or 'sqlite://'
 datadir = arguments['--data'] or DEFAULT_DATA_DIR
 pull_password = arguments['--pull-password']
 app = create_app(db_uri=db_uri, datadir=datadir, pull_password=pull_password)
+
+if not os.path.exists(datadir):
+    subprocess.check_call(['git', 'clone',
+                           'https://github.com/pyvec/pyvo-data', datadir])
 
 if arguments['--debug']:
     app.run(debug=True)
