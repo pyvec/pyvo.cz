@@ -7,13 +7,16 @@
         {% endblock styles %}
     </head>
     <body class="{% block bodyclass %}{% endblock %}">
-        <nav class="container">
-            {% if g.lang_code == 'cs' %}
-                <a class="lang_switch" href="{{ url_for_lang('en') }}">🌎 English, please!</a>
-            {% else %}
-                <a class="lang_switch" href="{{ url_for_lang('cs') }}">🌍 Česky, prosím!</a>
-            {% endif %}
-        </nav>
+        <div class="nav-container">
+            <nav class="container">
+                <a class="home" href="{{ url_for('index') }}">Pyvo<span>.cz</span></a>
+                {% if g.lang_code == 'cs' %}
+                    <a class="lang_switch" href="{{ url_for_lang('en') }}">🌎 English, please!</a>
+                {% else %}
+                    <a class="lang_switch" href="{{ url_for_lang('cs') }}">🌍 Česky, prosím!</a>
+                {% endif %}
+            </nav>
+        </div>
         {% block bodycontent %}
         {% endblock bodycontent %}
         <footer class="container">

@@ -20,24 +20,68 @@ body > ._content > .container:last-child {
     padding-bottom: 5em;
 }
 
-nav.container {
+.nav-container {
+    margin-bottom: 1.5ex;
+    margin-top: 0.5ex;
+    padding: 0;
+}
+
+.nav-container nav.container {
+    background-color: transparent;
+    padding: 0;
+    position: relative;
+}
+
+.nav-container nav.container a.home {
+    font-family: "Bree Serif", serif;
+    font-size: 120%;
+    color: black;
+}
+
+.nav-container nav.container a.home span {
+    color: 808080;
+}
+
+.nav-container nav.container a.lang_switch {
+    color: 555666;
+}
+
+body.homepage .nav-container {
+    margin: 0;
+    padding: 0;
+}
+
+body.homepage nav.container {
     padding: 0;
     height: 0;
     position: relative;
 }
 
-nav.container a.lang_switch {
-    display: block;
-    float: right;
-    padding: 1em 1em 1ex 1ex;
+body.homepage nav.container a {
+    display: none;
 }
 
 body.homepage nav.container a.lang_switch {
-    float: none;
+    display: block;
     position: absolute;
+    padding: 0.5ex 1ex;
+    margin: 0;
     right: 0;
 }
-@media(max-width: 480px) { nav.container { height: 2em; } }
+
+nav.container a.lang_switch {
+    display: block;
+    float: right;
+    margin-left: 2em;
+}
+
+@media(max-width: 480px) {
+    body.homepage .nav-container + * { padding-top: 3em; }
+}
+@media(max-width: 768px) {
+    .nav-container nav.container { padding: 0 1ex 0 1ex; }
+    nav.container a.lang_switch { right: 1ex; }
+}
 
 /******************** Homepage header ********************/
 
