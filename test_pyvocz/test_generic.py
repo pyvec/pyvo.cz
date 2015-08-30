@@ -14,7 +14,8 @@ def test_spider(client, app, check_external_links):
     """Check that all links work
 
     Spiders the site, making sure all internal links point to existing pages.
-    Includes fragments: any #hash in a link must
+    Includes fragments: any #hash in a link must correspond to existing element
+    with id.
 
     If check_external_links is true, checks external links as well.
     """
