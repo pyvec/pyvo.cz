@@ -1,0 +1,14 @@
+language: python
+
+python:
+  - "3.3"
+  - "3.4"
+
+install:
+  - pip install -e.
+  - pip install pytest pytest-flask lxml requests cssselect
+  - git clone --depth 1 https://github.com/pyvec/pyvo-data pyvocz/pyvo-data
+
+script: py.test
+
+sudo: false
