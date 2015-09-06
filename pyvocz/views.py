@@ -2,7 +2,7 @@ import datetime
 import subprocess
 import time
 
-from sqlalchemy import func, and_, desc
+from sqlalchemy import func, and_, or_, desc
 from sqlalchemy.orm import joinedload, subqueryload
 from sqlalchemy.orm.exc import NoResultFound
 from flask import request, Response, url_for
@@ -65,7 +65,10 @@ def index():
     # Video query
 
     query = db.session.query(tables.TalkLink)
-    query = query.filter(tables.TalkLink.url.startswith('http://www.youtube.com'))
+    query = query.filter(or_(
+        tables.TalkLink.url.startswith('http://www.youtube.com'),
+        tables.TalkLink.url.startswith('https://www.youtube.com'),
+    ))
     query = query.join(tables.TalkLink.talk)
     query = query.join(tables.Talk.event)
     query = query.options(joinedload(tables.TalkLink.talk))
