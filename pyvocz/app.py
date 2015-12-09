@@ -19,7 +19,10 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
     app.config.setdefault('PYVO_DATADIR', datadir)
     app.config.setdefault('PYVO_PULL_PASSWORD', pull_password)
     if host:
-        app.config['SERVER_NAME'] = '{}:{}'.format(host, port)
+        server_name = host
+        if port != 80:
+            server_name += ':{}'.format(port)
+        app.config['SERVER_NAME'] = server_name
     app.jinja_env.undefined = StrictUndefined
     db.init_app(app)
 
