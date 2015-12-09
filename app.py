@@ -43,6 +43,8 @@ logging.basicConfig(level=logging.INFO)
 
 db = 'sqlite:////srv/app/db.sqlite'
 datadir = 'pyvo-data'
+host = 'pyvo.cz'
+port = 80
 
 try:
     password_file = open('pull_password')
@@ -53,4 +55,6 @@ else:
         pull_password = password_file.read().strip()
 
 
-application = create_app(db, datadir=datadir, echo=False, pull_password=pull_password)
+application = create_app(db, datadir=datadir, echo=False,
+                         pull_password=pull_password,
+                         host=host, port=port)

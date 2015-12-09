@@ -9,7 +9,8 @@ from .views import routes
 
 DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'pyvo-data')
 
-def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None):
+def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
+               host=None, port=5000):
     datadir = os.path.abspath(datadir)
 
     app = Flask(__name__)
@@ -17,6 +18,8 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None):
     app.config.setdefault('SQLALCHEMY_ECHO', echo)
     app.config.setdefault('PYVO_DATADIR', datadir)
     app.config.setdefault('PYVO_PULL_PASSWORD', pull_password)
+    if host:
+        app.config['SERVER_NAME'] = '{}:{}'.format(host, port)
     app.jinja_env.undefined = StrictUndefined
     db.init_app(app)
 
@@ -53,7 +56,7 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None):
         if app.url_map.is_endpoint_expecting(endpoint, 'lang_code'):
             values['lang_code'] = g.lang_code
 
-    for url, (func, options) in routes.items():
+    for url, func, options in routes:
         app.route(url, **options)(func)
 
     return app

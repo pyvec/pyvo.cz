@@ -5,10 +5,11 @@ import time
 from sqlalchemy import func, and_, or_, desc
 from sqlalchemy.orm import joinedload, subqueryload
 from sqlalchemy.orm.exc import NoResultFound
-from flask import request, Response, url_for
+from flask import request, Response, url_for, redirect
 from flask import render_template, jsonify
 from flask import current_app as app
 from werkzeug.exceptions import abort
+from werkzeug.routing import Rule
 from jinja2.exceptions import TemplateNotFound
 import ics
 
@@ -20,21 +21,25 @@ from .db import db, db_reload
 
 RELOAD_HOOK_TIME = 0
 
-routes = {}
+routes = []
 
-def route(url, methods=['GET'], translate=True):
+def route(url, methods=['GET'], translate=True, **kwargs):
     def decorator(func):
         assert url.startswith('/')
+        options = dict(kwargs, methods=methods)
         if translate:
-            routes[url] = func, {'defaults': {'lang_code': 'cs'},
-                                 'methods': methods}
-            routes['/en' + url] = func, {'defaults': {'lang_code': 'en'},
-                                         'methods': methods}
+            routes.append((
+                url, func,
+                dict(options, defaults={'lang_code': 'cs'}),
+            ))
+            routes.append((
+                '/en' + url, func,
+                dict(options, defaults={'lang_code': 'en'}),
+            ))
         else:
-            routes[url] = func, {}
+            routes.append((url, func, options))
         return func
     return decorator
-
 
 @route('/')
 def index():
@@ -225,3 +230,7 @@ def reload_hook():
     output = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=datadir)
     head_commit = output.decode('ascii').strip()
     return jsonify({'result': 'OK', 'HEAD': head_commit})
+
+@route('/', subdomain='<subdomain>')
+def subdomain_redirect(subdomain):
+    return redirect(url_for('city', cityslug=subdomain))
