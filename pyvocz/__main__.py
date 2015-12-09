@@ -7,6 +7,7 @@ Options:
   --debug       Run in debug mode
   --db=URI      SQLAlchemy database URI
   --data=DIR    Data directory
+  --port=PORT   Port to serve on
   --pull-password=PWD
                 Password for Git pull webhook
 
@@ -33,7 +34,9 @@ if not os.path.exists(datadir):
     subprocess.check_call(['git', 'clone',
                            'https://github.com/pyvec/pyvo-data', datadir])
 
+port = int(arguments.get('--port', 5000))
+
 if arguments['--debug']:
-    app.run(debug=True)
+    app.run(debug=True, port=port)
 else:
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0', port=port)
