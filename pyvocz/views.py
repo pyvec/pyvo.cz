@@ -235,4 +235,11 @@ def reload_hook():
 def subdomain_redirect(subdomain):
     if subdomain in ('www', '<invalid>'):
         return redirect(url_for('index'))
+    ALIASES = {
+        'brnenske': 'brno',
+        'ostravske': 'ostrava',
+        'prazske': 'praha',
+        'prague': 'praha',
+    }
+    subdomain = ALIASES.get(subdomain, subdomain)
     return redirect(url_for('city', cityslug=subdomain))
