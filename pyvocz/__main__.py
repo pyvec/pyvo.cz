@@ -29,7 +29,7 @@ arguments = docopt.docopt(__doc__)
 db_uri = arguments['--db'] or 'sqlite://'
 datadir = arguments['--data'] or DEFAULT_DATA_DIR
 pull_password = arguments['--pull-password']
-port = int(arguments.get('--port', 5000))
+port = int(arguments['--port'] or 5000)
 host = arguments['--host']
 
 app = create_app(db_uri=db_uri, datadir=datadir, pull_password=pull_password,
