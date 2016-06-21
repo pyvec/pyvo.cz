@@ -1,4 +1,4 @@
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 from pyvodb.load import get_db, load_from_directory
 from pyvodb import tables
