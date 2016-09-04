@@ -14,3 +14,32 @@
         </p>
     </div>
 {% endblock cityinfo %}
+
+{% block contact %}
+<div id="organizer-contacts">
+    <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>
+    <ul id="contacts" class="contacts">
+        <li>
+            <em>Google group</em>
+            <dl>
+                <dt>Web</dt><dd><a href="https://groups.google.com/forum/#!forum/ostrava-pyvo" target="_blank">Ostrava - Pyvo</a></dd>
+                <dt>E-mail</dt><dd>{{ 'ostrava-pyvo@googlegroups.com' | mail_link }}</dd>
+            </dl>
+        </li>
+        <li>
+            <em>Lumír Balhar</em>
+            <dl>
+                <dt>{{ tr('Telefon', 'Phone') }}</dt><dd>732689768</dd>
+                <dt>E-mail</dt><dd>{{ 'frenzy.madness@gmail.com' | mail_link }}</dd>
+            </dl>
+        </li>
+        <li>
+            <em>Ladislav Krčmárik</em>
+            <dl>
+                <dt>{{ tr('Telefon', 'Phone') }}</dt><dd>604112390</dd>
+                <dt>E-mail</dt><dd>{{ 'krcmarik@avocado.cz' | mail_link }}</dd>
+            </dl>
+        </li>
+    </ul>
+</div>
+{% endblock contact %}
