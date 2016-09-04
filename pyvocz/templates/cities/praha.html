@@ -32,3 +32,30 @@
         {% endif %}
     </div>
 {% endblock cityinfo %}
+
+{% block contact %}
+<div id="organizer-contacts">
+    <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>
+    <ul id="contacts" class="contacts">
+        <li>
+            <em>Jakub Vysoký</em>
+            <dl>
+                <dt>{{ tr('Telefon', 'Phone') }}</dt><dd>605852377</dd>
+                <dt>E-mail</dt><dd>{{ 'jakub.vysoky@gmail.com' | mail_link }}</dd>
+            </dl>
+        </li>
+        <li>
+            <em>Jiří Bartoň</em>
+            <dl>
+                <dt>E-mail</dt><dd>{{ 'whiskybar@gmail.com' | mail_link }}</dd>
+            </dl>
+        </li>
+        <li>
+            <em>Aleš Zoulek</em>
+            <dl>
+                <dt>E-mail</dt><dd>{{ 'ales.zoulek@gmail.com' | mail_link }}</dd>
+            </dl>
+        </li>
+    </ul>
+</div>
+{% endblock contact %}
