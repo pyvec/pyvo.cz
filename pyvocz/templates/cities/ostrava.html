@@ -14,3 +14,18 @@
         </p>
     </div>
 {% endblock cityinfo %}
+
+{% block contact %}
+<div id="organizer-contacts">
+    <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>
+    <ul id="contacts" class="contacts">
+        <li>
+            <em>Lumír Balhar</em>
+            <dl>
+                <dt>{{ tr('Telefon', 'Phone') }}</dt><dd>732 689 768</dd>
+                <dt>E-mail</dt><dd>{{ 'frenzy.madness@gmail.com' | mail_link }}</dd>
+            </dl>
+        </li>
+    </ul>
+</div>
+{% endblock contact %}
