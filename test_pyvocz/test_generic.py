@@ -51,7 +51,7 @@ def test_spider(client, app, check_external_links):
                 result = urldefrag(fullurl)
                 defrag = result.url
                 fragment = result.fragment
-                if fragment:
+                if fragment and urlparse(fullurl).netloc == 'localhost':
                     wanted_fragments[defrag].add(fragment)
                 if defrag not in visited:
                     to_visit.add(defrag)
