@@ -1,5 +1,5 @@
 import os
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 from flask import Flask, g, url_for, redirect, request
 from jinja2 import StrictUndefined
@@ -62,13 +62,12 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
 
     @app.before_request
     def redirect_subdomains():
-        url = urlparse(request.url)
-        hostname = url.hostname
-        hostname_parts = hostname.split('.')
-        if len(hostname_parts) > 2:
-            subdomain = hostname_parts[0]
-            if subdomain == 'www':
-                return redirect(request.url.replace('www.', ''))
+        scheme, netloc, path, params, query, fragment = urlparse(request.url)
+        if netloc.startswith('www.'):
+            # Remove leading 'www.' from the hostname
+            netloc = netloc[4:]
+            url = urlunparse((scheme, netloc, path, params, query, fragment))
+            return redirect(url)
 
     for url, func, options in routes:
         app.route(url, **options)(func)
