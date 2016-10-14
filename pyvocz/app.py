@@ -1,6 +1,7 @@
 import os
+from urllib.parse import urlparse
 
-from flask import Flask, g, url_for, request
+from flask import Flask, g, url_for, redirect, request
 from jinja2 import StrictUndefined
 
 from . import filters
@@ -58,6 +59,16 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
             return
         if app.url_map.is_endpoint_expecting(endpoint, 'lang_code'):
             values['lang_code'] = g.lang_code
+
+    @app.before_request
+    def redirect_subdomains():
+        url = urlparse(request.url)
+        hostname = url.hostname
+        hostname_parts = hostname.split('.')
+        if len(hostname_parts) > 2:
+            subdomain = hostname_parts[0]
+            if subdomain == 'www':
+                return redirect(request.url[4:])
 
     for url, func, options in routes:
         app.route(url, **options)(func)

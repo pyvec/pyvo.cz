@@ -233,8 +233,6 @@ def reload_hook():
 
 @route('/', subdomain='<subdomain>')
 def subdomain_redirect(subdomain):
-    if subdomain in ('www', '<invalid>'):
-        return redirect(url_for('index'))
     ALIASES = {
         'brnenske': 'brno',
         'ostravske': 'ostrava',
