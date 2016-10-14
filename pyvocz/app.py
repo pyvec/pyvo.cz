@@ -68,7 +68,7 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
         if len(hostname_parts) > 2:
             subdomain = hostname_parts[0]
             if subdomain == 'www':
-                return redirect(request.url.replace('www.', ''))
+                return redirect(request.url[4:])
 
     for url, func, options in routes:
         app.route(url, **options)(func)
