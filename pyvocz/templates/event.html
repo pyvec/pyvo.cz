@@ -62,7 +62,7 @@
 
     {% if event.description %}
         <div id="description">
-            {{ event.description | nl2br }}
+            {{ event.description | markdown  }}
         </div>
     {% endif %}
 
@@ -94,7 +94,7 @@
                         {% endif %}
                         {% if talk.description %}
                             <div class="description">
-                                {{ talk.description }}
+                                {{ talk.description | markdown }}
                             </div>
                         {% endif %}
                         {% if talk.links %}

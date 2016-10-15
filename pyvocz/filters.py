@@ -3,9 +3,12 @@ import re
 from flask import g, url_for
 from jinja2 import escape
 from markupsafe import Markup
+from markdown import markdown as convert_markdown
+import textwrap
 
 __all__ = ('mail_link', 'nl2br', 'monthname', 'shortdayname', 'shortmonth',
-           'shortday', 'longdate', 'dayname', 'th', 'event_url', 'event_link')
+           'shortday', 'longdate', 'dayname', 'th', 'event_url', 'event_link',
+           'markdown')
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
@@ -117,3 +120,9 @@ def event_link(event, *, text=None):
     if text is None:
         text = event.title
     return Markup('<a href="{}">{}</a>'.format(event_url(event), text))
+
+
+def markdown(text):
+    text = textwrap.dedent(text)
+    result = Markup(convert_markdown(text))
+    return result

@@ -22,7 +22,7 @@
         </ul>
         {% if talk.description %}
             <div class="talk-description">
-                {{talk.description}}
+                {{ talk.description | markdown }}
             </div>
         {% endif %}
     </div>

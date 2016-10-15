@@ -26,7 +26,7 @@
 
         {% if event.description %}
             <div class="description">
-                {{event.description | nl2br}}
+                {{ event.description | markdown }}
             </div>
         {% endif %}
     </div>

@@ -54,6 +54,7 @@ setup_args = dict(
         'docopt >= 0.6, < 1.0',
         'ics >= 0.3.1, < 1.0',
         'feedgen >= 0.3.1, < 1.0',
+        'markdown >= 2.6.7, < 3.0',
     ],
 
     package_data={'pyvocz': list(data_file_names())},

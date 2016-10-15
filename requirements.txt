@@ -12,6 +12,7 @@ ics==0.3.1
 itsdangerous==0.24
 Jinja2==2.8
 lxml==3.6.0
+Markdown==2.6.7
 MarkupSafe==0.23
 python-dateutil==2.5.3
 pytz==2016.4
