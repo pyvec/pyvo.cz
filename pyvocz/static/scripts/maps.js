@@ -1,10 +1,10 @@
 
 requirejs([
-    "http://code.jquery.com/jquery-1.10.1.min.js",
-    "http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"
+    "https://code.jquery.com/jquery-1.12.4.min.js",
+    "https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"
 ], function(jQuery, L) {
 
-    var layer = L.tileLayer('http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    var layer = L.tileLayer('https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     });
