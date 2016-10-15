@@ -6,3 +6,17 @@
         <a class="map-alt" href="http://mapy.cz/zakladni?q={{venue.name}}, {{ venue.latitude }}N+{{ venue.longitude }}E ">→ {{ tr('mapa', 'map') }} (mapy.cz)</a>
     {% endif %}
 {% endmacro %}
+
+{% macro youtube_preview(youtube_id) %}
+    {% if youtube_id %}
+        <a class="youtube-link yt" href="//www.youtube.com/watch?v={{youtube_id}}">
+            <img src="https://img.youtube.com/vi/{{youtube_id}}/hqdefault.jpg"
+                width="30">
+            <span class="overlay"></span>
+        </a>
+    {% else %}
+        <span class="youtube-link no-yt">
+            <span class="overlay"></span>
+        </span>
+    {% endif %}
+{% endmacro %}

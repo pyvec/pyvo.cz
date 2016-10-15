@@ -43,4 +43,4 @@ if arguments['--debug']:
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(debug=True, host=host, port=port)
 else:
-    0#app.run(debug=False, host=host or '0.0.0.0', port=port)
+    app.run(debug=False, host=host or '0.0.0.0', port=port)

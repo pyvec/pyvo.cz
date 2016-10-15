@@ -73,16 +73,7 @@
                 <div class="talk-entry
                     {% if talk.is_lightning %}lightning{% endif %}
                 ">
-                    {% if talk.youtube_id %}
-                        <a class="youtube-link yt" href="http://www.youtube.com/watch?v={{talk.youtube_id}}">
-                            <img src="http://img.youtube.com/vi/{{talk.youtube_id}}/hqdefault.jpg" width="20">
-                            <span class="overlay"></span>
-                        </a>
-                    {% else %}
-                        <span class="youtube-link no-yt">
-                            <span class="overlay"></span>
-                        </span>
-                    {% endif %}
+                    {{ youtube_preview(talk.youtube_id) }}
                     <div class="head">
                         <h3>{{ talk.title }}</h3>
                         {% if talk.speakers %}
