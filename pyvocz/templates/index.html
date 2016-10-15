@@ -33,8 +33,8 @@
         <div class="map">
             <img src="{{ url_for('static', filename='images/czech_republic.svg') }}" alt="">
             <ul>
-            {% for event in latest_events %}
-                <li class="map-city map-city-{{event.city.slug}}
+            {% for event in featured_events %}
+                <li class="map-city map-city-{{event.series.home_city_slug}}
                     {% if event.date == today %}
                         today
                     {% elif event.date < today %}
@@ -44,13 +44,13 @@
                     {% endif %}
                     "
                 >
-                    <a href="{{ url_for('city', cityslug=event.city.slug) }}">
+                    <a href="{{ url_for('series', series_slug=event.series.slug) }}">
                         {% if event.date == today and event.start_time %}
                             <div class="date"><time datetime="{{event.date}}">{{ event.start_time.strftime('%H:%M') }}</time></div>
                         {% else %}
                             <div class="date"><time datetime="{{event.date}}">{{event.date | shortday}}</time></div>
                         {% endif %}
-                        <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}"
+                        <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}"
                              width="50"
                              alt=""
                              title="{{event.date | shortday}} – {{event.title}}"
@@ -65,12 +65,12 @@
     <div id="events">
         <h2>{{ tr('Kdy a kde?', 'When & Where?') }}</h2>
         <div>
-            {% for event in latest_events %}
+            {% for event in featured_events %}
             <div class="event">
                 <h3>
-                    <a href="{{ url_for('city', cityslug=event.city.slug) }}">
-                        <img src="{{ url_for('static', filename='coatofarms/'+event.city.slug+'.svg') }}" width="50">
-                        {{event.city.name}}
+                    <a href="{{ url_for('series', series_slug=event.series.slug) }}">
+                        <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}" width="50">
+                        {{event.series.name}}
                     </a>
                 </h3>
                 <div>
@@ -228,7 +228,7 @@
                             </div>
                             {% set date = link.talk.event.date %}
                             <div class="info">
-                                <time datetime="{{date}}">{{ date | longdate }}</time>, {{ link.talk.event.city.name }}
+                                <time datetime="{{date}}">{{ date | longdate }}</time>, {{ link.talk.event.series.name }}
                             </div>
                         </p>
                     </a>
@@ -262,9 +262,9 @@
                         Look for contact information on the pages of
                         individual cities:
                     {% endif %}
-                    <a href="{{url_for('city', cityslug='praha')}}">Praha</a>,
-                    <a href="{{url_for('city', cityslug='brno')}}">Brno</a>,
-                    <a href="{{url_for('city', cityslug='ostrava')}}">Ostrava</a>.
+                    <a href="{{url_for('series', series_slug='praha')}}">Praha</a>,
+                    <a href="{{url_for('series', series_slug='brno')}}">Brno</a>,
+                    <a href="{{url_for('series', series_slug='ostrava')}}">Ostrava</a>.
                     <p>
                 </li>
                 <li>

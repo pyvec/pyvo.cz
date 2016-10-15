@@ -1,0 +1,105 @@
+{% extends "_base.html" %}
+{% block title %}{{ series.name }}{% endblock title %}
+
+{% block bodyclass %}citypage{% endblock %}
+
+{% block bodycontent %}
+<div class="container">
+    <h1>{{ self.title() }}</h1>
+
+    <div id="cityinfo">
+        <div class="plan">
+            <p>
+                {% if g.lang_code == 'cs' %}
+                    {{ series.description_cs | markdown }}
+                {% else %}
+                    {{ series.description_en | markdown }}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% set event = series.events[0] %}
+
+    {% if event.venue %}
+        <div id="map" style="height: 350px"
+            data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+            data-zoom="14"
+            data-lat="{{event.venue.latitude}}"
+            data-lng="{{event.venue.longitude}}"
+        >
+        </div>
+    {% endif %}
+
+    <div id="featured-meetup">
+        {% if event.date < today %}
+             <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
+        {% elif event.date > today %}
+             <h2>{{ tr('Nadcházející sraz', 'Next Meetup') }}</h2>
+        {% else %}
+             <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
+        {% endif %}
+
+        {% set is_header_event = True %}
+        {% include "fragments/event.html" %}
+        {% set is_header_event = False %}
+
+    </div>
+
+    {% if organizer_info %}
+    <div id="organizer-contacts">
+        <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>
+        <ul id="contacts" class="contacts">
+            {% for organizer in organizer_info %}
+                <li>
+                    <em>{{ organizer.name }}</em>
+                    <dl>
+                    {% for type, value in organizer.items() | sort %}
+                        {% if type == 'name' %}
+                        {% elif type == 'phone' %}
+                            <dt>{{ tr('Telefon', 'Phone') }}</dt><dd>{{ value }}</dd>
+                        {% elif type == 'mail' %}
+                            <dt>E-mail</dt><dd>{{ value | mail_link }}</dd>
+                        {% elif type == 'web' %}
+                            <dt>E-mail</dt><dd><a href="{{ value }}">{{ value }}</a></dd>
+                        {% else %}
+                            {# XXX: raise #}
+                            <dt>?</dt>
+                        {% endif %}
+                    {% endfor %}
+                    </dl>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="event-list">
+        <h2>{{ tr('Historie srazů', 'Meetup History') }}</h2>
+        <ul>
+            {% for event in series.events[1:] %}
+                <li>
+                    {% include "fragments/event.html" %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock bodycontent %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+{% endblock styles %}
+
+{% block scripts %}
+    <script>
+        var require = {
+            baseUrl: "{{ url_for('static', filename='') }}",
+            deps: ["scripts/maps"],
+        };
+    </script>
+    <script async
+            src="{{ url_for('static', filename='third-party/require.js') }}"
+    ></script>
+{% endblock %}

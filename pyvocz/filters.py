@@ -112,7 +112,7 @@ def th(value):
 
 
 def event_url(event):
-    return url_for('event', cityslug=event.city.slug,
+    return url_for('event', series_slug=event.series.slug,
                    date_slug='{0.year:4}-{0.month:02}'.format(event.date))
 
 

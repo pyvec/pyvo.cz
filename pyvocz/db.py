@@ -12,6 +12,7 @@ def db_setup(datadir):
         print('Skipping DB reload')
         return
     get_db(datadir, engine=db.engine)
+    db.session.commit()
 
 def db_reload(datadir):
     for table in reversed(tables.metadata.sorted_tables):
@@ -20,3 +21,4 @@ def db_reload(datadir):
     print('Loading database from {}'.format(datadir))
     load_from_directory(db.session, datadir)
     print('Database loaded')
+    db.session.commit()

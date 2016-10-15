@@ -11,8 +11,8 @@
 
 {% block breadcrumbs %}
     <li class="crumb">
-        <a href="{{ url_for('city', cityslug=event.city.slug) }}">
-            {{ event.city.name }}
+        <a href="{{ url_for('series', series_slug=event.series.slug) }}">
+            {{ event.series.name }}
         </a>
     </li>
 {% endblock breadcrumbs %}

@@ -19,9 +19,11 @@
             </a>
             <em>{{ event | event_link}}</em>
 
-            <div class="address">
-                {{ venue_address(event.venue, show_map_link=is_header_event) }}
-            </div>
+            {% if event.venue %}
+                <div class="address">
+                    {{ venue_address(event.venue, show_map_link=is_header_event) }}
+                </div>
+            {% endif %}
         </div>
 
         {% if event.description %}

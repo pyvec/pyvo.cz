@@ -1,5 +1,6 @@
 import datetime
 import subprocess
+import json
 import time
 import re
 
@@ -42,6 +43,8 @@ def route(url, methods=['GET'], translate=True, **kwargs):
         return func
     return decorator
 
+FEATURED_SERIES = 'brno-pyvo', 'praha-pyvo', 'ostrava-pyvo'
+
 @route('/')
 def index():
     today = datetime.date.today()
@@ -49,24 +52,25 @@ def index():
     # Latest talk query
 
     subquery = db.session.query(
-        tables.Event.city_id,
+        tables.Event.series_slug,
         func.max(tables.Event.date).label('latest_date'),
     )
-    subquery = subquery.group_by(tables.Event.city_id)
+    subquery = subquery.group_by(tables.Event.series_slug)
     subquery = subquery.subquery()
 
     query = db.session.query(tables.Event)
     query = query.join(subquery,
                        and_(subquery.c.latest_date == tables.Event.date,
-                            subquery.c.city_id == tables.Event.city_id,
+                            subquery.c.series_slug == tables.Event.series_slug,
                             ))
+    query = query.filter(tables.Event.series_slug.in_(FEATURED_SERIES))
     # order: upcoming first, then by distance from today
     jd = func.julianday
     query = query.order_by(jd(subquery.c.latest_date) < jd(today),
                            func.abs(jd(subquery.c.latest_date) - jd(today)))
-    query = query.options(joinedload(tables.Event.city))
+    query = query.options(joinedload(tables.Event.series))
     query = query.options(joinedload(tables.Event.venue))
-    latest_events = query.all()
+    featured_events = query.all()
 
     # Video query
 
@@ -79,7 +83,7 @@ def index():
     query = query.join(tables.Talk.event)
     query = query.options(joinedload(tables.TalkLink.talk))
     query = query.options(joinedload(tables.TalkLink.talk, 'event'))
-    query = query.options(joinedload(tables.TalkLink.talk, 'event', 'city'))
+    query = query.options(joinedload(tables.TalkLink.talk, 'event', 'series'))
     query = query.options(subqueryload(tables.TalkLink.talk, 'talk_speakers'))
     query = query.options(joinedload(tables.TalkLink.talk, 'talk_speakers', 'speaker'))
     query = query.order_by(desc(tables.Event.date), tables.Talk.index)
@@ -91,40 +95,56 @@ def index():
     calendar = get_calendar(db.session, first_year=today.year,
                             first_month=today.month - 1, num_months=3)
 
-    return render_template('index.html', latest_events=latest_events,
+    return render_template('index.html', featured_events=featured_events,
                            today=today, videos=videos, calendar=calendar)
 
-@route('/<cityslug>')
-def city(cityslug):
+
+BACKCOMPAT_SERIES_ALIASES = {
+    'brno': 'brno-pyvo',
+    'praha': 'praha-pyvo',
+    'ostrava': 'ostrava-pyvo',
+}
+
+@route('/<series_slug>/')
+def series(series_slug):
+    if series_slug in BACKCOMPAT_SERIES_ALIASES:
+        url = url_for('series',
+                      series_slug=BACKCOMPAT_SERIES_ALIASES[series_slug])
+        return redirect(url)
+
     today = datetime.date.today()
 
-    query = db.session.query(tables.City)
-    query = query.filter(tables.City.slug == cityslug)
-    query = query.options(joinedload(tables.City.events, 'talks'))
-    query = query.options(joinedload(tables.City.events))
-    query = query.options(joinedload(tables.City.events, 'venue'))
-    query = query.options(joinedload(tables.City.events, 'talks', 'talk_speakers'))
-    query = query.options(subqueryload(tables.City.events, 'talks', 'talk_speakers', 'speaker'))
-    query = query.options(subqueryload(tables.City.events, 'talks', 'links'))
+    query = db.session.query(tables.Series)
+    query = query.filter(tables.Series.slug == series_slug)
+    query = query.options(joinedload(tables.Series.events, 'talks'))
+    query = query.options(joinedload(tables.Series.events))
+    query = query.options(joinedload(tables.Series.events, 'venue'))
+    query = query.options(joinedload(tables.Series.events, 'talks', 'talk_speakers'))
+    query = query.options(subqueryload(tables.Series.events, 'talks', 'talk_speakers', 'speaker'))
+    query = query.options(subqueryload(tables.Series.events, 'talks', 'links'))
     try:
-        city = query.one()
+        series = query.one()
     except NoResultFound:
         abort(404)
 
-    args = dict(city=city, today=today)
-    try:
-        return render_template('cities/{}.html'.format(cityslug), **args)
-    except TemplateNotFound:
-        return render_template('city.html', **args)
+    organizer_info = json.loads(series.organizer_info)
+    return render_template('series.html', series=series, today=today,
+                           organizer_info=organizer_info)
 
 
-@route('/<cityslug>/<date_slug>')
-def event(cityslug, date_slug):
+@route('/<series_slug>/<date_slug>/')
+def event(series_slug, date_slug):
+    if series_slug in BACKCOMPAT_SERIES_ALIASES:
+        url = url_for('event',
+                      series_slug=BACKCOMPAT_SERIES_ALIASES[series_slug],
+                      date_slug=date_slug)
+        return redirect(url)
+
     today = datetime.date.today()
 
     query = db.session.query(tables.Event)
-    query = query.join(tables.City)
-    query = query.filter(tables.City.slug == cityslug)
+    query = query.join(tables.Series)
+    query = query.filter(tables.Series.slug == series_slug)
 
     match = re.match(r'^(\d{4})-(\d{1,2})$', date_slug)
     if not match:
@@ -152,18 +172,18 @@ def event(cityslug, date_slug):
 
     proper_date_slug = '{0.year:4}-{0.month:02}'.format(event.date)
     if date_slug != proper_date_slug:
-        return redirect(url_for('event', cityslug=cityslug,
+        return redirect(url_for('event', series_slug=series_slug,
                                 date_slug=proper_date_slug))
 
     return render_template('event.html', event=event, today=today)
 
 
-@route('/code-of-conduct')
+@route('/code-of-conduct/')
 def coc():
     abort(404)  # XXX
 
 
-@route('/api/venues/<venueslug>/geo', translate=False)
+@route('/api/venues/<venueslug>/geo/', translate=False)
 def api_venue_geojson(venueslug):
     query = db.session.query(tables.Venue)
     query = query.filter(tables.Venue.slug == venueslug)
