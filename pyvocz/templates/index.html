@@ -108,7 +108,7 @@
             <h2>{{ tr('Kalendář', 'Calendar') }}</h2>
             <div class="row">
                 {% for (year, month), weeks in calendar.items() %}
-                    <div class="col-sm-4 col">
+                    <div class="col-md-4 col">
                         {% include "fragments/calendar.html" %}
                     </div>
                 {% endfor %}
