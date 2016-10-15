@@ -19,13 +19,15 @@
 
     {% set event = city.events[0] %}
 
-    <div id="map" style="height: 350px"
-        data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
-        data-zoom="14"
-        data-lat="{{event.venue.latitude}}"
-        data-lng="{{event.venue.longitude}}"
-    >
-    </div>
+    {% if event.venue %}
+        <div id="map" style="height: 350px"
+            data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+            data-zoom="14"
+            data-lat="{{event.venue.latitude}}"
+            data-lng="{{event.venue.longitude}}"
+        >
+        </div>
+    {% endif %}
 
     <div id="featured-meetup">
         {% if event.date < today %}
