@@ -32,13 +32,37 @@ body > ._content > .container:last-child {
     position: relative;
 }
 
-.nav-container nav.container a.home {
+.nav-container nav.container ul,
+.nav-container nav.container li {
+    display: inline;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-container nav.container a {
+    color: black;
+}
+
+.nav-container nav.container li.home {
     font-family: "Bree Serif", serif;
     font-size: 120%;
     color: black;
 }
 
-.nav-container nav.container a.home span {
+.nav-container nav.container li.crumb {
+    font-family: "Bree Serif", serif;
+    font-size: 120%;
+    color: black;
+}
+.nav-container nav.container li.crumb::before {
+    content: '•';
+    color: 808080;
+    text-decoration: none;
+}
+
+
+.nav-container nav.container li.home a span {
     color: 808080;
 }
 
@@ -124,6 +148,7 @@ body.homepage #header img { width: 200px; }
 
 /******************** Color strips ********************/
 
+body.eventpage #map,
 body.citypage #map {
     margin: 1ex -15px;
     padding: 1ex 15px;
@@ -142,6 +167,7 @@ body.homepage #map {
                 0 0 0 #000;
 }
 
+body.eventpage #description,
 body.homepage #calendar {
     margin: 1ex -15px;
     padding: 1ex 15px;
@@ -568,6 +594,10 @@ ul.contacts {
     margin-left: 8em;
 }
 
+body.eventpage .talk-entry {
+    margin-left: 6em;
+}
+
 .event-entry .event-common {
     min-height: 4.5em;
 }
@@ -614,12 +644,12 @@ ul.contacts {
     list-style-type: none;
 }
 
-.event-entry .talk-entry {
+.talk-entry {
     min-height: 3.5em;
     position: relative;
 }
 
-.event-entry .talk-entry .youtube-link {
+.talk-entry .youtube-link {
     order: 2;
     display: block;
     position: absolute;
@@ -630,13 +660,17 @@ ul.contacts {
     overflow: hidden;
 }
 
-.event-entry .talk-entry .youtube-link img {
+body.eventpage .talk-entry .youtube-link {
+    top: 0.35em;
+}
+
+.talk-entry .youtube-link img {
     width: 5em;
     position: absolute;
     top: -0.45em;
 }
 
-.event-entry .talk-entry .youtube-link .overlay {
+.talk-entry .youtube-link .overlay {
     width: 5em;
     height: 3em;
     position: absolute;
@@ -644,56 +678,73 @@ ul.contacts {
     opacity: 0.6;
 }
 
-.event-entry .talk-entry .youtube-link .overlay:hover {
+.talk-entry .youtube-link .overlay:hover {
     opacity: 0;
 }
 
-.event-entry .talk-entry .youtube-link.no-yt {
+.talk-entry .youtube-link.no-yt {
     background-color: #F4F4F4;
 }
 
-.event-entry .talk-entry .head {
+.talk-entry .head {
     order: 3;
 }
 
-.event-entry .talk-entry .head em {
+.talk-entry .head em {
     font-weight: bold;
     font-style: normal;
 }
 
-.event-entry .talk-entry .head ul.speakers {
+.talk-entry .head ul.speakers {
     padding: 0;
 }
 
-.event-entry .talk-entry .head ul.speakers > li {
+.talk-entry .head ul.speakers > li {
     list-style-type: none;
     display: inline;
 }
 
-.event-entry .talk-entry .head ul.speakers > li:first-child::before { content: "― "; }
-.event-entry .talk-entry .head ul.speakers > li::after { content: ", "; }
-.event-entry .talk-entry .head ul.speakers > li:last-child::after { content: ""; }
+.talk-entry .head ul.speakers > li:first-child::before { content: "― "; }
+.talk-entry .head ul.speakers > li::after { content: ", "; }
+.talk-entry .head ul.speakers > li:last-child::after { content: ""; }
 
-.event-entry .talk-entry.lightning {
+.talk-entry .talk-links-intro {
+    padding-top: 1em;
+}
+
+.talk-entry ul.talk-links {
+    list-style-type: '→ ';
+    list-style-position: inside;
+    padding-left: 0;
+    padding-bottom: 1em;
+}
+
+.talk-entry ul.talk-links li {
+    padding-left: 0;
+}
+
+.talk-entry.lightning {
     min-height: 2em;
 }
 
-.event-entry .talk-entry.lightning .youtube-link {
+.talk-entry.lightning .youtube-link {
     width: 2.6em;
     height: 1.5em;
     left: -3.6em;
 }
 
-.event-entry .talk-entry.lightning .youtube-link img {
+.talk-entry.lightning .youtube-link img {
     width: 2.6em;
     top: -0.2em;
 }
 
-.event-entry .talk-entry.lightning .head ul.speakers {
+.talk-entry.lightning .head ul.speakers {
     display: inline;
 }
 
+
 @media(max-width: 480px) {
+    body.eventpage .talk-entry,
     .event-entry {
         margin-left: 0;
     }
@@ -703,24 +754,24 @@ ul.contacts {
         left: 0;
     }
 
-    .event-entry .talk-entry .youtube-link {
+    .talk-entry .youtube-link {
         display: none;
     }
 
-    .event-entry .talk-entry .head ul.speakers {
+    .talk-entry .head ul.speakers {
         display: block !important;
         padding-left: 1em;
     }
 
-    .event-entry .talk-entry .head ul.speakers > li {
+    .talk-entry .head ul.speakers > li {
         display: block !important;
     }
 
-    .event-entry .talk-entry .head ul.speakers > li::before {
+    .talk-entry .head ul.speakers > li::before {
         content: "" !important;
     }
 
-    .event-entry .talk-entry .head ul.speakers > li::after {
+    .talk-entry .head ul.speakers > li::after {
         content: "" !important;
     }
 }

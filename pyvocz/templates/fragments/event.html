@@ -1,3 +1,5 @@
+{% from "_macros.html" import venue_address %}
+
 <div id="{{event.date}}" class="event-entry
     {% if event.date < today %}
         past
@@ -15,21 +17,16 @@
                     <span class="year">{{event.start.year}}</span> · <span class="time">{{event.start.strftime('%H:%M')}}</span>
                 </time>
             </a>
-            <em>{{event.title}}</em>
+            <em>{{ event | event_link}}</em>
 
             <div class="address">
-                {{event.venue.name}}{% if event.venue.address %},
-                    {{event.venue.short_address}}
-                {% endif %}
-                {% if is_header_event %}
-                    <a class="map-alt" href="http://mapy.cz/zakladni?q={{event.venue.name}}, {{ event.venue.latitude }}N+{{ event.venue.longitude }}E ">→ mapa (mapy.cz)</a>
-                {% endif %}
+                {{ venue_address(event.venue, show_map_link=is_header_event) }}
             </div>
         </div>
 
         {% if event.description %}
             <div class="description">
-            {{event.description | nl2br}}
+                {{event.description | nl2br}}
             </div>
         {% endif %}
     </div>

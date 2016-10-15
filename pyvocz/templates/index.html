@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "_base.html" %}
 {% block title %}
     {% if g.lang_code == 'cs' %}
         Pyvo – Pravidelné programátorské srazy
@@ -91,7 +91,7 @@
                             {{ tr('bude', 'will be') }}
                         {% endif %}
                     {% endif %}
-                    <em class="title">{{event.title}}</em>
+                    <em class="title">{{ event | event_link }}</em>
                 </div>
                 <span>
                     {{event.venue.name}}{% if event.venue.address %},

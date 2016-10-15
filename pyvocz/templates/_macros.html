@@ -1,0 +1,8 @@
+{% macro venue_address(venue, show_map_link=False) %}
+    {{venue.name}}{% if venue.address %},
+        {{venue.short_address}}
+    {% endif %}
+    {% if show_map_link %}
+        <a class="map-alt" href="http://mapy.cz/zakladni?q={{venue.name}}, {{ venue.latitude }}N+{{ venue.longitude }}E ">→ {{ tr('mapa', 'map') }} (mapy.cz)</a>
+    {% endif %}
+{% endmacro %}

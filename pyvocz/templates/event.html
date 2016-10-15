@@ -1,0 +1,153 @@
+{% extends "_base.html" %}
+{% block title %}
+    {% if g.lang_code == 'cs' %}
+        {{ event.title }}
+    {% else %}
+        {{ event.title }}
+    {% endif %}
+{% endblock title %}
+
+{% block bodyclass %}eventpage{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="crumb">
+        <a href="{{ url_for('city', cityslug=event.city.slug) }}">
+            {{ event.city.name }}
+        </a>
+    </li>
+{% endblock breadcrumbs %}
+
+{% block bodycontent %}
+<div class="container">
+    <h1>{{ event.title }}</h1>
+
+    {% if g.lang_code == 'cs' %}
+        <div>
+            Sraz
+            {% if event.date < today %}
+                se konal
+            {% elif event.date > today %}
+                se bude konat
+            {% else %}
+                se koná
+            {% endif %}
+            {{ event.date.weekday() | dayname(preposition='v') }}
+            {{ event.date.day }}.
+            {{ event.date.month | monthname('genitive') | lower }}
+            {{ event.date.year }}
+            v {{ event.start_time.hour }}:{{ event.start_time.minute }}.
+        </div>
+    {% else %}
+        <div>
+            The meetup
+            {% if event.date < today %}
+                took place
+            {% elif event.date > today %}
+                will take place
+            {% else %}
+                takes place
+            {% endif %}
+            on
+            {{ event.date.weekday() | dayname }}
+            the {{ event.date.day }}<sup>{{ event.date.day | th }}</sup>
+            of {{ event.date.month | monthname }},
+            {{ event.date.year }}
+            at {{ event.start_time.hour }}:{{ event.start_time.minute }}.
+        </div>
+    {% endif %}
+    <div>
+        {{ venue_address(event.venue) }}
+        <a href="#map">{{ tr('(mapa)', '(map)') }}</a>
+    </div>
+
+    {% if event.description %}
+        <div id="description">
+            {{ event.description | nl2br }}
+        </div>
+    {% endif %}
+
+    {% if event.talks %}
+        <div id="talks">
+        <h2>{{ tr('Přednášky', 'Talks') }}</h2>
+            {% for talk in event.talks %}
+                <div class="talk-entry
+                    {% if talk.is_lightning %}lightning{% endif %}
+                ">
+                    {% if talk.youtube_id %}
+                        <a class="youtube-link yt" href="http://www.youtube.com/watch?v={{talk.youtube_id}}">
+                            <img src="http://img.youtube.com/vi/{{talk.youtube_id}}/hqdefault.jpg" width="20">
+                            <span class="overlay"></span>
+                        </a>
+                    {% else %}
+                        <span class="youtube-link no-yt">
+                            <span class="overlay"></span>
+                        </span>
+                    {% endif %}
+                    <div class="head">
+                        <h3>{{ talk.title }}</h3>
+                        {% if talk.speakers %}
+                            <ul class="speakers">
+                                {% for speaker in talk.speakers %}
+                                    <li>{{ speaker.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% if talk.description %}
+                            <div class="description">
+                                {{ talk.description }}
+                            </div>
+                        {% endif %}
+                        {% if talk.links %}
+                            <div class="talk-links-intro">
+                                {{ tr('Jinde na webu:', 'Elsewhere on the Web:') }}
+                            </div>
+                            <ul class="talk-links">
+                                {% for link in talk.links %}
+                                    <li><a href="{{ link.url }}">{{ link.hostname }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if event.venue %}
+        <h2>{{ tr('Místo', 'Venue') }}</h2>
+
+        {{ venue_address(event.venue) }}
+
+        <div id="map" style="height: 350px"
+            data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+            data-zoom="14"
+            data-lat="{{event.venue.latitude}}"
+            data-lng="{{event.venue.longitude}}"
+        >
+        </div>
+
+        <div>
+            {{ tr('Další mapy:', 'Other maps:') }}
+            <a href="http://mapy.cz/zakladni?q={{event.venue.name}}, {{ event.venue.latitude }}N+{{ event.venue.longitude }}E ">mapy.cz</a>,
+            <a href="http://www.google.com/maps/place/{{ event.venue.latitude }},{{ event.venue.longitude }} ">Google Maps</a>.
+        </div>
+    {% endif %}
+</div>
+{% endblock bodycontent %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+{% endblock styles %}
+
+{% block scripts %}
+    <script>
+        var require = {
+            baseUrl: "{{ url_for('static', filename='') }}",
+            deps: ["scripts/maps"],
+        };
+    </script>
+    <script async
+            src="{{ url_for('static', filename='third-party/require.js') }}"
+    ></script>
+{% endblock %}

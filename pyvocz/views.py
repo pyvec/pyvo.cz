@@ -1,10 +1,11 @@
 import datetime
 import subprocess
 import time
+import re
 
-from sqlalchemy import func, and_, or_, desc
+from sqlalchemy import func, and_, or_, desc, extract
 from sqlalchemy.orm import joinedload, subqueryload
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from flask import request, Response, url_for, redirect
 from flask import render_template, jsonify
 from flask import current_app as app
@@ -115,6 +116,46 @@ def city(cityslug):
         return render_template('cities/{}.html'.format(cityslug), **args)
     except TemplateNotFound:
         return render_template('city.html', **args)
+
+
+@route('/<cityslug>/<date_slug>')
+def event(cityslug, date_slug):
+    today = datetime.date.today()
+
+    query = db.session.query(tables.Event)
+    query = query.join(tables.City)
+    query = query.filter(tables.City.slug == cityslug)
+
+    match = re.match(r'^(\d{4})-(\d{1,2})$', date_slug)
+    if not match:
+        try:
+            number = int(date_slug)
+        except ValueError:
+            abort(404)
+        query = query.filter(tables.Event.number == number)
+    else:
+        year = int(match.group(1))
+        month = int(match.group(2))
+        query = query.filter(extract('year', tables.Event.date) == year)
+        query = query.filter(extract('month', tables.Event.date) == month)
+
+    query = query.options(joinedload(tables.Event.talks))
+    query = query.options(joinedload(tables.Event.venue))
+    query = query.options(joinedload(tables.Event.talks, 'talk_speakers'))
+    query = query.options(subqueryload(tables.Event.talks, 'talk_speakers', 'speaker'))
+    query = query.options(subqueryload(tables.Event.talks, 'links'))
+
+    try:
+        event = query.one()
+    except (NoResultFound, MultipleResultsFound):
+        abort(404)
+
+    proper_date_slug = '{0.year:4}-{0.month:02}'.format(event.date)
+    if date_slug != proper_date_slug:
+        return redirect(url_for('event', cityslug=cityslug,
+                                date_slug=proper_date_slug))
+
+    return render_template('event.html', event=event, today=today)
 
 
 @route('/code-of-conduct')

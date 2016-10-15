@@ -1,3 +1,5 @@
+{% from "_macros.html" import venue_address %}
+
 <html>
     <head>
         <title>{% block title %}Pyvo – Pravidelné programátorské srazy{% endblock title %}</title>
@@ -11,7 +13,14 @@
     <body class="{% block bodyclass %}{% endblock %}">
         <div class="nav-container">
             <nav class="container">
-                <a class="home" href="{{ url_for('index') }}">Pyvo<span>.cz</span></a>
+                <ul>
+                    <li class="home">
+                        <a href="{{ url_for('index') }}">
+                            Pyvo<span>.cz</span>
+                        </a>
+                    </li>
+                </ul>
+                {% block breadcrumbs %}{% endblock breadcrumbs %}
                 {% if g.lang_code == 'cs' %}
                     <a class="lang_switch" href="{{ url_for_lang('en') }}">🌎 English, please!</a>
                 {% else %}

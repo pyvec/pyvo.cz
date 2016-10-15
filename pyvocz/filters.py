@@ -1,11 +1,11 @@
 import re
 
-from flask import g
+from flask import g, url_for
 from jinja2 import escape
 from markupsafe import Markup
 
 __all__ = ('mail_link', 'nl2br', 'monthname', 'shortdayname', 'shortmonth',
-           'shortday', 'longdate')
+           'shortday', 'longdate', 'dayname', 'th', 'event_url', 'event_link')
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
@@ -25,16 +25,40 @@ def nl2br(value):
     return result
 
 
-def monthname(value):
+def monthname(value, case='nominative'):
     if g.lang_code == 'cs':
-        list = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
-                'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec']
+        if case == 'nominative':
+            list = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+                    'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad',
+                    'Prosinec']
+        if case == 'genitive':
+            list = ['Ledna', 'Února', 'Března', 'Dubna', 'Května', 'Června',
+                    'Července', 'Srpna', 'Září', 'Října', 'Listopadu',
+                    'Prosince']
     elif g.lang_code == 'en':
         list = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
                 'August', 'September', 'October', 'November', 'December']
     else:
-        raise ValueError(value)
+        raise ValueError('unknown lang_code')
     return list[value - 1]
+
+
+def dayname(value, preposition=None):
+    if g.lang_code == 'cs':
+        names = ['v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pátek',
+                 'v sobotu', 'v neděli']
+        name = names[value % 7]
+        if preposition is None:
+            return name.split()[-1]
+        elif preposition == 'v':
+            return name
+        else:
+            raise ValueError('unknown preposition')
+    elif g.lang_code == 'en':
+        names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+                 'Saturday', 'Sunday']
+        return names[value % 7]
+    raise ValueError('unknown lang_code')
 
 
 def shortdayname(value):
@@ -42,7 +66,7 @@ def shortdayname(value):
         return ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'][value % 7]
     elif g.lang_code == 'en':
         return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][value % 7]
-    raise ValueError(value)
+    raise ValueError('unknown lang_code')
 
 
 def shortmonth(value):
@@ -68,3 +92,28 @@ def longdate(value):
     elif g.lang_code == 'en':
         return '{} {} {}'.format(monthname(value.month), value.day, value.year)
     raise ValueError(value)
+
+
+def th(value):
+    if g.lang_code == 'cs':
+        raise ValueError('th does not make sense for Czech')
+    elif g.lang_code == 'en':
+        if value % 10 == 1:
+            return '{} st'
+        elif value % 10 == 2:
+            return 'nd'
+        elif value % 10 == 3:
+            return 'rd'
+        else:
+            return 'th'
+
+
+def event_url(event):
+    return url_for('event', cityslug=event.city.slug,
+                   date_slug='{0.year:4}-{0.month:02}'.format(event.date))
+
+
+def event_link(event, *, text=None):
+    if text is None:
+        text = event.title
+    return Markup('<a href="{}">{}</a>'.format(event_url(event), text))

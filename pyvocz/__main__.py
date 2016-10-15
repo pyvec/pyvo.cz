@@ -40,6 +40,7 @@ if not os.path.exists(datadir):
                            'https://github.com/pyvec/pyvo-data', datadir])
 
 if arguments['--debug']:
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(debug=True, host=host, port=port)
 else:
-    app.run(debug=False, host=host or '0.0.0.0', port=port)
+    0#app.run(debug=False, host=host or '0.0.0.0', port=port)
