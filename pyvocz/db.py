@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
-from pyvodb.load import get_db, load_from_directory
+from pyvodb.load import load_from_directory
 from pyvodb import tables
 
 db = SQLAlchemy()
@@ -11,8 +11,7 @@ def db_setup(datadir):
     if db.session.query(tables.Event).count():
         print('Skipping DB reload')
         return
-    get_db(datadir, engine=db.engine)
-    db.session.commit()
+    db_reload(datadir)
 
 def db_reload(datadir):
     for table in reversed(tables.metadata.sorted_tables):
