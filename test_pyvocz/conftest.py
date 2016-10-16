@@ -27,24 +27,40 @@ def app(pytestconfig):
     else:
         with tempfile.TemporaryDirectory() as tempdir:
             for name in """
-                    ostrava/2014-08-07.yaml
-                    ostrava/2014-10-02-balis-balim-balime.yaml
-                    ostrava/2014-11-06-testovaci.yaml
-                    ostrava/2013-11-07-prvni.yaml
-                    ostrava/2013-12-04-druhe.yaml
-                    brno/2014-07-31-bitva-tri-cisaru.yaml
-                    brno/2013-05-30-gui.yaml
-                    brno/2015-02-26-dokumentacni.yaml
-                    brno/2014-02-27-vyjezdove.yaml
-                    praha/2015-05-20-anniversary.yaml
-                    praha/2015-03-18-zase-docker.yaml
-                    praha/2011-01-17.yaml
-                    praha/2015-04-15.yaml
+                    meta.yaml
+                    series/ostrava-pyvo/series.yaml
+                    series/ostrava-pyvo/events/2014-08-07.yaml
+                    series/ostrava-pyvo/events/2014-10-02-balis-balim-balime.yaml
+                    series/ostrava-pyvo/events/2014-11-06-testovaci.yaml
+                    series/ostrava-pyvo/events/2013-11-07-prvni.yaml
+                    series/ostrava-pyvo/events/2013-12-04-druhe.yaml
+                    series/brno-pyvo/series.yaml
+                    series/brno-pyvo/events/2014-07-31-bitva-tri-cisaru.yaml
+                    series/brno-pyvo/events/2013-05-30-gui.yaml
+                    series/brno-pyvo/events/2015-02-26-dokumentacni.yaml
+                    series/brno-pyvo/events/2014-02-27-vyjezdove.yaml
+                    series/brno-pyvo/events/2012-11-29-cli.yaml
+                    series/praha-pyvo/series.yaml
+                    series/praha-pyvo/events/2015-05-20-anniversary.yaml
+                    series/praha-pyvo/events/2015-03-18-zase-docker.yaml
+                    series/praha-pyvo/events/2011-01-17.yaml
+                    series/praha-pyvo/events/2015-04-15.yaml
+                    cities/brno/city.yaml
+                    cities/brno/venues/u-dreveneho-orla.yaml
+                    cities/brno/venues/u-drevaka.yaml
+                    cities/brno/venues/hlavni-nadrazi.yaml
+                    cities/praha/city.yaml
+                    cities/praha/venues/konvikt.yaml
+                    cities/praha/venues/na-venecku.yaml
+                    cities/ostrava/city.yaml
+                    cities/ostrava/venues/ires-sc.yaml
+                    cities/ostrava/venues/sport-club.yaml
+                    cities/ostrava/venues/vr-levsky.yaml
                     """.splitlines():
                 name = name.strip()
                 if name:
                     try:
-                        os.mkdir(os.path.dirname(os.path.join(tempdir, name)))
+                        os.makedirs(os.path.dirname(os.path.join(tempdir, name)))
                     except FileExistsError:
                         pass
                     shutil.copyfile(
