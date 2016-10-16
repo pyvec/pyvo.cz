@@ -79,7 +79,7 @@
                         {% elif type == 'mail' %}
                             <dt>E-mail</dt><dd>{{ value | mail_link }}</dd>
                         {% elif type == 'web' %}
-                            <dt>E-mail</dt><dd><a href="{{ value }}">{{ value }}</a></dd>
+                            <dt>Web</dt><dd><a href="{{ value }}">{{ value }}</a></dd>
                         {% else %}
                             {# XXX: raise #}
                             <dt>?</dt>
