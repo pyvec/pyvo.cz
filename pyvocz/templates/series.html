@@ -46,6 +46,24 @@
 
     </div>
 
+    {% if series.recurrence_rule %}
+    <div id="future">
+        <h2>Budoucí termíny</h2>
+        <div>
+            {{ tr(series.recurrence_description_cs, series.recurrence_description_en) }}
+        </div>
+        <div>
+            Předběžně to vypadá na následující termíny –
+            některé se ale můžou posunout, např. kvůli svátkům:
+        </div>
+        <ul>
+            {% for occurence in series.next_occurrences(3) %}
+                <li>{{ occurence | longdate }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
     {% if organizer_info %}
     <div id="organizer-contacts">
         <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>

@@ -21,7 +21,14 @@ from pyvodb.calendar import get_calendar
 from . import filters
 from .db import db, db_reload
 
-RELOAD_HOOK_TIME = 0
+
+FEATURED_SERIES = 'brno-pyvo', 'praha-pyvo', 'ostrava-pyvo'
+
+BACKCOMPAT_SERIES_ALIASES = {
+    'brno': 'brno-pyvo',
+    'praha': 'praha-pyvo',
+    'ostrava': 'ostrava-pyvo',
+}
 
 routes = []
 
@@ -43,7 +50,6 @@ def route(url, methods=['GET'], translate=True, **kwargs):
         return func
     return decorator
 
-FEATURED_SERIES = 'brno-pyvo', 'praha-pyvo', 'ostrava-pyvo'
 
 @route('/')
 def index():
@@ -98,12 +104,6 @@ def index():
     return render_template('index.html', featured_events=featured_events,
                            today=today, videos=videos, calendar=calendar)
 
-
-BACKCOMPAT_SERIES_ALIASES = {
-    'brno': 'brno-pyvo',
-    'praha': 'praha-pyvo',
-    'ostrava': 'ostrava-pyvo',
-}
 
 @route('/<series_slug>/')
 def series(series_slug):
