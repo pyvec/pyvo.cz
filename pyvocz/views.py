@@ -301,10 +301,11 @@ def reload_hook():
 @route('/', subdomain='<subdomain>')
 def subdomain_redirect(subdomain):
     ALIASES = {
-        'brnenske': 'brno',
-        'ostravske': 'ostrava',
-        'prazske': 'praha',
-        'prague': 'praha',
+        'brnenske': 'brno-pyvo',
+        'ostravske': 'ostrava-pyvo',
+        'prazske': 'praha-pyvo',
+        'prague': 'praha-pyvo',
+        **BACKCOMPAT_SERIES_ALIASES,
     }
     subdomain = ALIASES.get(subdomain, subdomain)
-    return redirect(url_for('city', cityslug=subdomain))
+    return redirect(url_for('series', series_slug=subdomain))
