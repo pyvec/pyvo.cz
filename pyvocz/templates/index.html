@@ -254,17 +254,26 @@
                         ať už teď nebo v budoucnosti,
                         na deset minut nebo hodinu, k tématu nebo ne,
                         ozvi se organizátorům a domluvíme se.
-                        Kontakty jsou na stránce každého města:
+                        Kontakty jsou na stránce každého Pyva:
                     {% else %}
                         If you'd like to <em>speak</em>,
                         now or in the future, for 10 minutes or an hour,
                         on-topic or off, get in touch with the organizers!
                         Look for contact information on the pages of
-                        individual cities:
+                        individual Pyvos:
                     {% endif %}
-                    <a href="{{url_for('series', series_slug='praha')}}">Praha</a>,
-                    <a href="{{url_for('series', series_slug='brno')}}">Brno</a>,
-                    <a href="{{url_for('series', series_slug='ostrava')}}">Ostrava</a>.
+                    <a href="{{url_for('series',
+                                        series_slug='praha-pyvo',
+                                        _anchor='organizer-contacts')}}">
+                        Praha</a>,
+                    <a href="{{url_for('series',
+                                        series_slug='brno-pyvo',
+                                        _anchor='organizer-contacts')}}">
+                        Brno</a>,
+                    <a href="{{url_for('series',
+                                        series_slug='ostrava-pyvo',
+                                        _anchor='organizer-contacts')}}">
+                        Ostrava</a>.
                     <p>
                 </li>
                 <li>

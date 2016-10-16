@@ -111,9 +111,10 @@ def th(value):
             return 'th'
 
 
-def event_url(event):
+def event_url(event, **kwargs):
     return url_for('event', series_slug=event.series.slug,
-                   date_slug='{0.year:4}-{0.month:02}'.format(event.date))
+                   date_slug='{0.year:4}-{0.month:02}'.format(event.date),
+                   **kwargs)
 
 
 def event_link(event, *, text=None):

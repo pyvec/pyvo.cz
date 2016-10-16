@@ -55,10 +55,12 @@
             at {{ event.start_time.hour }}:{{ event.start_time.minute }}.
         </div>
     {% endif %}
-    <div>
-        {{ venue_address(event.venue) }}
-        <a href="#map">{{ tr('(mapa)', '(map)') }}</a>
-    </div>
+    {% if event.venue %}
+        <div>
+            {{ venue_address(event.venue) }}
+            <a href="#map">{{ tr('(mapa)', '(map)') }}</a>
+        </div>
+    {% endif %}
 
     {% if event.description %}
         <div id="description">

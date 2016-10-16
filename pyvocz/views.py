@@ -217,19 +217,24 @@ def api_ics():
     query = query.options(joinedload(tables.Event.venue))
     calendar = ics.Calendar()
     for event in query:
-        location = '{}, {}, {}'.format(
-            event.venue.name,
-            event.venue.short_address,
-            event.city.name,
-        )
+        if event.venue:
+            location = '{}, {}, {}'.format(
+                event.venue.name,
+                event.venue.short_address,
+                event.city.name,
+            )
+            geo_obj = event.venue
+        else:
+            location = event.city.name
+            geo_obj = event.city
         cal_event = ics.Event(
             name=event.title,
             location=location,
             begin=event.start,
-            uid='{}-{}@pyvo.cz'.format(event.city.slug, event.date),
+            uid='{}-{}@pyvo.cz'.format(event.series_slug, event.date),
         )
-        cal_event.geo = '{}:{}'.format(event.venue.latitude,
-                                       event.venue.longitude)
+        cal_event.geo = '{}:{}'.format(geo_obj.latitude,
+                                       geo_obj.longitude)
         calendar.events.append(cal_event)
     return Response(str(calendar), mimetype='text/calendar')
 
@@ -242,12 +247,12 @@ def make_feed(query, url):
     fg = FeedGenerator()
     fg.id('http://pyvo.cz')
     fg.title('Pyvo')
-    fg.logo('http://ex.com/logo.jpg')
+    fg.logo(url_for('static', filename='images/krygl.png', _external=True))
     fg.link(href=url, rel='self')
     fg.subtitle('Srazy Pyvo.cz')
     for event in query:
         fe = fg.add_entry()
-        url = url_for('city', cityslug=event.city.slug, _external=True) + '#{}'.format(event.date)
+        url = filters.event_url(event, _external=True)
         fe.id(url)
         fe.link(href=url, rel='alternate')
         fe.title(event.title)
