@@ -27,6 +27,17 @@
                                          title="{{day['day'] | shortday}} – {{ event.title }}"
                                     >
                                 </a>
+                            {% elif day['next_occurences'] %}
+                                {% set series = day['next_occurences'][0] %}
+                                <a href="{{ url_for('series', series_slug=series.slug,
+                                                    _anchor='future') }}">
+                                    <img src="{{ url_for('static', filename='coatofarms/'+series.home_city_slug+'-gray.svg') }}"
+                                         width="20"
+                                         alt="{{day['day'] | shortday}} – {{ tr('možný termín pro', 'possible date for') }} {{ series.name }}"
+                                         title="{{day['day'] | shortday}} – {{ tr('možný termín pro', 'possible date for') }} {{ series.name}}"
+                                         style="opacity:0.2;"
+                                    >
+                                </a>
                             {% else %}
                                 {{ day['day'].day }}
                             {% endif %}

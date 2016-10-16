@@ -99,6 +99,7 @@ def index():
             videos.append(link)
 
     calendar = get_calendar(db.session, first_year=today.year,
+                            series_slugs=FEATURED_SERIES,
                             first_month=today.month - 1, num_months=3)
 
     return render_template('index.html', featured_events=featured_events,
