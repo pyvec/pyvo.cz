@@ -290,12 +290,20 @@ def reload_hook():
 
     datadir = app.config['PYVO_DATADIR']
 
+    output = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=datadir)
+    old_head_commit = output.decode('ascii').strip()
+
     output = subprocess.check_output(['git', 'pull'], cwd=datadir)
     app.logger.info('Git output: %s', str(output))
-    db_reload(datadir)
 
     output = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=datadir)
     head_commit = output.decode('ascii').strip()
+
+    if old_head_commit == head_commit:
+        return jsonify({'result': 'OK', 'HEAD': head_commit, 'note': 'unchanged'})
+
+    db_reload(datadir)
+
     return jsonify({'result': 'OK', 'HEAD': head_commit})
 
 @route('/', subdomain='<subdomain>')
