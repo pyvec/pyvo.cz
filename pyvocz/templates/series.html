@@ -48,13 +48,18 @@
 
     {% if series.recurrence_rule %}
     <div id="future">
-        <h2>Budoucí termíny</h2>
+        <h2>{{ tr('Budoucí termíny', 'Future dates') }}</h2>
         <div>
             {{ tr(series.recurrence_description_cs, series.recurrence_description_en) }}
         </div>
         <div>
-            Předběžně to vypadá na následující termíny –
-            některé se ale můžou posunout, např. kvůli svátkům:
+            {% if g.lang_code == 'cs' %}
+                Předběžně to vypadá na následující termíny –
+                některé se ale můžou posunout, např. kvůli svátkům:
+            {% else %}
+                That means the following days are likely – but some
+                might be rescheduled, for example to avoid holidays.
+            {% endif %}
         </div>
         <ul>
             {% for occurence in series.next_occurrences(3) %}
