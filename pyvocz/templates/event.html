@@ -35,7 +35,7 @@
             {{ event.date.day }}.
             {{ event.date.month | monthname('genitive') | lower }}
             {{ event.date.year }}
-            v {{ event.start_time.hour }}:{{ event.start_time.minute }}.
+            v {{ event.start_time.strftime('%H:%M') }}.
         </div>
     {% else %}
         <div>
@@ -52,7 +52,7 @@
             the {{ event.date.day }}<sup>{{ event.date.day | th }}</sup>
             of {{ event.date.month | monthname }},
             {{ event.date.year }}
-            at {{ event.start_time.hour }}:{{ event.start_time.minute }}.
+            at {{ event.start_time.strftime('%H:%M') }}.
         </div>
     {% endif %}
     {% if event.venue %}
