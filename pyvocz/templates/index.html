@@ -94,8 +94,10 @@
                     <em class="title">{{ event | event_link }}</em>
                 </div>
                 <span>
-                    {{event.venue.name}}{% if event.venue.address %},
-                        {{event.venue.short_address}}
+                    {% if event.venue %}
+                        {{event.venue.name}}{% if event.venue.address %},
+                            {{event.venue.short_address}}
+                        {% endif %}
                     {% endif %}
                 </span>
             </div>
