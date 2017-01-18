@@ -32,6 +32,9 @@ Instructions:
 - Configure the Github hook for pyvec/pyvo-data to
   POST to pyvo.cz/api/reload_hook?password=YOUR_RANDOM_PASSWORD
 
+- If automated tweets of events are desired, set up pyvo-twitter according to
+  https://github.com/pyvec/pyvo-twitter.
+
 """
 
 import logging
