@@ -319,7 +319,6 @@ def subdomain_redirect(subdomain):
     return redirect(url_for('series', series_slug=subdomain))
 
 @route('/feedback')
-@route('/zpetnovazebnik')
 def feedback_form_redirect():
     feedback_form_url = (
         'https://docs.google.com/forms/d/e/'
