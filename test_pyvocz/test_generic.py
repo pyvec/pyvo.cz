@@ -74,7 +74,7 @@ def check_url(client, url, links_out=None, ids_out=None):
     if url == 'http://localhost/static/':
         return
     result = client.get(url)
-    assert result.status_code == 200
+    assert result.status_code in (200, 301, 302)
     tree = lxml.html.document_fromstring(result.data)
     if links_out is not None:
         for element, attribute, link, pos in tree.iterlinks():
