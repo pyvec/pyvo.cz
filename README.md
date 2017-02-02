@@ -37,7 +37,7 @@ For deployment configuration, see `app.py`.
 To test, you'll need some additional dependencies.
 From the source directory, do:
 
-    pip install -e.[test]
+    pip install -e ".[test]"
 
 Then, you can test with:
 
