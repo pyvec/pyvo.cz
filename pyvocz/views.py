@@ -325,3 +325,7 @@ def feedback_form_redirect():
         '1FAIpQLSdgnx9ljKYuC2FDWhCHDu8uHteN4uozHejbGfw2iEyt97q6fQ/viewform'
     )
     return redirect(feedback_form_url)
+
+@route('/zaloz')
+def zaloz_redirect():
+    return redirect('https://pyvec-guide.readthedocs.io/guides/meetup.html')
