@@ -324,6 +324,13 @@
         <h2>{{ tr('Kamarádi', 'Friends') }}</h2>
         <ul>
             <li>
+                {% if g.lang_code == 'cs' %}
+                    <a href="https://pycon.sk/">PyCon SK</a> – Slovenská konference and srazy
+                {% else %}
+                    <a href="https://pycon.sk/">PyCon SK</a> – Slovak Python User Group
+                {% endif %}
+            </li>
+            <li>
                 <a href="http://blog.pykonik.org/">Pykonik</a> –
                 {% if g.lang_code == 'cs' %}
                     Srazy Pythonistů z Krakówa
