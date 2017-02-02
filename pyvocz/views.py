@@ -287,6 +287,13 @@ def api_feed(feed_type):
     return feed_response(query, feed_type)
 
 
+@route('/api/series/<series_slug>.<feed_type>')
+def api_series_feed(series_slug, feed_type):
+    query = db.session.query(tables.Event)
+    query = query.filter(tables.Event.series_slug == series_slug)
+    return feed_response(query, feed_type)
+
+
 @route('/api/reload_hook', methods=['POST'])
 def reload_hook():
     # Some really lame password protection (against DoS)

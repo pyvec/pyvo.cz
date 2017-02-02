@@ -31,6 +31,19 @@
         </div>
     {% endif %}
 
+    <div class="row">
+        <div class="export-links col-lg-12">
+            {{ tr('Přidej si do {} kalendáře:'.format(series.name),
+                  'Add {} to your calendar:'.format(series.name)) }}
+            <ul>
+                <li><a href="{{ url_for('api_series_feed', series_slug=series.slug,
+                                        feed_type='ics') }}">iCal</a></li>
+                <li><a href="{{ url_for('api_series_feed', series_slug=series.slug,
+                                        feed_type='rss') }}">RSS</a></li>
+            </ul>
+        </div>
+    </div>
+
     <div id="featured-meetup">
         {% if event.date < today %}
              <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
