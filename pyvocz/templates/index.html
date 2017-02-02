@@ -119,8 +119,8 @@
                 <div class="export-links col-lg-12">
                     {{ tr('Přidej si pyvní kalendář:', 'Add the Pyvo calendar:') }}
                     <ul>
-                        <li><a href="{{ url_for('api_ics') }}">iCal</a></li>
-                        <li><a href="{{ url_for('api_rss') }}">RSS</a></li>
+                        <li><a href="{{ url_for('api_feed', feed_type='ics') }}">iCal</a></li>
+                        <li><a href="{{ url_for('api_feed', feed_type='rss') }}">RSS</a></li>
                     </ul>
                 </div>
             </div>

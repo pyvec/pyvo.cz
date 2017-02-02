@@ -210,10 +210,7 @@ def api_venue_geojson(venueslug):
         ]
     })
 
-
-@route('/api/pyvo.ics')
-def api_ics():
-    query = db.session.query(tables.Event)
+def make_ics(query, url):
     query = query.options(joinedload(tables.Event.city))
     query = query.options(joinedload(tables.Event.venue))
     calendar = ics.Calendar()
@@ -237,8 +234,7 @@ def api_ics():
         cal_event.geo = '{}:{}'.format(geo_obj.latitude,
                                        geo_obj.longitude)
         calendar.events.append(cal_event)
-    return Response(str(calendar), mimetype='text/calendar')
-
+    return calendar
 
 def make_feed(query, url):
     query = query.options(joinedload(tables.Event.city))
@@ -264,18 +260,32 @@ def make_feed(query, url):
     return fg
 
 
-@route('/api/pyvo.rss')
-def api_rss():
-    query = db.session.query(tables.Event)
-    feed = make_feed(query, request.url)
-    return Response(feed.rss_str(pretty=True), mimetype='application/rss+xml')
+def feed_response(query, feed_type):
+    MIMETYPES = {
+        'rss': 'application/rss+xml',
+        'atom': 'application/atom+xml',
+        'ics': 'text/calendar',
+    }
+    FEED_MAKERS = {
+        'rss': lambda: make_feed(query, request.url).rss_str(pretty=True),
+        'atom': lambda: make_feed(query, request.url).atom_str(pretty=True),
+        'ics': lambda: str(make_ics(query, request.url)),
+    }
+
+    try:
+        mimetype = MIMETYPES[feed_type]
+        maker = FEED_MAKERS[feed_type]
+    except KeyError:
+        abort(404)
+
+    return Response(maker(), mimetype=mimetype)
 
 
-@route('/api/pyvo.atom')
-def api_atom():
+@route('/api/pyvo.<feed_type>')
+def api_feed(feed_type):
     query = db.session.query(tables.Event)
-    feed = make_feed(query, request.url)
-    return Response(feed.atom_str(pretty=True), mimetype='application/atom+xml')
+    return feed_response(query, feed_type)
+
 
 @route('/api/reload_hook', methods=['POST'])
 def reload_hook():
