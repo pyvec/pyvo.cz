@@ -6,6 +6,15 @@ import lxml.html
 import requests
 
 
+IGNORED_URLS = (
+    'http://localhost/static/',
+    'http://localhost/calendar/2030/',
+    'http://localhost/calendar/2010/',
+    'http://localhost/en/calendar/2030/',
+    'http://localhost/en/calendar/2010/',
+)
+
+
 def test_homepage_ok(client):
     assert client.get('/').status_code == 200
 
@@ -71,8 +80,9 @@ def test_spider(client, app, check_external_links):
 
 
 def check_url(client, url, links_out=None, ids_out=None):
-    if url == 'http://localhost/static/':
+    if url in IGNORED_URLS:
         return
+
     result = client.get(url)
     assert result.status_code in (200, 301, 302)
     tree = lxml.html.document_fromstring(result.data)
