@@ -1,0 +1,58 @@
+{% extends "_base.html" %}
+{% from "_macros.html" import calendar_month %}
+
+{% block title %}
+    {% if g.lang_code == 'cs' %}
+        Pyvní kalendář {{year}}
+    {% else %}
+        Pyvo Calendar {{year}}
+    {% endif %}
+{% endblock title %}
+
+{% block bodycontent %}
+<div class="container">
+    <div id="header">
+        <h1>{{ tr('Pyvní kalendář', 'Pyvo Calendar') }} {{year}}</h1>
+    </div>
+
+    <div class="calendar" id="calendar">
+        <div class="calendar">
+            <div class="row">
+                {% for (year, month), weeks in calendar.items() %}
+                    <div class="col-md-4 col">
+                        {{ calendar_month(year, month, weeks, today=today) }}
+                    </div>
+                {% if month % 3 == 0 %}</div><div class="row">{% endif %}
+                {% endfor %}
+            </div>
+
+            <div>
+                <ul class="paginate">
+                    <li class="paginate-prev">
+                        <a href="{{ url_for('calendar', year=year-1) }}">&lt;</a>
+                    </li>
+                    {% for page in range(first_year, last_year+1) %}
+                        <li class="paginate-link {% if page==year %}current{% endif %}">
+                             <a href="{{ url_for('calendar', year=page) }}">{{ page }}</a>
+                        </li>
+                    {% endfor %}
+                    <li class="paginate-next">
+                        <a href="{{ url_for('calendar', year=year+1) }}">&gt;</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="export-links col-lg-12">
+                    {{ tr('Přidej si pyvní kalendář:', 'Add the Pyvo calendar:') }}
+                    <ul>
+                        <li><a href="{{ url_for('api_feed', feed_type='ics') }}">iCal</a></li>
+                        <li><a href="{{ url_for('api_feed', feed_type='rss') }}">RSS</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock bodycontent %}

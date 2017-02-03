@@ -106,6 +106,19 @@ def index():
                            today=today, videos=videos, calendar=calendar)
 
 
+@route('/calendar/')
+def calendar():
+    today = datetime.date.today()
+    start = today.replace(month=1, day=1)
+
+    calendar = get_calendar(db.session, first_year=today.year,
+                            series_slugs=FEATURED_SERIES,
+                            first_month=today.month - 1, num_months=12)
+
+    return render_template('calendar.html', today=today, calendar=calendar,
+                           year=start.year)
+
+
 @route('/<series_slug>/')
 def series(series_slug):
     if series_slug in BACKCOMPAT_SERIES_ALIASES:
@@ -163,7 +176,6 @@ def event(series_slug, date_slug):
     query = query.options(joinedload(tables.Event.talks))
     query = query.options(joinedload(tables.Event.venue))
     query = query.options(joinedload(tables.Event.talks, 'talk_speakers'))
-    query = query.options(joinedload(tables.Event.links))
     query = query.options(subqueryload(tables.Event.talks, 'talk_speakers', 'speaker'))
     query = query.options(subqueryload(tables.Event.talks, 'links'))
 
