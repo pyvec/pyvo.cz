@@ -1,4 +1,6 @@
 {% extends "_base.html" %}
+{% from "_macros.html" import calendar_month %}
+
 {% block title %}
     {% if g.lang_code == 'cs' %}
         Pyvo – Pravidelné programátorské srazy
@@ -111,7 +113,7 @@
             <div class="row">
                 {% for (year, month), weeks in calendar.items() %}
                     <div class="col-md-4 col">
-                        {% include "fragments/calendar.html" %}
+                        {{ calendar_month(year, month, weeks, today=today) }}
                     </div>
                 {% endfor %}
             </div>
