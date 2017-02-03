@@ -109,7 +109,11 @@
 
     <div class="calendar" id="calendar">
         <div class="calendar">
-            <h2>{{ tr('Kalendář', 'Calendar') }}</h2>
+            <h2>
+                <a href="{{ url_for('calendar') }}">
+                    {{ tr('Kalendář', 'Calendar') }}
+                </a>
+            </h2>
             <div class="row">
                 {% for (year, month), weeks in calendar.items() %}
                     <div class="col-md-4 col">
