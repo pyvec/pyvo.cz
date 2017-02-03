@@ -6,13 +6,17 @@ import lxml.html
 import requests
 
 
-IGNORED_URLS = (
+IGNORED_URLS = {
     'http://localhost/static/',
     'http://localhost/calendar/2030/',
     'http://localhost/calendar/2010/',
     'http://localhost/en/calendar/2030/',
     'http://localhost/en/calendar/2010/',
-)
+}
+
+IGNORED_MIMETYPE_EXTENSIONS = {
+    'image/vnd.microsoft.icon': 'ico',
+}
 
 
 def test_homepage_ok(client):
@@ -83,7 +87,12 @@ def check_url(client, url, links_out=None, ids_out=None):
     if url in IGNORED_URLS:
         return
 
+    base, dot, extension = url.rpartition('.')
+
     result = client.get(url)
+    if dot and extension == IGNORED_MIMETYPE_EXTENSIONS.get(result.mimetype):
+        return
+
     assert result.status_code in (200, 301, 302)
     tree = lxml.html.document_fromstring(result.data)
     if links_out is not None:
