@@ -106,6 +106,35 @@ def index():
                            today=today, videos=videos, calendar=calendar)
 
 
+def min_max_years(query):
+    year_col = func.extract('year', tables.Event.date)
+    query = query.with_entities(func.min(year_col), func.max(year_col))
+    first_year, last_year = query.one()
+    return first_year, last_year
+
+
+@route('/calendar/', defaults={'year': None})
+@route('/calendar/<int:year>/')
+def calendar(year=None):
+    today = datetime.date.today()
+    if year is None:
+        year = today.year
+    try:
+        start = datetime.datetime(year, 1, 1)
+    except ValueError:
+        abort(404)
+
+    calendar = get_calendar(db.session, first_year=start.year,
+                            series_slugs=FEATURED_SERIES,
+                            first_month=start.month, num_months=12)
+
+    first_year, last_year = min_max_years(db.session.query(tables.Event))
+
+    return render_template('calendar.html', today=today, calendar=calendar,
+                           year=year,
+                           first_year=first_year, last_year=last_year)
+
+
 @route('/<series_slug>/')
 def series(series_slug):
     if series_slug in BACKCOMPAT_SERIES_ALIASES:
@@ -163,7 +192,6 @@ def event(series_slug, date_slug):
     query = query.options(joinedload(tables.Event.talks))
     query = query.options(joinedload(tables.Event.venue))
     query = query.options(joinedload(tables.Event.talks, 'talk_speakers'))
-    query = query.options(joinedload(tables.Event.links))
     query = query.options(subqueryload(tables.Event.talks, 'talk_speakers', 'speaker'))
     query = query.options(subqueryload(tables.Event.talks, 'links'))
 
