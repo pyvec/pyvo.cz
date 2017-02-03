@@ -13,6 +13,7 @@ from flask import current_app as app
 from werkzeug.exceptions import abort
 from werkzeug.routing import Rule
 from jinja2.exceptions import TemplateNotFound
+from urllib.parse import  urlparse
 import ics
 
 from pyvodb import tables
@@ -163,6 +164,7 @@ def event(series_slug, date_slug):
     query = query.options(joinedload(tables.Event.talks))
     query = query.options(joinedload(tables.Event.venue))
     query = query.options(joinedload(tables.Event.talks, 'talk_speakers'))
+    query = query.options(joinedload(tables.Event.links))
     query = query.options(subqueryload(tables.Event.talks, 'talk_speakers', 'speaker'))
     query = query.options(subqueryload(tables.Event.talks, 'links'))
 
@@ -176,7 +178,7 @@ def event(series_slug, date_slug):
         return redirect(url_for('event', series_slug=series_slug,
                                 date_slug=proper_date_slug))
 
-    return render_template('event.html', event=event, today=today)
+    return render_template('event.html', event=event, today=today, urlparse=urlparse)
 
 
 @route('/code-of-conduct/')
