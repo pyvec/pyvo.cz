@@ -131,7 +131,7 @@
             {{ tr('Jinde na webu:', 'Elsewhere on the web:') }}
             {% for link in event.links|sort(attribute='index') %}
                 <a href="{{ link.url }}">{{ urlparse(link.url).netloc }}</a>
-                {%- if loop.index < event.links|length -%}
+                {%- if not loop.last -%}
                     ,
                 {% else -%}
                     .
