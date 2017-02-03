@@ -16,6 +16,7 @@ IGNORED_URLS = {
 
 IGNORED_MIMETYPE_EXTENSIONS = {
     'image/vnd.microsoft.icon': 'ico',
+    'image/x-icon': 'ico',
 }
 
 
