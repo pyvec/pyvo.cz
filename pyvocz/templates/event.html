@@ -72,7 +72,7 @@
         <div>
             {{ tr('Jinde na webu:', 'Elsewhere on the web:') }}
             {% for link in event.links|sort(attribute='index') %}
-                <a href="{{ link.url }}">{{ urlparse(link.url).netloc | remove_www }}</a>
+                <a href="{{ link.url }}">{{ link.url | get_site_name }}</a>
                 {%- if not loop.last -%}
                     ,
                 {% else -%}
