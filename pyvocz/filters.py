@@ -8,7 +8,7 @@ import textwrap
 
 __all__ = ('mail_link', 'nl2br', 'monthname', 'shortdayname', 'shortmonth',
            'shortday', 'longdate', 'dayname', 'th', 'event_url', 'event_link',
-           'markdown')
+           'markdown', 'remove_www')
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
@@ -127,3 +127,6 @@ def markdown(text):
     text = textwrap.dedent(text)
     result = Markup(convert_markdown(text))
     return result
+
+def remove_www(link):
+    return re.sub(r'^www.', '', link)
