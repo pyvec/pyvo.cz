@@ -163,6 +163,7 @@ def event(series_slug, date_slug):
     query = query.options(joinedload(tables.Event.talks))
     query = query.options(joinedload(tables.Event.venue))
     query = query.options(joinedload(tables.Event.talks, 'talk_speakers'))
+    query = query.options(joinedload(tables.Event.links))
     query = query.options(subqueryload(tables.Event.talks, 'talk_speakers', 'speaker'))
     query = query.options(subqueryload(tables.Event.talks, 'links'))
 

@@ -4,11 +4,12 @@ from flask import g, url_for
 from jinja2 import escape
 from markupsafe import Markup
 from markdown import markdown as convert_markdown
+from urllib.parse import urlparse
 import textwrap
 
 __all__ = ('mail_link', 'nl2br', 'monthname', 'shortdayname', 'shortmonth',
            'shortday', 'longdate', 'dayname', 'th', 'event_url', 'event_link',
-           'markdown')
+           'markdown', 'get_site_name')
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
@@ -127,3 +128,7 @@ def markdown(text):
     text = textwrap.dedent(text)
     result = Markup(convert_markdown(text))
     return result
+
+def get_site_name(link):
+    base_url = urlparse(link).netloc
+    return re.sub(r'^www.', '', base_url)
