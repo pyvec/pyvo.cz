@@ -106,17 +106,33 @@ def index():
                            today=today, videos=videos, calendar=calendar)
 
 
-@route('/calendar/')
-def calendar():
-    today = datetime.date.today()
-    start = today.replace(month=1, day=1)
+def min_max_years(query):
+    year_col = func.extract('year', tables.Event.date)
+    query = query.with_entities(func.min(year_col), func.max(year_col))
+    first_year, last_year = query.one()
+    return first_year, last_year
 
-    calendar = get_calendar(db.session, first_year=today.year,
+
+@route('/calendar/', defaults={'year': None})
+@route('/calendar/<int:year>/')
+def calendar(year=None):
+    today = datetime.date.today()
+    if year is None:
+        year = today.year
+    try:
+        start = datetime.datetime(year, 1, 1)
+    except ValueError:
+        abort(404)
+
+    calendar = get_calendar(db.session, first_year=start.year,
                             series_slugs=FEATURED_SERIES,
-                            first_month=today.month - 1, num_months=12)
+                            first_month=start.month, num_months=12)
+
+    first_year, last_year = min_max_years(db.session.query(tables.Event))
 
     return render_template('calendar.html', today=today, calendar=calendar,
-                           year=start.year)
+                           year=year,
+                           first_year=first_year, last_year=last_year)
 
 
 @route('/<series_slug>/')
