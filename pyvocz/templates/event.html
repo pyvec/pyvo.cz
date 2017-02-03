@@ -68,6 +68,20 @@
         </div>
     {% endif %}
 
+    {% if event.links %}
+        <div>
+            {{ tr('Jinde na webu:', 'Elsewhere on the web:') }}
+            {% for link in event.links|sort(attribute='index') %}
+                <a href="{{ link.url }}">{{ urlparse(link.url).netloc }}</a>
+                {%- if not loop.last -%}
+                    ,
+                {% else -%}
+                    .
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% if event.talks %}
         <div id="talks">
         <h2>{{ tr('Přednášky', 'Talks') }}</h2>
@@ -123,20 +137,6 @@
             {{ tr('Další mapy:', 'Other maps:') }}
             <a href="http://mapy.cz/zakladni?q={{event.venue.name}}, {{ event.venue.latitude }}N+{{ event.venue.longitude }}E ">mapy.cz</a>,
             <a href="http://www.google.com/maps/place/{{ event.venue.latitude }},{{ event.venue.longitude }} ">Google Maps</a>.
-        </div>
-    {% endif %}
-
-    {% if event.links %}
-        <div>
-            {{ tr('Jinde na webu:', 'Elsewhere on the web:') }}
-            {% for link in event.links|sort(attribute='index') %}
-                <a href="{{ link.url }}">{{ urlparse(link.url).netloc }}</a>
-                {%- if not loop.last -%}
-                    ,
-                {% else -%}
-                    .
-                {% endif %}
-            {% endfor %}
         </div>
     {% endif %}
 </div>
