@@ -16,7 +16,7 @@ Markdown==2.6.7
 MarkupSafe==0.23
 python-dateutil==2.5.3
 pytz==2016.4
-pyvodb==0.3.3
+pyvodb==0.3.4
 PyYAML==3.12
 requests==2.11.1
 six==1.10.0
