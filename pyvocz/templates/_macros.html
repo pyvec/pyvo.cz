@@ -44,7 +44,8 @@
                             >
                                 {% if day['events'] %}
                                     {% set event = day['events'][0] %}
-                                    <a href="{{ url_for('series', series_slug=event.series.slug) }}">
+                                    <a href="{{ url_for('event', series_slug=event.series.slug,
+                                                        date_slug=event.slug) }}">
                                         <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}"
                                             width="20"
                                             alt="{{day['day'] | shortday}} – {{ event.title }}"
