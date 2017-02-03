@@ -240,10 +240,15 @@ def api_venue_geojson(venueslug):
         ]
     })
 
-def make_ics(query, url):
+def make_ics(query, url, *, recurrence_series=()):
+    today = datetime.date.today()
+
     query = query.options(joinedload(tables.Event.city))
     query = query.options(joinedload(tables.Event.venue))
     calendar = ics.Calendar()
+
+    last_series_date = {}
+
     for event in query:
         if event.venue:
             location = '{}, {}, {}'.format(
@@ -264,6 +269,27 @@ def make_ics(query, url):
         cal_event.geo = '{}:{}'.format(geo_obj.latitude,
                                        geo_obj.longitude)
         calendar.events.append(cal_event)
+
+        if (event.series in last_series_date
+                and last_series_date[event.series] < event.date):
+            last_series_date[event.series] = event.date
+
+    for series in recurrence_series:
+        since = last_series_date.get(series, today)
+        since += datetime.timedelta(days=1)
+
+        # XXX: We should use the Series recurrence rule directly,
+        # but ics doesn't allow that yet:
+        # https://github.com/C4ptainCrunch/ics.py/issues/14
+        # Just show the 6 next events.
+        for occurence in series.next_occurrences(n=6, since=since):
+            cal_event = ics.Event(
+                name='({}?)'.format(series.name),
+                begin=occurence,
+                uid='{}-{}@pyvo.cz'.format(series.slug, occurence.date()),
+            )
+            calendar.events.append(cal_event)
+
     return calendar
 
 def make_feed(query, url):
@@ -290,7 +316,7 @@ def make_feed(query, url):
     return fg
 
 
-def feed_response(query, feed_type):
+def feed_response(query, feed_type, *, recurrence_series=()):
     MIMETYPES = {
         'rss': 'application/rss+xml',
         'atom': 'application/atom+xml',
@@ -299,7 +325,8 @@ def feed_response(query, feed_type):
     FEED_MAKERS = {
         'rss': lambda: make_feed(query, request.url).rss_str(pretty=True),
         'atom': lambda: make_feed(query, request.url).atom_str(pretty=True),
-        'ics': lambda: str(make_ics(query, request.url)),
+        'ics': lambda: str(make_ics(query, request.url,
+                                    recurrence_series=recurrence_series)),
     }
 
     try:
@@ -313,15 +340,19 @@ def feed_response(query, feed_type):
 
 @route('/api/pyvo.<feed_type>')
 def api_feed(feed_type):
+    series = db.session.query(tables.Series).all()
+
     query = db.session.query(tables.Event)
-    return feed_response(query, feed_type)
+    return feed_response(query, feed_type, recurrence_series=series)
 
 
 @route('/api/series/<series_slug>.<feed_type>')
 def api_series_feed(series_slug, feed_type):
+    series = db.session.query(tables.Series).get(series_slug)
+
     query = db.session.query(tables.Event)
-    query = query.filter(tables.Event.series_slug == series_slug)
-    return feed_response(query, feed_type)
+    query = query.filter(tables.Event.series == series)
+    return feed_response(query, feed_type, recurrence_series=[series])
 
 
 @route('/api/reload_hook', methods=['POST'])
