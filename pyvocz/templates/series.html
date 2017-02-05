@@ -44,6 +44,7 @@
         </div>
     </div>
 
+    {% if year==None %}
         <div id="featured-meetup">
             {% if event.date < today %}
                  <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
@@ -55,8 +56,6 @@
 
             {% set is_header_event = True %}
             {% include "fragments/event.html" %}
-            {% set is_header_event = False %}
-
         </div>
 
         {% if series.recurrence_rule %}
@@ -109,16 +108,20 @@
             </ul>
         </div>
         {% endif %}
+    {% endif %}
 
     <div class="event-list">
         <h2>{{ tr('Historie srazů', 'Meetup History') }}</h2>
+        {% include "fragments/series-pagination.html" %}
         <ul>
-            {% for event in series.events[1:] %}
+            {% for event in series.events[1 if year==None else 0:] %}
                 <li>
+                    {% set is_header_event = False %}
                     {% include "fragments/event.html" %}
                 </li>
             {% endfor %}
         </ul>
+        {% include "fragments/series-pagination.html" %}
     </div>
 </div>
 {% endblock bodycontent %}
