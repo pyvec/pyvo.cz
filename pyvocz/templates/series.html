@@ -19,17 +19,17 @@
         </div>
     </div>
 
-    {% set event = series.events[0] %}
+        {% set event = series.events[0] %}
 
-    {% if event.venue %}
-        <div id="map" style="height: 350px"
-            data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
-            data-zoom="14"
-            data-lat="{{event.venue.latitude}}"
-            data-lng="{{event.venue.longitude}}"
-        >
-        </div>
-    {% endif %}
+        {% if event.venue %}
+            <div id="map" style="height: 350px"
+                data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+                data-zoom="14"
+                data-lat="{{event.venue.latitude}}"
+                data-lng="{{event.venue.longitude}}"
+            >
+            </div>
+        {% endif %}
 
     <div class="row">
         <div class="export-links col-lg-12">
@@ -46,16 +46,16 @@
 
     {% if year==None %}
         <div id="featured-meetup">
-            {% if event.date < today %}
-                 <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
-            {% elif event.date > today %}
-                 <h2>{{ tr('Nadcházející sraz', 'Next Meetup') }}</h2>
-            {% else %}
-                 <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
-            {% endif %}
+                {% if event.date < today %}
+                     <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
+                {% elif event.date > today %}
+                     <h2>{{ tr('Nadcházející sraz', 'Next Meetup') }}</h2>
+                {% else %}
+                     <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
+                {% endif %}
 
-            {% set is_header_event = True %}
-            {% include "fragments/event.html" %}
+                {% set is_header_event = True %}
+                {% include "fragments/event.html" %}
         </div>
 
         {% if series.recurrence_rule %}
@@ -112,16 +112,40 @@
 
     <div class="event-list">
         <h2>{{ tr('Historie srazů', 'Meetup History') }}</h2>
-        {% include "fragments/series-pagination.html" %}
+        {% macro pagination() %}
+            <div>
+                <ul class="paginate">
+                    <li class="paginate-prev">
+                        <a {% if year==None %}class="disabled"{% endif %}
+                           href="{{ url_for('series', series_slug=series_slug,
+                                            year=None if year==None or year>=last_year else year+1) }}">&lt;</a>
+                    </li>
+                    <li class="paginate-link {% if year==None %}current{% endif %}">
+                         <a href="{{ url_for('series', series_slug=series_slug, year=None) }}">{{ tr("Nové", "New") }}</a>
+                    </li>
+                    {% for page in range(last_year, first_year-1, -1) %}
+                        <li class="paginate-link {% if page==year %}current{% endif %}">
+                             <a href="{{ url_for('series', series_slug=series_slug, year=page) }}">{{ page }}</a>
+                        </li>
+                    {% endfor %}
+                    <li class="paginate-next">
+                        <a {% if year!=None and year<=first_year %}class="disabled"{% endif %}
+                           href="{{ url_for('series', series_slug=series_slug,
+                                            year=last_year if year==None else year-1) }}">&gt;</a>
+                    </li>
+                </ul>
+            </div>
+        {% endmacro %}
+        {{ pagination() }}
         <ul>
-            {% for event in series.events[1 if year==None else 0:] %}
-                <li>
-                    {% set is_header_event = False %}
-                    {% include "fragments/event.html" %}
-                </li>
-            {% endfor %}
+                {% for event in series.events[1 if year==None else 0:] %}
+                    <li>
+                        {% set is_header_event = False %}
+                        {% include "fragments/event.html" %}
+                    </li>
+                {% endfor %}
         </ul>
-        {% include "fragments/series-pagination.html" %}
+        {{ pagination() }}
     </div>
 </div>
 {% endblock bodycontent %}
