@@ -135,9 +135,10 @@ def calendar(year=None):
                            first_year=first_year, last_year=last_year)
 
 
-@route('/<series_slug>/', defaults={'year': None})
+@route('/<series_slug>/')
 @route('/<series_slug>/<int:year>/')
-def series(series_slug, year=None):
+@route('/<series_slug>/<any(all):all>/')
+def series(series_slug, year=None, all=None):
     if series_slug in BACKCOMPAT_SERIES_ALIASES:
         url = url_for('series',
                       series_slug=BACKCOMPAT_SERIES_ALIASES[series_slug])
@@ -156,6 +157,22 @@ def series(series_slug, year=None):
         if year < first_year:
             year = first_year
 
+    if all is not None:
+        paginate_prev = {'year': first_year}
+        paginate_next = {'all': 'all'}
+    elif year is None:
+        paginate_prev = {'year': None}
+        paginate_next = {'year': last_year}
+    elif year >= last_year:
+        paginate_prev = {'year': None}
+        paginate_next = {'year': year - 1}
+    elif year <= first_year:
+        paginate_prev = {'year': year + 1}
+        paginate_next = {'all': 'all'}
+    else:
+        paginate_prev = {'year': year + 1}
+        paginate_next = {'year': year - 1}
+
     query = db.session.query(tables.Series)
     query = query.filter(tables.Series.slug == series_slug)
     query = query.join(tables.Series.events)
@@ -167,12 +184,13 @@ def series(series_slug, year=None):
     query = query.options(subqueryload(tables.Series.events, 'talks', 'links'))
     query = query.order_by(tables.Event.date.desc())
 
-    if year is None:
-        # The 'New' page displays the current year as well as the last one
-        query = query.filter(tables.Event.date >= datetime.date(today.year - 1, 1, 1))
-    else:
-        query = query.filter(tables.Event.date >= datetime.date(year, 1, 1))
-        query = query.filter(tables.Event.date < datetime.date(year + 1, 1, 1))
+    if not all:
+        if year is None:
+            # The 'New' page displays the current year as well as the last one
+            query = query.filter(tables.Event.date >= datetime.date(today.year - 1, 1, 1))
+        else:
+            query = query.filter(tables.Event.date >= datetime.date(year, 1, 1))
+            query = query.filter(tables.Event.date < datetime.date(year + 1, 1, 1))
 
     try:
         series = query.one()
@@ -181,8 +199,10 @@ def series(series_slug, year=None):
 
     organizer_info = json.loads(series.organizer_info)
     return render_template('series.html', series=series, today=today, year=year,
-                           organizer_info=organizer_info, first_year=first_year,
-                           last_year=last_year, series_slug=series_slug)
+                           organizer_info=organizer_info, all=all,
+                           first_year=first_year, last_year=last_year,
+                           paginate_prev=paginate_prev,
+                           paginate_next=paginate_next)
 
 
 @route('/<series_slug>/<date_slug>/')

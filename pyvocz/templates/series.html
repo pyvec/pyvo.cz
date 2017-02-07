@@ -19,6 +19,7 @@
         </div>
     </div>
 
+    {% if series.events %}
         {% set event = series.events[0] %}
 
         {% if event.venue %}
@@ -30,6 +31,7 @@
             >
             </div>
         {% endif %}
+    {% endif %}
 
     <div class="row">
         <div class="export-links col-lg-12">
@@ -46,6 +48,7 @@
 
     {% if year==None %}
         <div id="featured-meetup">
+            {% if series.events %}
                 {% if event.date < today %}
                      <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
                 {% elif event.date > today %}
@@ -56,6 +59,7 @@
 
                 {% set is_header_event = True %}
                 {% include "fragments/event.html" %}
+            {% endif %}
         </div>
 
         {% if series.recurrence_rule %}
@@ -116,34 +120,39 @@
             <div>
                 <ul class="paginate">
                     <li class="paginate-prev">
-                        <a {% if year==None %}class="disabled"{% endif %}
-                           href="{{ url_for('series', series_slug=series_slug,
-                                            year=None if year==None or year>=last_year else year+1) }}">&lt;</a>
+                        <a {% if year==None and all==None %}class="disabled"{% endif %}
+                           href="{{ url_for('series', series_slug=series.slug, **paginate_prev) }}">&lt;</a>
                     </li>
-                    <li class="paginate-link {% if year==None %}current{% endif %}">
-                         <a href="{{ url_for('series', series_slug=series_slug, year=None) }}">{{ tr("Nové", "New") }}</a>
+                    <li class="paginate-link {% if year==None and all==None %}current{% endif %}">
+                         <a href="{{ url_for('series', series_slug=series.slug, year=None) }}">{{ tr("Nové", "New") }}</a>
                     </li>
                     {% for page in range(last_year, first_year-1, -1) %}
                         <li class="paginate-link {% if page==year %}current{% endif %}">
-                             <a href="{{ url_for('series', series_slug=series_slug, year=page) }}">{{ page }}</a>
+                             <a href="{{ url_for('series', series_slug=series.slug, year=page) }}">{{ page }}</a>
                         </li>
                     {% endfor %}
+                    <li class="paginate-link {% if all!=None %}current{% endif %}">
+                         <a href="{{ url_for('series', series_slug=series.slug, year=None, all='all') }}">{{ tr("Vše", "All") }}</a>
+                    </li>
                     <li class="paginate-next">
-                        <a {% if year!=None and year<=first_year %}class="disabled"{% endif %}
-                           href="{{ url_for('series', series_slug=series_slug,
-                                            year=last_year if year==None else year-1) }}">&gt;</a>
+                        <a {% if all!=None %}class="disabled"{% endif %}
+                           href="{{ url_for('series', series_slug=series.slug, **paginate_next) }}">&gt;</a>
                     </li>
                 </ul>
             </div>
         {% endmacro %}
         {{ pagination() }}
         <ul>
+            {% if series.events %}
                 {% for event in series.events[1 if year==None else 0:] %}
                     <li>
                         {% set is_header_event = False %}
                         {% include "fragments/event.html" %}
                     </li>
                 {% endfor %}
+            {% else %}
+                {{ tr("Žádné vyhovující srazy nenalezeny.", "No fitting events found.") }}
+            {% endif %}
         </ul>
         {{ pagination() }}
     </div>
