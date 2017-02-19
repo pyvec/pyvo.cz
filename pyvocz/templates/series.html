@@ -126,7 +126,7 @@
                     <li class="paginate-link {% if year==None and all==None %}current{% endif %}">
                          <a href="{{ url_for('series', series_slug=series.slug, year=None) }}">{{ tr("Nové", "New") }}</a>
                     </li>
-                    {% for page in range(last_year, first_year-1, -1) %}
+                    {% for page in all_years|reverse %}
                         <li class="paginate-link {% if page==year %}current{% endif %}">
                              <a href="{{ url_for('series', series_slug=series.slug, year=page) }}">{{ page }}</a>
                         </li>

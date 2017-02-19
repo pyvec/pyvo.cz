@@ -112,6 +112,14 @@ def min_max_years(query):
     first_year, last_year = query.one()
     return first_year, last_year
 
+def years_with_events(series_slug):
+    query = db.session.query(tables.Event)
+    query = query.filter(tables.Event.series_slug == series_slug)
+    year_col = func.extract('year', tables.Event.date)
+    query = query.with_entities(year_col)
+    query = query.order_by(year_col)
+    return [x[0] for x in query.distinct()]
+
 
 @route('/calendar/', defaults={'year': None})
 @route('/calendar/<int:year>/')
@@ -146,11 +154,14 @@ def series(series_slug, year=None, all=None):
 
     today = datetime.date.today()
 
-    first_year, last_year = min_max_years(db.session.query(tables.Event)
-            .filter(tables.Event.series_slug == series_slug))
-    if last_year == today.year:
+    # If there are no years with events, put the current year there at least
+    all_years = years_with_events(series_slug) or [today.year]
+    first_year, last_year = min(all_years), max(all_years)
+
+    if last_year == today.year and len(all_years) > 1:
         # The current year is displayed on the 'New' page (year=None)
-        last_year -= 1
+        all_years.remove(last_year)
+        last_year = max(all_years)
 
     if year is not None:
         if year > last_year:
@@ -164,15 +175,16 @@ def series(series_slug, year=None, all=None):
     elif year is None:
         paginate_prev = {'year': None}
         paginate_next = {'year': last_year}
-    elif year >= last_year:
-        paginate_prev = {'year': None}
-        paginate_next = {'year': year - 1}
-    elif year <= first_year:
-        paginate_prev = {'year': year + 1}
-        paginate_next = {'all': 'all'}
     else:
-        paginate_prev = {'year': year + 1}
-        paginate_next = {'year': year - 1}
+        if year >= last_year:
+            paginate_prev = {'year': None}
+        else:
+            paginate_prev = {'year': all_years[all_years.index(year) + 1]}
+
+        if year <= first_year:
+            paginate_next = {'all': 'all'}
+        else:
+            paginate_next = {'year': all_years[all_years.index(year) - 1]}
 
     query = db.session.query(tables.Series)
     query = query.filter(tables.Series.slug == series_slug)
@@ -214,7 +226,7 @@ def series(series_slug, year=None, all=None):
     return render_template('series.html', series=series, today=today, year=year,
                            organizer_info=organizer_info, all=all,
                            first_year=first_year, last_year=last_year,
-                           paginate_prev=paginate_prev,
+                           all_years=all_years, paginate_prev=paginate_prev,
                            paginate_next=paginate_next, has_events=has_events)
 
 
