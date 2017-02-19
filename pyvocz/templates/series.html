@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    {% if series.events %}
+    {% if has_events %}
         {% set event = series.events[0] %}
 
         {% if event.venue %}
@@ -48,7 +48,7 @@
 
     {% if year==None %}
         <div id="featured-meetup">
-            {% if series.events %}
+            {% if has_events %}
                 {% if event.date < today %}
                      <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
                 {% elif event.date > today %}
@@ -143,7 +143,7 @@
         {% endmacro %}
         {{ pagination() }}
         <ul>
-            {% if series.events %}
+            {% if has_events %}
                 {% for event in series.events[1 if year==None else 0:] %}
                     <li>
                         {% set is_header_event = False %}

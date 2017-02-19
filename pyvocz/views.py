@@ -146,7 +146,8 @@ def series(series_slug, year=None, all=None):
 
     today = datetime.date.today()
 
-    first_year, last_year = min_max_years(db.session.query(tables.Event))
+    first_year, last_year = min_max_years(db.session.query(tables.Event)
+            .filter(tables.Event.series_slug == series_slug))
     if last_year == today.year:
         # The current year is displayed on the 'New' page (year=None)
         last_year -= 1
@@ -154,7 +155,7 @@ def series(series_slug, year=None, all=None):
     if year is not None:
         if year > last_year:
             year = None
-        if year < first_year:
+        elif year < first_year:
             year = first_year
 
     if all is not None:
@@ -194,15 +195,27 @@ def series(series_slug, year=None, all=None):
 
     try:
         series = query.one()
+        has_events = True
     except NoResultFound:
-        abort(404)
+        has_events = False
+
+        # The series has no events during the selected timeframe so at least
+        # load general information on the series so we can properly display
+        # the heading.
+        query = db.session.query(tables.Series)
+        query = query.filter(tables.Series.slug == series_slug)
+        try:
+            series = query.one()
+        except NoResultFound:
+            abort(404)
+
 
     organizer_info = json.loads(series.organizer_info)
     return render_template('series.html', series=series, today=today, year=year,
                            organizer_info=organizer_info, all=all,
                            first_year=first_year, last_year=last_year,
                            paginate_prev=paginate_prev,
-                           paginate_next=paginate_next)
+                           paginate_next=paginate_next, has_events=has_events)
 
 
 @route('/<series_slug>/<date_slug>/')
