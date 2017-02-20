@@ -236,6 +236,11 @@ ul.paginate > li a {
     text-decoration: none;
 }
 
+ul.paginate > li a.disabled {
+    color: #999;
+    pointer-events: none;
+}
+
 
 /******************** Homepage events ********************/
 

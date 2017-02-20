@@ -5,7 +5,7 @@ import time
 import re
 
 from sqlalchemy import func, and_, or_, desc, extract
-from sqlalchemy.orm import joinedload, subqueryload
+from sqlalchemy.orm import joinedload, subqueryload, contains_eager
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from flask import request, Response, url_for, redirect
 from flask import render_template, jsonify
@@ -112,6 +112,14 @@ def min_max_years(query):
     first_year, last_year = query.one()
     return first_year, last_year
 
+def years_with_events(series_slug):
+    query = db.session.query(tables.Event)
+    query = query.filter(tables.Event.series_slug == series_slug)
+    year_col = func.extract('year', tables.Event.date)
+    query = query.with_entities(year_col)
+    query = query.order_by(year_col)
+    return [x[0] for x in query.distinct()]
+
 
 @route('/calendar/', defaults={'year': None})
 @route('/calendar/<int:year>/')
@@ -136,7 +144,9 @@ def calendar(year=None):
 
 
 @route('/<series_slug>/')
-def series(series_slug):
+@route('/<series_slug>/<int:year>/')
+@route('/<series_slug>/<any(all):all>/')
+def series(series_slug, year=None, all=None):
     if series_slug in BACKCOMPAT_SERIES_ALIASES:
         url = url_for('series',
                       series_slug=BACKCOMPAT_SERIES_ALIASES[series_slug])
@@ -144,22 +154,80 @@ def series(series_slug):
 
     today = datetime.date.today()
 
+    # If there are no years with events, put the current year there at least
+    all_years = years_with_events(series_slug) or [today.year]
+    first_year, last_year = min(all_years), max(all_years)
+
+    if last_year == today.year and len(all_years) > 1:
+        # The current year is displayed on the 'New' page (year=None)
+        all_years.remove(last_year)
+        last_year = max(all_years)
+
+    if year is not None:
+        if year > last_year:
+            year = None
+        elif year < first_year:
+            year = first_year
+
+    if all is not None:
+        paginate_prev = {'year': first_year}
+        paginate_next = {'all': 'all'}
+    elif year is None:
+        paginate_prev = {'year': None}
+        paginate_next = {'year': last_year}
+    else:
+        if year >= last_year:
+            paginate_prev = {'year': None}
+        else:
+            paginate_prev = {'year': all_years[all_years.index(year) + 1]}
+
+        if year <= first_year:
+            paginate_next = {'all': 'all'}
+        else:
+            paginate_next = {'year': all_years[all_years.index(year) - 1]}
+
     query = db.session.query(tables.Series)
     query = query.filter(tables.Series.slug == series_slug)
+    query = query.join(tables.Series.events)
+    query = query.options(contains_eager(tables.Series.events))
     query = query.options(joinedload(tables.Series.events, 'talks'))
-    query = query.options(joinedload(tables.Series.events))
     query = query.options(joinedload(tables.Series.events, 'venue'))
     query = query.options(joinedload(tables.Series.events, 'talks', 'talk_speakers'))
     query = query.options(subqueryload(tables.Series.events, 'talks', 'talk_speakers', 'speaker'))
     query = query.options(subqueryload(tables.Series.events, 'talks', 'links'))
+    query = query.order_by(tables.Event.date.desc())
+
+    if not all:
+        if year is None:
+            # The 'New' page displays the current year as well as the last one
+            query = query.filter(tables.Event.date >= datetime.date(today.year - 1, 1, 1))
+        else:
+            query = query.filter(tables.Event.date >= datetime.date(year, 1, 1))
+            query = query.filter(tables.Event.date < datetime.date(year + 1, 1, 1))
+
     try:
         series = query.one()
+        has_events = True
     except NoResultFound:
-        abort(404)
+        has_events = False
+
+        # The series has no events during the selected timeframe so at least
+        # load general information on the series so we can properly display
+        # the heading.
+        query = db.session.query(tables.Series)
+        query = query.filter(tables.Series.slug == series_slug)
+        try:
+            series = query.one()
+        except NoResultFound:
+            abort(404)
+
 
     organizer_info = json.loads(series.organizer_info)
-    return render_template('series.html', series=series, today=today,
-                           organizer_info=organizer_info)
+    return render_template('series.html', series=series, today=today, year=year,
+                           organizer_info=organizer_info, all=all,
+                           first_year=first_year, last_year=last_year,
+                           all_years=all_years, paginate_prev=paginate_prev,
+                           paginate_next=paginate_next, has_events=has_events)
 
 
 @route('/<series_slug>/<date_slug>/')

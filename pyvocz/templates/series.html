@@ -19,16 +19,18 @@
         </div>
     </div>
 
-    {% set event = series.events[0] %}
+    {% if has_events %}
+        {% set event = series.events[0] %}
 
-    {% if event.venue %}
-        <div id="map" style="height: 350px"
-            data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
-            data-zoom="14"
-            data-lat="{{event.venue.latitude}}"
-            data-lng="{{event.venue.longitude}}"
-        >
-        </div>
+        {% if event.venue %}
+            <div id="map" style="height: 350px"
+                data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+                data-zoom="14"
+                data-lat="{{event.venue.latitude}}"
+                data-lng="{{event.venue.longitude}}"
+            >
+            </div>
+        {% endif %}
     {% endif %}
 
     <div class="row">
@@ -44,81 +46,115 @@
         </div>
     </div>
 
-    <div id="featured-meetup">
-        {% if event.date < today %}
-             <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
-        {% elif event.date > today %}
-             <h2>{{ tr('Nadcházející sraz', 'Next Meetup') }}</h2>
-        {% else %}
-             <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
-        {% endif %}
+    {% if year==None %}
+        <div id="featured-meetup">
+            {% if has_events %}
+                {% if event.date < today %}
+                     <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
+                {% elif event.date > today %}
+                     <h2>{{ tr('Nadcházející sraz', 'Next Meetup') }}</h2>
+                {% else %}
+                     <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
+                {% endif %}
 
-        {% set is_header_event = True %}
-        {% include "fragments/event.html" %}
-        {% set is_header_event = False %}
-
-    </div>
-
-    {% if series.recurrence_rule %}
-    <div id="future">
-        <h2>{{ tr('Budoucí termíny', 'Future dates') }}</h2>
-        <div>
-            {{ tr(series.recurrence_description_cs, series.recurrence_description_en) }}
-        </div>
-        <div>
-            {% if g.lang_code == 'cs' %}
-                Předběžně to vypadá na následující termíny –
-                některé se ale můžou posunout, např. kvůli svátkům:
-            {% else %}
-                That means the following days are likely – but some
-                might be rescheduled, for example to avoid holidays.
+                {% set is_header_event = True %}
+                {% include "fragments/event.html" %}
             {% endif %}
         </div>
-        <ul>
-            {% for occurence in series.next_occurrences(3) %}
-                <li>{{ occurence | longdate }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
 
-    {% if organizer_info %}
-    <div id="organizer-contacts">
-        <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>
-        <ul id="contacts" class="contacts">
-            {% for organizer in organizer_info %}
-                <li>
-                    <em>{{ organizer.name }}</em>
-                    <dl>
-                    {% for type, value in organizer.items() | sort %}
-                        {% if type == 'name' %}
-                        {% elif type == 'phone' %}
-                            <dt>{{ tr('Telefon', 'Phone') }}</dt><dd>{{ value }}</dd>
-                        {% elif type == 'mail' %}
-                            <dt>E-mail</dt><dd>{{ value | mail_link }}</dd>
-                        {% elif type == 'web' %}
-                            <dt>Web</dt><dd><a href="{{ value }}">{{ value }}</a></dd>
-                        {% else %}
-                            {# XXX: raise #}
-                            <dt>?</dt>
-                        {% endif %}
-                    {% endfor %}
-                    </dl>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+        {% if series.recurrence_rule %}
+        <div id="future">
+            <h2>{{ tr('Budoucí termíny', 'Future dates') }}</h2>
+            <div>
+                {{ tr(series.recurrence_description_cs, series.recurrence_description_en) }}
+            </div>
+            <div>
+                {% if g.lang_code == 'cs' %}
+                    Předběžně to vypadá na následující termíny –
+                    některé se ale můžou posunout, např. kvůli svátkům:
+                {% else %}
+                    That means the following days are likely – but some
+                    might be rescheduled, for example to avoid holidays.
+                {% endif %}
+            </div>
+            <ul>
+                {% for occurence in series.next_occurrences(3) %}
+                    <li>{{ occurence | longdate }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if organizer_info %}
+        <div id="organizer-contacts">
+            <h2>{{ tr('Kontakt na organizátory', 'Organizer Contact Info') }}</h2>
+            <ul id="contacts" class="contacts">
+                {% for organizer in organizer_info %}
+                    <li>
+                        <em>{{ organizer.name }}</em>
+                        <dl>
+                        {% for type, value in organizer.items() | sort %}
+                            {% if type == 'name' %}
+                            {% elif type == 'phone' %}
+                                <dt>{{ tr('Telefon', 'Phone') }}</dt><dd>{{ value }}</dd>
+                            {% elif type == 'mail' %}
+                                <dt>E-mail</dt><dd>{{ value | mail_link }}</dd>
+                            {% elif type == 'web' %}
+                                <dt>Web</dt><dd><a href="{{ value }}">{{ value }}</a></dd>
+                            {% else %}
+                                {# XXX: raise #}
+                                <dt>?</dt>
+                            {% endif %}
+                        {% endfor %}
+                        </dl>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
     {% endif %}
 
     <div class="event-list">
         <h2>{{ tr('Historie srazů', 'Meetup History') }}</h2>
+        {% macro pagination() %}
+            <div>
+                <ul class="paginate">
+                    <li class="paginate-prev">
+                        <a {% if year==None and all==None %}class="disabled"{% endif %}
+                           href="{{ url_for('series', series_slug=series.slug, **paginate_prev) }}">&lt;</a>
+                    </li>
+                    <li class="paginate-link {% if year==None and all==None %}current{% endif %}">
+                         <a href="{{ url_for('series', series_slug=series.slug, year=None) }}">{{ tr("Nové", "New") }}</a>
+                    </li>
+                    {% for page in all_years|reverse %}
+                        <li class="paginate-link {% if page==year %}current{% endif %}">
+                             <a href="{{ url_for('series', series_slug=series.slug, year=page) }}">{{ page }}</a>
+                        </li>
+                    {% endfor %}
+                    <li class="paginate-link {% if all!=None %}current{% endif %}">
+                         <a href="{{ url_for('series', series_slug=series.slug, year=None, all='all') }}">{{ tr("Vše", "All") }}</a>
+                    </li>
+                    <li class="paginate-next">
+                        <a {% if all!=None %}class="disabled"{% endif %}
+                           href="{{ url_for('series', series_slug=series.slug, **paginate_next) }}">&gt;</a>
+                    </li>
+                </ul>
+            </div>
+        {% endmacro %}
+        {{ pagination() }}
         <ul>
-            {% for event in series.events[1:] %}
-                <li>
-                    {% include "fragments/event.html" %}
-                </li>
-            {% endfor %}
+            {% if has_events %}
+                {% for event in series.events[1 if year==None else 0:] %}
+                    <li>
+                        {% set is_header_event = False %}
+                        {% include "fragments/event.html" %}
+                    </li>
+                {% endfor %}
+            {% else %}
+                {{ tr("Žádné vyhovující srazy nenalezeny.", "No fitting events found.") }}
+            {% endif %}
         </ul>
+        {{ pagination() }}
     </div>
 </div>
 {% endblock bodycontent %}
