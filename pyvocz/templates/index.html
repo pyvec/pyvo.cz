@@ -66,43 +66,45 @@
 
     <div id="events">
         <h2>{{ tr('Kdy a kde?', 'When & Where?') }}</h2>
-        <div>
+        <div class="row">
             {% for event in featured_events %}
-            <div class="event">
-                <h3>
-                    <a href="{{ url_for('series', series_slug=event.series.slug) }}">
-                        <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}" width="50">
-                        {{event.series.name}}
-                    </a>
-                </h3>
-                <div>
-                    {% if event.date == today %}
-                        {% if g.lang_code == 'cs' %}
-                            <em>Dnes</em>
-                            v <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time> je
-                        {% else %}
-                            <em>Today</em>
-                            at <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time>:
-                        {% endif %}
-                    {% else %}
-                        {{ tr('', 'On') }}
-                        <em><time datetime="{{event.date}}">{{event.date | shortday}}</time></em>
-                        {% if event.date < today %}
-                            {{ tr('bylo', 'was') }}
-                        {% else %}
-                            {{ tr('bude', 'will be') }}
-                        {% endif %}
-                    {% endif %}
-                    <em class="title">{{ event | event_link }}</em>
+                <div class="col-md-4 col">
+                    <div class="event">
+                        <h3>
+                            <a href="{{ url_for('series', series_slug=event.series.slug) }}">
+                                <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}" width="50">
+                                {{event.series.name}}
+                            </a>
+                        </h3>
+                        <div>
+                            {% if event.date == today %}
+                                {% if g.lang_code == 'cs' %}
+                                    <em>Dnes</em>
+                                    v <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time> je
+                                {% else %}
+                                    <em>Today</em>
+                                    at <time datetime="{{event.date}}">{{event.start_time.hour}}:{{'%02d' | format(event.start_time.minute)}}</time>:
+                                {% endif %}
+                            {% else %}
+                                {{ tr('', 'On') }}
+                                <em><time datetime="{{event.date}}">{{event.date | shortday}}</time></em>
+                                {% if event.date < today %}
+                                    {{ tr('bylo', 'was') }}
+                                {% else %}
+                                    {{ tr('bude', 'will be') }}
+                                {% endif %}
+                            {% endif %}
+                            <em class="title">{{ event | event_link }}</em>
+                        </div>
+                        <span>
+                            {% if event.venue %}
+                                {{event.venue.name}}{% if event.venue.address %},
+                                    {{event.venue.short_address}}
+                                {% endif %}
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
-                <span>
-                    {% if event.venue %}
-                        {{event.venue.name}}{% if event.venue.address %},
-                            {{event.venue.short_address}}
-                        {% endif %}
-                    {% endif %}
-                </span>
-            </div>
             {% endfor %}
         </div>
     </div>
