@@ -256,6 +256,7 @@ body.homepage #events .event {
     clear: left;
     margin-left: 7em;
     min-height: 7em;
+    margin-bottom: 1em;
 }
 
 body.homepage #events .event em.title {
