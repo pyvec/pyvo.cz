@@ -104,6 +104,38 @@
                 </span>
             </div>
             {% endfor %}
+
+            <h2>{{ tr('Další srazy:', 'Another events:') }}</h2>
+            <div class="event">
+                <h3>
+                    <a href="https://www.facebook.com/groups/894454654024779/">
+                    <!-- TODO: propojit s databazi, aby odkaz mohl vest na stranku na pyvo.cz/nepyvo -->
+                        <img src="{{ url_for('static', filename='images/nepyvo.png') }}" width="50">
+                        NePyvo
+                    </a>
+                </h3>
+                <div>
+                    {{ tr('každý čtvrtek, když není Pyvo v Brně', 'every Thursday (when there isn\'t Pyvo Brno)') }}
+                </div>
+                <span>
+                    Nekavárna, Minská 13, Brno
+                </span>
+            </div>
+
+            <div class="event">
+                <h3>
+                    <a href="https://cz.pycon.org/2017/">
+                        <img src="{{ url_for('static', filename='images/pyconlogo.png') }}" width="50">
+                        Pycon CZ
+                    </a>
+                </h3>
+                <div>
+                    {{ tr('9. - 11. června 2017', '9 -11 June 2017') }}
+                </div>
+                <span>
+                    DUP36, Charvátova 10, Praha - Nové Město
+                </span>
+            </div>
         </div>
     </div>
 
