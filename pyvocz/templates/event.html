@@ -135,7 +135,7 @@
 
         <div>
             {{ tr('Další mapy:', 'Other maps:') }}
-            <a href="http://mapy.cz/zakladni?q={{event.venue.name}}, {{ event.venue.latitude }}N+{{ event.venue.longitude }}E ">mapy.cz</a>,
+            <a href="http://mapy.cz/zakladni?q={{event.venue.name}}&amp;y={{ event.venue.latitude }}&amp;x={{ event.venue.longitude }}&amp;z=18&amp;id={{ event.venue.longitude }}%2C{{ event.venue.latitude }}&amp;source=coor">mapy.cz</a>,
             <a href="http://www.google.com/maps/place/{{ event.venue.latitude }},{{ event.venue.longitude }} ">Google Maps</a>.
         </div>
     {% endif %}
