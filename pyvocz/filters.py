@@ -9,7 +9,7 @@ import textwrap
 
 __all__ = ('mail_link', 'nl2br', 'monthname', 'shortdayname', 'shortmonth',
            'shortday', 'longdate', 'dayname', 'th', 'event_url', 'event_link',
-           'markdown', 'get_site_name')
+           'markdown', 'get_site_name', 'mapy_cz_url')
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
@@ -132,3 +132,10 @@ def markdown(text):
 def get_site_name(link):
     base_url = urlparse(link).netloc
     return re.sub(r'^www.', '', base_url)
+
+def mapy_cz_url(venue):
+    template = ('http://mapy.cz/zakladni?q={venue.name}&amp;' +
+                'y={venue.latitude}&amp;' +
+                'x={venue.longitude}&amp;z=18&amp;' +
+                'id={venue.longitude}%2C{venue.latitude}&amp;source=coor')
+    return Markup(template.format(venue=venue))

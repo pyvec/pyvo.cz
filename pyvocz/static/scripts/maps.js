@@ -39,7 +39,14 @@ requirejs([
                 onEachFeature: function (feature, marker) {
                     if (feature.properties) {
                         text = '<h3>' + feature.properties.name + '</h3><p>' + feature.properties.address + '</p>' +
-                            '<a class="maplink" href="http://mapy.cz/zakladni?q=' + feature.properties.name + ', ' + feature.geometry.coordinates[1] + 'N+' + feature.geometry.coordinates[0] + 'E ">→mapy.cz</a>';
+                            '<a class="maplink" href="http://mapy.cz/zakladni?q=' +
+                            feature.properties.name +
+                            '&y=' + feature.geometry.coordinates[1] +
+                            '&x=' + feature.geometry.coordinates[0] +
+                            '&z=18&' +
+                            'id=' + feature.geometry.coordinates[0] +
+                            '%2C' + feature.geometry.coordinates[1] +
+                            '&source=coor">→mapy.cz</a>';
                         marker.bindPopup(text);
                     }
                 }
