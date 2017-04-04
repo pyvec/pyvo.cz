@@ -57,8 +57,7 @@
     {% endif %}
     {% if event.venue %}
         <div>
-            {{ venue_address(event.venue) }}
-            <a href="#map">{{ tr('(mapa)', '(map)') }}</a>
+            {{ venue_address(event.venue, show_map_link=True) }}
         </div>
     {% endif %}
 
