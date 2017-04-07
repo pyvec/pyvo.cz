@@ -87,6 +87,7 @@ def index():
     ))
     query = query.join(tables.TalkLink.talk)
     query = query.join(tables.Talk.event)
+    query = query.filter(tables.TalkLink.kind == 'video')
     query = query.options(joinedload(tables.TalkLink.talk))
     query = query.options(joinedload(tables.TalkLink.talk, 'event'))
     query = query.options(joinedload(tables.TalkLink.talk, 'event', 'series'))
