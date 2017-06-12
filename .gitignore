@@ -1,3 +1,4 @@
 /*.egg-info/
 __pycache__/
 /pyvocz/pyvo-data/
+pyvocz-env

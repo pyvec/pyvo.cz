@@ -17,7 +17,7 @@ Then install with:
 
 Alternatively, if you've cloned the repository, run this in your copy:
 
-    pip install -e.
+    pip install -e .
 
 (Nothing should depend on the pyvocz module, so it's not on PyPI.)
 
