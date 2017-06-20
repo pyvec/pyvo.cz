@@ -409,9 +409,12 @@ def feed_response(query, feed_type, *, recurrence_series=()):
 
 @route('/api/pyvo.<feed_type>')
 def api_feed(feed_type):
-    series = db.session.query(tables.Series).all()
+    query = db.session.query(tables.Series)
+    query = query.filter(tables.Series.slug.in_(FEATURED_SERIES))
+    series = query.all()
 
     query = db.session.query(tables.Event)
+    query = query.filter(tables.Event.series_slug.in_(FEATURED_SERIES))
     return feed_response(query, feed_type, recurrence_series=series)
 
 
