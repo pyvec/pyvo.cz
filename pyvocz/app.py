@@ -11,7 +11,7 @@ from .views import routes
 DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'pyvo-data')
 
 def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
-               host=None, port=5000):
+               host=None, port=5000, auto_reload_templates=False):
     datadir = os.path.abspath(datadir)
 
     app = Flask(__name__)
@@ -24,6 +24,7 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
         if port != 80:
             server_name += ':{}'.format(port)
         app.config['SERVER_NAME'] = server_name
+    app.config['TEMPLATES_AUTO_RELOAD'] = auto_reload_templates
     app.jinja_env.undefined = StrictUndefined
     db.init_app(app)
 

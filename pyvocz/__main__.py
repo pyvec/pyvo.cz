@@ -31,16 +31,16 @@ datadir = arguments['--data'] or DEFAULT_DATA_DIR
 pull_password = arguments['--pull-password']
 port = int(arguments['--port'] or 5000)
 host = arguments['--host']
+auto_reload_templates = arguments['--debug']
 
 app = create_app(db_uri=db_uri, datadir=datadir, pull_password=pull_password,
-                 host=host, port=port)
+                 host=host, port=port, auto_reload_templates=auto_reload_templates)
 
 if not os.path.exists(datadir):
     subprocess.check_call(['git', 'clone',
                            'https://github.com/pyvec/pyvo-data', datadir])
 
 if arguments['--debug']:
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(debug=True, host=host, port=port)
 else:
     app.run(debug=False, host=host or '0.0.0.0', port=port)
