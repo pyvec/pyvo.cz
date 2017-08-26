@@ -468,14 +468,6 @@ def subdomain_redirect(subdomain):
     subdomain = ALIASES.get(subdomain, subdomain)
     return redirect(url_for('series', series_slug=subdomain))
 
-@route('/feedback')
-def feedback_form_redirect():
-    feedback_form_url = (
-        'https://docs.google.com/forms/d/e/'
-        '1FAIpQLSdgnx9ljKYuC2FDWhCHDu8uHteN4uozHejbGfw2iEyt97q6fQ/viewform'
-    )
-    return redirect(feedback_form_url)
-
 @route('/zaloz')
 def zaloz_redirect():
     return redirect('https://pyvec-guide.readthedocs.io/guides/meetup.html')
