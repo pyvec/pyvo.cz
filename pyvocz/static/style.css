@@ -825,16 +825,3 @@ body.eventpage .talk-entry .youtube-link {
     font-size: 100%;
     margin: 0 0 1em;
 }
-
-.notice {
-  background: #337ab7;
-  color: #fff;
-  padding: 0.5em;
-  text-align: center;
-}
-
-.notice a {
-  color: #fff;
-  text-decoration: underline;
-  font-weight: bold;
-}
