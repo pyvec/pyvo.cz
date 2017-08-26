@@ -275,7 +275,11 @@ def event(series_slug, date_slug):
         return redirect(url_for('event', series_slug=series_slug,
                                 date_slug=proper_date_slug))
 
-    return render_template('event.html', event=event, today=today)
+    github_link = "https://github.com/pyvec/pyvo-data/blob/master/{filepath}" \
+            .format(filepath=event._source)
+
+    return render_template('event.html', event=event, today=today,
+                           github_link=github_link)
 
 
 @route('/code-of-conduct/')
