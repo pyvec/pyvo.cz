@@ -317,7 +317,7 @@ div.map .map-city .date {
 div.map .map-city img {
     position: relative;
     z-index: 1;
-    width: 40px;
+    width: 30px;
 }
 
 div.map .map-city-praha {
