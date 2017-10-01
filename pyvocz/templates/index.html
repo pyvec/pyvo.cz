@@ -20,13 +20,14 @@
             <div>
                 Pyva jsou setkání příznivců programovacího jazyka <a href="http://python.cz">Python</a>
                 a spřízněných technologií.
-                Pravidelně jsou pořádány v Praze, Brně a Ostravě.
+                Pravidelně jsou pořádány v Praze, Brně, Ostravě a za nedlouho
+                i v Olomouci.
             </div>
         {% else %}
             <div>
                 Pyvo is a meetups for fans of the <a href="http://python.cz">Python</a> programming language
                 and related technologies.
-                These meetups are held regularly in Prague, Brno, and Ostrava.
+                These meetups are held regularly in Prague, Brno, Ostrava and also in Olomouc soon.
             </div>
         {% endif %}
     </div>
@@ -68,7 +69,7 @@
         <h2>{{ tr('Kdy a kde?', 'When & Where?') }}</h2>
         <div class="row">
             {% for event in featured_events %}
-                <div class="col-md-4 col">
+                <div class="col-md-6 col">
                     <div class="event">
                         <h3>
                             <a href="{{ url_for('series', series_slug=event.series.slug) }}">
