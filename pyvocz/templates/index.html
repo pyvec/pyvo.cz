@@ -272,18 +272,12 @@
                         Look for contact information on the pages of
                         individual Pyvos:
                     {% endif %}
+                    {% for event in featured_events %}
                     <a href="{{url_for('series',
-                                        series_slug='praha-pyvo',
+                                        series_slug=event.series.slug,
                                         _anchor='organizer-contacts')}}">
-                        Praha</a>,
-                    <a href="{{url_for('series',
-                                        series_slug='brno-pyvo',
-                                        _anchor='organizer-contacts')}}">
-                        Brno</a>,
-                    <a href="{{url_for('series',
-                                        series_slug='ostrava-pyvo',
-                                        _anchor='organizer-contacts')}}">
-                        Ostrava</a>.
+                        {{ event.series.home_city.name }}</a>.
+                    {% endfor %}
                     <p>
                 </li>
                 <li>
