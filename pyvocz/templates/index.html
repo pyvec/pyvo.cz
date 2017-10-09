@@ -272,11 +272,11 @@
                         Look for contact information on the pages of
                         individual Pyvos:
                     {% endif %}
-                    {% for event in featured_events %}
+                    {% for event in featured_events | sort(attribute='name') %}
                     <a href="{{url_for('series',
                                         series_slug=event.series.slug,
                                         _anchor='organizer-contacts')}}">
-                        {{ event.series.home_city.name }}</a>.
+                        {{ event.series.home_city.name }}</a>{%if loop.last %}.{% else %},{% endif %}
                     {% endfor %}
                     <p>
                 </li>
