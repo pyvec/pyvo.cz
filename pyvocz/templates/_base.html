@@ -10,6 +10,20 @@
             <link rel="stylesheet" href="{{ url_for('static', filename='third-party/bootstrap.min.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         {% endblock styles %}
+        <!-- For Facebook and Twitter: -->
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="{{ self.title()|trim }}">
+        {%- if g.lang_code == 'cs' %}
+        <meta property="og:description" content="Pyva jsou setkání příznivců programovacího jazyka Python a spřízněných technologií.">
+        {% else %}
+        <meta property="og:description" content="Pyvo is a meetups for fans of the Python programming language and related technologies.">
+        {% endif -%}
+        <meta property="og:url" content="{{ request.url }}">
+        <meta property="og:image" content="{{ url_for('static', filename='images/pyvo-people.svg', _external=True) }}">
+        <!-- Additionaly, for Twitter: -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:site" content="@naPyvo">
+        <meta property="twitter:creator" content="@naPyvo" />
     </head>
     <body class="{% block bodyclass %}{% endblock %}">
         <div class="nav-container">
