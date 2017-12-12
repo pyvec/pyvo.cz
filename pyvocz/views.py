@@ -22,13 +22,20 @@ from . import filters
 from .db import db, db_reload
 
 
-FEATURED_SERIES = 'brno-pyvo', 'praha-pyvo', 'ostrava-pyvo', 'olomouc-pyvo'
+FEATURED_SERIES = (
+    'brno-pyvo',
+    'praha-pyvo',
+    'ostrava-pyvo',
+    'olomouc-pyvo',
+    'plzen-pyvo',
+)
 
 BACKCOMPAT_SERIES_ALIASES = {
     'brno': 'brno-pyvo',
     'praha': 'praha-pyvo',
     'ostrava': 'ostrava-pyvo',
     'olomouc': 'olomouc-pyvo',
+    'plzen': 'plzen-pyvo',
 }
 
 routes = []

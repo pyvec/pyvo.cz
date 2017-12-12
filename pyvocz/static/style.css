@@ -344,6 +344,12 @@ div.map .map-city-olomouc {
     top: 120px;
 }
 
+div.map .map-city-plzen {
+    display: block;
+    left: 45px;
+    top: 120px;
+}
+
 div.map .map-city.past { opacity: 0.75; }
 div.map .map-city.past a { color: black; }
 div.map .map-city.today a { color: black; text-shadow: 0px 0px 3px white, 0 0 2px white; }

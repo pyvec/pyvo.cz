@@ -20,13 +20,13 @@
             <div>
                 Pyva jsou setkání příznivců programovacího jazyka <a href="http://python.cz">Python</a>
                 a spřízněných technologií.
-                Pravidelně jsou pořádány v Praze, Brně, Ostravě a brzy i v Olomouci.
+                Pravidelně jsou pořádány ve městech po celé republice.
             </div>
         {% else %}
             <div>
                 Pyvo is a meetups for fans of the <a href="http://python.cz">Python</a> programming language
                 and related technologies.
-                These meetups are held regularly in Prague, Brno, Ostrava and also in Olomouc soon.
+                These meetups are held in cities across the country.
             </div>
         {% endif %}
     </div>
@@ -67,8 +67,18 @@
     <div id="events">
         <h2>{{ tr('Kdy a kde?', 'When & Where?') }}</h2>
         <div class="row">
+            {% if (featured_events | length) % 3 == 0 %}
+                {# prefer 3 columns #}
+                {% set num_columns = 3 %}
+            {% elif (featured_events | length) % 2 == 0 %}
+                {# 2 columns is OK #}
+                {% set num_columns = 2 %}
+            {% else %}
+                {# if neither is possible, use 3 (with padding, see below) #}
+                {% set num_columns = 3 %}
+            {% endif %}
             {% for event in featured_events %}
-                <div class="col-md-6 col">
+                <div class="col-md-{{ 12//num_columns }} col">
                     <div class="event">
                         <h3>
                             <a href="{{ url_for('series', series_slug=event.series.slug) }}">
@@ -106,13 +116,28 @@
                     </div>
                 </div>
             {% endfor %}
+            {% if (featured_events | length) % num_columns != 0 %}
+                {# padding in case events don't fit in columns #}
+                <div class="col-md-{{ 12//num_columns }} col">
+                    <div class="event">
+                        <h3>
+                            <img src="{{ url_for('static', filename='coatofarms/unknown.svg') }}" width="50">
+                            A další…?
+                        </h3>
+                        Chybí ti tu tvoje město?
+                        Přijď na návštěvu na některé zavedené Pyvo, a pak
+                        <a href="http://pyvec-guide.readthedocs.io/guides/meetup.html">založ</a>
+                        sraz i u vás!
+                    </div>
+                </div>
+            {% endif %}
         </div>
         <div class="muted" style="opacity:0.4;">
-            Nejste tu poprvé a chybí vám hezké symboly měst?
-            Zjistili jsme, že (zatím) bohužel
+            Děkujeme městu Plzni, které nám
             <a href="https://github.com/pyvec/pyvo.cz/issues/70">
-                 nemáme právo je užívat.
+                 dalo souhlas
             </a>
+            s použitím městského znaku!
         </div>
     </div>
 
