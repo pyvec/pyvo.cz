@@ -244,33 +244,57 @@ ul.paginate > li a.disabled {
 
 /******************** Homepage events ********************/
 
-body.homepage #events img {
+body.homepage .events-display {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+body.homepage .events-display.columns-3 .event {
+    width: 33%;
+}
+body.homepage .events-display.columns-2 .event {
+    width: 50%;
+}
+
+body.homepage .events-display .event {
+    flex-grow: 1;
+    min-height: 7em;
+    margin-bottom: 1em;
+    box-sizing: border-box;
+}
+
+body.homepage .events-display .event-inner {
+    margin-left: 7em;
+    margin-right: 1em;
+    position: relative;
+}
+
+body.homepage .events-display img {
     width: 3em;
     position: absolute;
     left: -3.75em;
     top: 0.3em;
 }
 
-body.homepage #events .event {
-    position: relative;
-    clear: left;
-    margin-left: 7em;
-    min-height: 7em;
-    margin-bottom: 1em;
-}
-
-body.homepage #events .event em.title {
+body.homepage .events-display .event em.title {
     font-weight: bold;
     font-style: normal;
 }
 
-body.homepage #events .event em time {
+body.homepage .events-display .event em time {
     font-style: normal;
 }
 
+@media(max-width: 990px) {
+    body.homepage .events-display .event { width: 100% !important; }
+}
 @media(max-width: 480px) {
-    body.homepage #events img { display: none; }
-    body.homepage #events .event { margin-left: 0; }
+    body.homepage .events-display img { display: none; }
+    body.homepage .events-display .event-inner { margin-left: 0; }
 }
 
 /******************** Map rows ********************/

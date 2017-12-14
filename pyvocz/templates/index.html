@@ -66,20 +66,20 @@
 
     <div id="events">
         <h2>{{ tr('Kdy a kde?', 'When & Where?') }}</h2>
-        <div class="row">
-            {% if (featured_events | length) % 3 == 0 %}
-                {# prefer 3 columns #}
-                {% set num_columns = 3 %}
-            {% elif (featured_events | length) % 2 == 0 %}
-                {# 2 columns is OK #}
-                {% set num_columns = 2 %}
-            {% else %}
-                {# if neither is possible, use 3 (with padding, see below) #}
-                {% set num_columns = 3 %}
-            {% endif %}
+        {% if (featured_events | length) % 3 == 0 %}
+            {# prefer 3 columns #}
+            {% set num_columns = 3 %}
+        {% elif (featured_events | length) % 2 == 0 %}
+            {# 2 columns is OK #}
+            {% set num_columns = 2 %}
+        {% else %}
+            {# if neither is possible, use 3 (with padding, see below) #}
+            {% set num_columns = 3 %}
+        {% endif %}
+        <div class="events-display columns-{{ num_columns }}">
             {% for event in featured_events %}
-                <div class="col-md-{{ 12//num_columns }} col">
-                    <div class="event">
+                <div class="event">
+                    <div class="event-inner">
                         <h3>
                             <a href="{{ url_for('series', series_slug=event.series.slug) }}">
                                 <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}" width="50">
@@ -118,8 +118,8 @@
             {% endfor %}
             {% if (featured_events | length) % num_columns != 0 %}
                 {# padding in case events don't fit in columns #}
-                <div class="col-md-{{ 12//num_columns }} col">
-                    <div class="event">
+                <div class="event">
+                    <div class="event-inner">
                         <h3>
                             <img src="{{ url_for('static', filename='coatofarms/unknown.svg') }}" width="50">
                             A další…?
