@@ -8,7 +8,8 @@
         <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
         {% block styles %}
             <link rel="stylesheet" href="{{ url_for('static', filename='third-party/bootstrap.min.css') }}">
-            <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', filename='style.css',
+                                                    tag=_static_cache_tag) }}">
         {% endblock styles %}
         <!-- For Facebook and Twitter: -->
         <meta property="og:type" content="article">

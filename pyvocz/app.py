@@ -1,5 +1,6 @@
 import os
 from urllib.parse import urlparse, urlunparse
+import binascii
 
 from flask import Flask, g, url_for, redirect, request
 from jinja2 import StrictUndefined
@@ -47,6 +48,10 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
     @app.before_first_request
     def setup():
         db_setup(datadir)
+
+        # Use a random cache tag for each deployment
+        tag = binascii.hexlify(os.urandom(16))
+        app.jinja_env.globals['_static_cache_tag'] = tag
 
     @app.url_value_preprocessor
     def pull_lang_code(endpoint, values):

@@ -38,6 +38,7 @@ BACKCOMPAT_SERIES_ALIASES = {
     'plzen': 'plzen-pyvo',
 }
 
+
 routes = []
 
 def route(url, methods=['GET'], translate=True, **kwargs):
