@@ -126,7 +126,11 @@
     {% if event.venue %}
         <h2>{{ tr('Místo', 'Venue') }}</h2>
 
-        {{ venue_address(event.venue) }}
+        <p>{{ venue_address(event.venue) }}</p>
+
+        {% if (event.venue.note is defined) and event.venue.note %}
+            {{ event.venue.note | markdown }}
+        {% endif %}
 
         <div id="map" style="height: 350px"
             data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
