@@ -38,9 +38,7 @@
              <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
         {% endif %}
 
-        {% set is_header_event = True %}
-        {% include "fragments/event.html" %}
-        {% set is_header_event = False %}
+        {{ event_entry(event, is_header_event=True) }}
 
     </div>
 
@@ -51,7 +49,7 @@
         <ul>
             {% for event in city.events[1:] %}
                 <li>
-                    {% include "fragments/event.html" %}
+                    {{ event_entry(event) }}
                 </li>
             {% endfor %}
         </ul>

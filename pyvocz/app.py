@@ -1,6 +1,7 @@
 import os
 from urllib.parse import urlparse, urlunparse
 import binascii
+import datetime
 
 from flask import Flask, g, url_for, redirect, request
 from jinja2 import StrictUndefined
@@ -26,6 +27,7 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
             server_name += ':{}'.format(port)
         app.config['SERVER_NAME'] = server_name
     app.jinja_env.undefined = StrictUndefined
+    app.jinja_env.globals['get_today'] = datetime.date.today
     db.init_app(app)
 
     for filter_name in filters.__all__:

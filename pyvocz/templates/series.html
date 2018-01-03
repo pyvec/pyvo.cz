@@ -57,8 +57,7 @@
                      <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
                 {% endif %}
 
-                {% set is_header_event = True %}
-                {% include "fragments/event.html" %}
+                {{ event_entry(event, is_header_event=True, add_venue_note=True) }}
             {% endif %}
         </div>
 
@@ -146,8 +145,7 @@
             {% if has_events %}
                 {% for event in series.events[1 if year==None else 0:] %}
                     <li>
-                        {% set is_header_event = False %}
-                        {% include "fragments/event.html" %}
+                        {{ event_entry(event) }}
                     </li>
                 {% endfor %}
             {% else %}
