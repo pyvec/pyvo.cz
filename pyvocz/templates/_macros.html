@@ -119,5 +119,18 @@
                 {% endfor %}
             </ul>
         {% endif %}
+
+        {% if add_venue_note and (event.venue.note is defined) and event.venue.note %}
+            <div class="venue-note">
+                <h3>Místo</h3>
+                <div class="address">
+                    {{ venue_address(event.venue, show_map_link=is_header_event) }}
+                </div>
+
+                {% if (event.venue.note is defined) and event.venue.note %}
+                    {{ event.venue.note | markdown }}
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 {% endmacro %}

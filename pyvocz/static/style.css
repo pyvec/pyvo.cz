@@ -712,6 +712,10 @@ body.eventpage .talk-entry {
     font-style: normal;
 }
 
+.event-entry .venue-note .address {
+    margin-bottom: 10px;
+}
+
 .event-entry > ul {
     padding: 0;
 }
