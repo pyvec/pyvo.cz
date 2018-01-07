@@ -128,8 +128,8 @@
 
         <p>{{ venue_address(event.venue) }}</p>
 
-        {% if (event.venue.note is defined) and event.venue.note %}
-            {{ event.venue.note | markdown }}
+        {% if (event.venue.notes is defined) and event.venue.notes %}
+            {{ event.venue.notes | markdown }}
         {% endif %}
 
         <div id="map" style="height: 350px"

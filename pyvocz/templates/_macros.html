@@ -75,7 +75,7 @@
     </table>
 {% endmacro %}
 
-{% macro event_entry(event, is_header_event=False, add_venue_note=False) %}
+{% macro event_entry(event, is_header_event=False, add_venue_notes=False) %}
     {% set today = get_today() %}
     <div id="{{event.date}}" class="event-entry
         {% if event.date < today %}
@@ -120,16 +120,14 @@
             </ul>
         {% endif %}
 
-        {% if add_venue_note and (event.venue.note is defined) and event.venue.note %}
-            <div class="venue-note">
+        {% if add_venue_notes and (event.venue.notes is defined) and event.venue.notes %}
+            <div class="venue-notes">
                 <h3>Místo</h3>
                 <div class="address">
                     {{ venue_address(event.venue, show_map_link=is_header_event) }}
                 </div>
 
-                {% if (event.venue.note is defined) and event.venue.note %}
-                    {{ event.venue.note | markdown }}
-                {% endif %}
+                {{ event.venue.notes | markdown }}
             </div>
         {% endif %}
     </div>
