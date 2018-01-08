@@ -865,3 +865,51 @@ body.eventpage .talk-entry .youtube-link {
     font-size: 100%;
     margin: 0 0 1em;
 }
+
+/******************** Event page adjustments incl. print ********************/
+
+.eventpage div.container div.edit-on-github {
+    float: right;
+}
+
+@page {
+    size: A4;
+    margin: 1cm;
+}
+
+@media print {
+    .eventpage div.container {
+        font-size: 16px;
+    }
+
+    .eventpage div.container h1 {
+        text-align: center;
+    }
+
+    .eventpage div.container div.event-datetime,
+    .eventpage div.container div.event-location {
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .eventpage div.container div.talk-entry {
+        margin-left: 0em;
+    }
+
+    .eventpage div.container div.talk-entry div.head>:not(:first-child){
+        margin-left: 2em;
+    }
+
+    .eventpage div.container div#map {
+        page-break-inside: avoid;
+    }
+
+    .eventpage div.nav-container a.lang_switch,
+    .eventpage div.container div.edit-on-github,
+    .eventpage div.container div.talk-entry>span.youtube-link,
+    .eventpage div.container div#map div.leaflet-control-container,
+    .eventpage div.container div.other-maps,
+    .eventpage footer.container {
+        display: none;
+    }
+}

@@ -19,14 +19,14 @@
 
 {% block bodycontent %}
 <div class="container">
-    <div style="float: right;">
+    <div class="edit-on-github">
         <a href="{{ github_link }}">
             ✎ {{ tr('Edituj tuto událost na GitHubu', 'Edit this event on GitHub') }}</a>
     </div>
     <h1>{{ event.title }}</h1>
 
     {% if g.lang_code == 'cs' %}
-        <div>
+        <div class="event-datetime">
             Sraz
             {% if event.date < today %}
                 se konal
@@ -60,7 +60,7 @@
         </div>
     {% endif %}
     {% if event.venue %}
-        <div>
+        <div class="event-location">
             {{ venue_address(event.venue, show_map_link=True) }}
         </div>
     {% endif %}
@@ -140,7 +140,7 @@
         >
         </div>
 
-        <div>
+        <div class="other-maps">
             {{ tr('Další mapy:', 'Other maps:') }}
             <a href="{{ event.venue | mapy_cz_url }}">mapy.cz</a>,
             <a href="http://www.google.com/maps/place/{{ event.venue.latitude }},{{ event.venue.longitude }} ">Google Maps</a>.
