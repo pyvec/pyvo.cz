@@ -55,6 +55,8 @@ setup_args = dict(
         'ics >= 0.3.1, < 1.0',
         'feedgen >= 0.3.1, < 1.0',
         'markdown >= 2.6.7, < 3.0',
+        'Pillow >= 5.0.0, < 6.0.0',
+        'qrcode >= 5.3, < 6.0',
     ],
 
     package_data={'pyvocz': list(data_file_names())},
