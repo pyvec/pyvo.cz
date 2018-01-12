@@ -25,7 +25,7 @@
     </div>
     <h1>{{ event.title }}</h1>
 
-    <div class="qrcode"><img src="qrcode" /></div>
+    <div class="qrcode"><img src="{{ event | event_qrcode_url }}" /></div>
 
     {% if g.lang_code == 'cs' %}
         <div class="event-datetime">

@@ -44,7 +44,9 @@ BACKCOMPAT_SERIES_ALIASES = {
 }
 
 
-cache = SimpleCache()
+# Be careful when using SimpleCache!
+# See: http://werkzeug.pocoo.org/docs/contrib/cache/#werkzeug.contrib.cache.SimpleCache
+cache = SimpleCache(threshold=500, default_timeout=300)
 
 routes = []
 
@@ -298,7 +300,7 @@ def event(series_slug, date_slug):
                            github_link=github_link)
 
 
-@route('/<series_slug>/<date_slug>/qrcode')
+@route('/<series_slug>/<date_slug>/qrcode.png')
 def event_qrcode(series_slug, date_slug):
     url = url_for('event', _external=True,
                   series_slug=series_slug, date_slug=date_slug)
