@@ -4,6 +4,11 @@ import json
 import time
 import re
 
+from io import BytesIO
+
+import ics
+import qrcode
+
 from sqlalchemy import func, and_, or_, desc, extract
 from sqlalchemy.orm import joinedload, subqueryload, contains_eager
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -12,8 +17,8 @@ from flask import render_template, jsonify
 from flask import current_app as app
 from werkzeug.exceptions import abort
 from werkzeug.routing import Rule
+from werkzeug.contrib.cache import SimpleCache
 from jinja2.exceptions import TemplateNotFound
-import ics
 
 from pyvodb import tables
 from pyvodb.calendar import get_calendar
@@ -38,6 +43,10 @@ BACKCOMPAT_SERIES_ALIASES = {
     'plzen': 'plzen-pyvo',
 }
 
+
+# Be careful when using SimpleCache!
+# See: http://werkzeug.pocoo.org/docs/contrib/cache/#werkzeug.contrib.cache.SimpleCache
+cache = SimpleCache(threshold=500, default_timeout=300)
 
 routes = []
 
@@ -289,6 +298,24 @@ def event(series_slug, date_slug):
 
     return render_template('event.html', event=event, today=today,
                            github_link=github_link)
+
+
+@route('/<series_slug>/<date_slug>/qrcode.png')
+def event_qrcode(series_slug, date_slug):
+    url = url_for('event', _external=True,
+                  series_slug=series_slug, date_slug=date_slug)
+
+    qr_byte_io = cache.get(url)
+    if qr_byte_io is None:
+        qr_img = qrcode.make(url,
+                             box_size=5,
+                             border=0)
+        qr_byte_io = BytesIO()
+        qr_img.save(qr_byte_io, 'PNG')
+        qr_byte_io.seek(0)
+        cache.set(url, qr_byte_io, timeout=5*60)
+
+    return Response(qr_byte_io, mimetype='image/png')
 
 
 @route('/code-of-conduct/')

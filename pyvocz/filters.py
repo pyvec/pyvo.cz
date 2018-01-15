@@ -8,8 +8,9 @@ from urllib.parse import urlparse
 import textwrap
 
 __all__ = ('mail_link', 'nl2br', 'monthname', 'shortdayname', 'shortmonth',
-           'shortday', 'longdate', 'dayname', 'th', 'event_url', 'event_link',
-           'markdown', 'get_site_name', 'mapy_cz_url')
+           'shortday', 'longdate', 'dayname', 'th', 'event_url',
+           'event_qrcode_url', 'event_link', 'markdown', 'get_site_name',
+           'mapy_cz_url')
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
@@ -114,6 +115,12 @@ def th(value):
 
 def event_url(event, **kwargs):
     return url_for('event', series_slug=event.series.slug,
+                   date_slug='{0.year:4}-{0.month:02}'.format(event.date),
+                   **kwargs)
+
+
+def event_qrcode_url(event, **kwargs):
+    return url_for('event_qrcode', series_slug=event.series.slug,
                    date_slug='{0.year:4}-{0.month:02}'.format(event.date),
                    **kwargs)
 

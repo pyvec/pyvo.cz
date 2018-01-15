@@ -872,6 +872,10 @@ body.eventpage .talk-entry .youtube-link {
     float: right;
 }
 
+.eventpage div.container div.qrcode {
+    display: none;
+}
+
 @page {
     size: A4;
     margin: 1cm;
@@ -879,21 +883,39 @@ body.eventpage .talk-entry .youtube-link {
 
 @media print {
     .eventpage div.container {
-        font-size: 16px;
+        font-size: large;
     }
 
     .eventpage div.container h1 {
         text-align: center;
+        margin-top: 1.5em;
+        margin-bottom: 2em;
+    }
+
+    .eventpage div.container div.qrcode {
+        display: block;
+        float: right;
+        margin: 1em;
     }
 
     .eventpage div.container div.event-datetime,
     .eventpage div.container div.event-location {
-        font-size: 18px;
-        text-align: center;
+        font-size: x-large;
+    }
+
+    .eventpage div.container div#description {
+        margin-top: 2em;
+    }
+
+    .eventpage div.container h2 {
+        clear: right;
+        margin-top: 1em;
+        page-break-after: avoid;
     }
 
     .eventpage div.container div.talk-entry {
         margin-left: 0em;
+        page-break-inside: avoid;
     }
 
     .eventpage div.container div.talk-entry div.head>:not(:first-child){
