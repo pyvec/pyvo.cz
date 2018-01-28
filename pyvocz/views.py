@@ -33,6 +33,7 @@ FEATURED_SERIES = (
     'ostrava-pyvo',
     'olomouc-pyvo',
     'plzen-pyvo',
+    'liberec-pyvo',
 )
 
 BACKCOMPAT_SERIES_ALIASES = {
@@ -41,6 +42,7 @@ BACKCOMPAT_SERIES_ALIASES = {
     'ostrava': 'ostrava-pyvo',
     'olomouc': 'olomouc-pyvo',
     'plzen': 'plzen-pyvo',
+    'liberec': 'liberec-pyvo',
 }
 
 
