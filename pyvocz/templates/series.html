@@ -113,6 +113,7 @@
         {% endif %}
     {% endif %}
 
+    {% if series.events|length > 1 %}
     <div class="event-list">
         <h2>{{ tr('Historie srazů', 'Meetup History') }}</h2>
         {% macro pagination() %}
@@ -154,6 +155,7 @@
         </ul>
         {{ pagination() }}
     </div>
+    {% endif %}
 </div>
 {% endblock bodycontent %}
 
