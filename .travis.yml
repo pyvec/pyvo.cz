@@ -8,6 +8,6 @@ install:
   - pip install pytest pytest-flask lxml requests cssselect
   - git clone --depth 1 https://github.com/pyvec/pyvo-data pyvocz/pyvo-data
 
-script: py.test
+script: py.test test_pyvocz
 
 sudo: false
