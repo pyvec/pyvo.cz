@@ -176,6 +176,7 @@ def series(series_slug, year=None, all=None):
 
     today = datetime.date.today()
 
+    # List of years to show in the pagination
     # If there are no years with events, put the current year there at least
     all_years = years_with_events(series_slug) or [today.year]
     first_year, last_year = min(all_years), max(all_years)
@@ -187,9 +188,11 @@ def series(series_slug, year=None, all=None):
 
     if year is not None:
         if year > last_year:
-            year = None
-        elif year < first_year:
-            year = first_year
+            # Instead of showing a future year, redirect to the 'New' page
+            return redirect(url_for('series', series_slug=series_slug))
+        if year not in all_years:
+            # Otherwise, if there are no events in requested year, return 404.
+            abort(404)
 
     if all is not None:
         paginate_prev = {'year': first_year}
@@ -198,15 +201,17 @@ def series(series_slug, year=None, all=None):
         paginate_prev = {'year': None}
         paginate_next = {'year': last_year}
     else:
-        if year >= last_year:
-            paginate_prev = {'year': None}
+        past_years = [y for y in all_years if y < year]
+        if past_years:
+            paginate_next = {'year': max(past_years)}
         else:
-            paginate_prev = {'year': all_years[all_years.index(year) + 1]}
-
-        if year <= first_year:
             paginate_next = {'all': 'all'}
+
+        future_years = [y for y in all_years if y > year]
+        if future_years:
+            paginate_prev = {'year': min(future_years)}
         else:
-            paginate_next = {'year': all_years[all_years.index(year) - 1]}
+            paginate_prev = {'year': None}
 
     query = db.session.query(tables.Series)
     query = query.filter(tables.Series.slug == series_slug)
@@ -243,9 +248,27 @@ def series(series_slug, year=None, all=None):
         except NoResultFound:
             abort(404)
 
+    # Split events between future and past
+    # (today's event, if any, is considered future)
+    past_events = [e for e in series.events if e.date < today]
+    future_events = [e for e in series.events if e.date >= today]
+
+    # Events are ordered closest first;
+    #  for future ones this means ascending order
+    future_events.reverse()
+
+    featured_event = None
+    if year is None:
+        # Pop the featured event -- closest future one, or latest past one
+        if future_events:
+            featured_event = future_events.pop(0)
+        elif past_events:
+            featured_event = past_events.pop(0)
 
     organizer_info = json.loads(series.organizer_info)
     return render_template('series.html', series=series, today=today, year=year,
+                           future_events=future_events, past_events=past_events,
+                           featured_event=featured_event,
                            organizer_info=organizer_info, all=all,
                            first_year=first_year, last_year=last_year,
                            all_years=all_years, paginate_prev=paginate_prev,
