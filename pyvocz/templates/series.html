@@ -19,15 +19,14 @@
         </div>
     </div>
 
-    {% if has_events %}
-        {% set event = series.events[0] %}
-
-        {% if event.venue %}
+    {% if featured_event %}
+        {% if featured_event.venue %}
             <div id="map" style="height: 350px"
-                data-src="{{ url_for('api_venue_geojson', venueslug=event.venue.slug) }}"
+                data-src="{{ url_for('api_venue_geojson',
+                                     venueslug=featured_event.venue.slug) }}"
                 data-zoom="14"
-                data-lat="{{event.venue.latitude}}"
-                data-lng="{{event.venue.longitude}}"
+                data-lat="{{featured_event.venue.latitude}}"
+                data-lng="{{featured_event.venue.longitude}}"
             >
             </div>
         {% endif %}
@@ -48,41 +47,19 @@
 
     {% if year==None %}
         <div id="featured-meetup">
-            {% if has_events %}
-                {% if event.date < today %}
+            {% if featured_event %}
+                {% if featured_event.date < today %}
                      <h2>{{ tr('Poslední sraz', 'Last Meetup') }}</h2>
-                {% elif event.date > today %}
+                {% elif featured_event.date > today %}
                      <h2>{{ tr('Nadcházející sraz', 'Next Meetup') }}</h2>
                 {% else %}
                      <h2>{{ tr('Dnešní sraz', "Today's Meetup") }}</h2>
                 {% endif %}
 
-                {{ event_entry(event, is_header_event=True, add_venue_notes=True) }}
+                {{ event_entry(featured_event, is_header_event=True,
+                               add_venue_notes=True) }}
             {% endif %}
         </div>
-
-        {% if series.recurrence_rule %}
-        <div id="future">
-            <h2>{{ tr('Budoucí termíny', 'Future dates') }}</h2>
-            <div>
-                {{ tr(series.recurrence_description_cs, series.recurrence_description_en) }}
-            </div>
-            <div>
-                {% if g.lang_code == 'cs' %}
-                    Předběžně to vypadá na následující termíny –
-                    některé se ale můžou posunout, např. kvůli svátkům:
-                {% else %}
-                    That means the following days are likely – but some
-                    might be rescheduled, for example to avoid holidays.
-                {% endif %}
-            </div>
-            <ul>
-                {% for occurence in series.next_occurrences(3) %}
-                    <li>{{ occurence | longdate }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
 
         {% if organizer_info %}
         <div id="organizer-contacts">
@@ -113,7 +90,37 @@
         {% endif %}
     {% endif %}
 
-    {% if series.events|length > 1 %}
+        {% if series.recurrence_rule or future_events %}
+        <div id="future">
+            <h2>{{ tr('Budoucí termíny', 'Future dates') }}</h2>
+            {% if future_events %}
+                {% for event in future_events %}
+                    {{ event_entry(event, is_header_event=True, add_venue_notes=True) }}
+                {% endfor %}
+            {% endif %}
+            {% if series.recurrence_rule %}
+            <div>
+                {{ tr(series.recurrence_description_cs, series.recurrence_description_en) }}
+            </div>
+            <div>
+                {% if g.lang_code == 'cs' %}
+                    Předběžně to vypadá na následující termíny –
+                    některé se ale můžou posunout, např. kvůli svátkům:
+                {% else %}
+                    That means the following days are likely – but some
+                    might be rescheduled, for example to avoid holidays.
+                {% endif %}
+            </div>
+            <ul>
+                {% for occurence in series.next_occurrences(3) %}
+                    <li>{{ occurence | longdate }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    {% if past_events %}
     <div class="event-list">
         <h2>{{ tr('Historie srazů', 'Meetup History') }}</h2>
         {% macro pagination() %}
@@ -143,8 +150,8 @@
         {% endmacro %}
         {{ pagination() }}
         <ul>
-            {% if has_events %}
-                {% for event in series.events[1 if year==None else 0:] %}
+            {% if past_events %}
+                {% for event in past_events %}
                     <li>
                         {{ event_entry(event) }}
                     </li>

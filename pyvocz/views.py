@@ -248,9 +248,27 @@ def series(series_slug, year=None, all=None):
         except NoResultFound:
             abort(404)
 
+    # Split events between future and past
+    # (today's event, if any, is considered future)
+    past_events = [e for e in series.events if e.date < today]
+    future_events = [e for e in series.events if e.date >= today]
+
+    # Events are ordered closest first;
+    #  for future ones this means ascending order
+    future_events.reverse()
+
+    featured_event = None
+    if year is None:
+        # Pop the featured event -- closest future one, or latest past one
+        if future_events:
+            featured_event = future_events.pop(0)
+        elif past_events:
+            featured_event = past_events.pop(0)
 
     organizer_info = json.loads(series.organizer_info)
     return render_template('series.html', series=series, today=today, year=year,
+                           future_events=future_events, past_events=past_events,
+                           featured_event=featured_event,
                            organizer_info=organizer_info, all=all,
                            first_year=first_year, last_year=last_year,
                            all_years=all_years, paginate_prev=paginate_prev,
