@@ -77,23 +77,24 @@ def index():
 
     # Latest talk query
 
-    subquery = db.session.query(
-        tables.Event.series_slug,
-        func.max(tables.Event.date).label('latest_date'),
-    )
-    subquery = subquery.group_by(tables.Event.series_slug)
+    # order to show meetups in: upcoming first, then by distance from today
+    _jd = func.julianday
+    order_args = (_jd(tables.Event.date) < _jd(today),
+                  func.abs(_jd(tables.Event.date) - _jd(today)))
+
+    # Make a subquery to select the best event from a series
+    # (according to the order above)
+    subquery = db.session.query(tables.Event.date)
+    subquery = subquery.filter(tables.Event.series_slug == tables.Series.slug)
+    subquery = subquery.order_by(*order_args)
+    subquery = subquery.limit(1).correlate(tables.Series)
     subquery = subquery.subquery()
 
+    # Select all featured series, along with their best event
     query = db.session.query(tables.Event)
-    query = query.join(subquery,
-                       and_(subquery.c.latest_date == tables.Event.date,
-                            subquery.c.series_slug == tables.Event.series_slug,
-                            ))
+    query = query.join(tables.Series, tables.Event.date == subquery)
     query = query.filter(tables.Event.series_slug.in_(FEATURED_SERIES))
-    # order: upcoming first, then by distance from today
-    jd = func.julianday
-    query = query.order_by(jd(subquery.c.latest_date) < jd(today),
-                           func.abs(jd(subquery.c.latest_date) - jd(today)))
+    query = query.order_by(*order_args)
     query = query.options(joinedload(tables.Event.series))
     query = query.options(joinedload(tables.Event.venue))
     featured_events = query.all()
