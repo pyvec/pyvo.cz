@@ -5,6 +5,7 @@ from pyvodb import tables
 
 db = SQLAlchemy()
 
+
 def db_setup(datadir):
     # Workaround for https://github.com/mitsuhiko/flask-sqlalchemy/pull/250
     tables.metadata.create_all(db.engine)
@@ -12,6 +13,7 @@ def db_setup(datadir):
         print('Skipping DB reload')
         return
     db_reload(datadir)
+
 
 def db_reload(datadir):
     for table in reversed(tables.metadata.sorted_tables):

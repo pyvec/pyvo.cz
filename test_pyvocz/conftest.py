@@ -3,14 +3,16 @@ import shutil
 import os
 
 import pytest
-import pytest_flask as pt_flask
 
 from pyvocz.app import create_app, DEFAULT_DATA_DIR
 
+
 def pytest_addoption(parser):
-    parser.addoption("--check-external-links", action="store_true",
+    parser.addoption(
+        "--check-external-links", action="store_true",
         help="Check external links when running the tests.")
-    parser.addoption("--all-data", action="store_true",
+    parser.addoption(
+        "--all-data", action="store_true",
         help="Load all the meetup data, not just a testing subset.")
 
 
@@ -60,7 +62,8 @@ def app(pytestconfig):
                 name = name.strip()
                 if name:
                     try:
-                        os.makedirs(os.path.dirname(os.path.join(tempdir, name)))
+                        os.makedirs(os.path.dirname(os.path.join(tempdir,
+                                                                 name)))
                     except FileExistsError:
                         pass
                     shutil.copyfile(

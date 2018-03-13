@@ -2,7 +2,7 @@
 import os
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
 
@@ -17,7 +17,9 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
+
 tests_require = ['pytest', 'pytest-flask', 'lxml', 'requests', 'cssselect']
+
 
 def data_file_names():
     for top in 'pyvocz/static', 'pyvocz/templates':
@@ -28,6 +30,7 @@ def data_file_names():
                         '.png', '.svg', '.jpg', '.css', '.html',
                         )):
                     yield os.path.relpath(fullname, 'pyvocz')
+
 
 setup_args = dict(
     name='pyvocz',
