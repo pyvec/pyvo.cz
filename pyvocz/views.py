@@ -1,7 +1,6 @@
 import datetime
 import subprocess
 import json
-import time
 import re
 
 from io import BytesIO
@@ -9,16 +8,14 @@ from io import BytesIO
 import ics
 import qrcode
 
-from sqlalchemy import func, and_, or_, desc, extract
+from sqlalchemy import func, or_, desc, extract
 from sqlalchemy.orm import joinedload, subqueryload, contains_eager
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from flask import request, Response, url_for, redirect
 from flask import render_template, jsonify
 from flask import current_app as app
 from werkzeug.exceptions import abort
-from werkzeug.routing import Rule
 from werkzeug.contrib.cache import SimpleCache
-from jinja2.exceptions import TemplateNotFound
 
 from pyvodb import tables
 from pyvodb.calendar import get_calendar
@@ -47,10 +44,12 @@ BACKCOMPAT_SERIES_ALIASES = {
 
 
 # Be careful when using SimpleCache!
-# See: http://werkzeug.pocoo.org/docs/contrib/cache/#werkzeug.contrib.cache.SimpleCache
+# See: http://werkzeug.pocoo.org/docs/contrib/cache/
+#      #werkzeug.contrib.cache.SimpleCache
 cache = SimpleCache(threshold=500, default_timeout=300)
 
 routes = []
+
 
 def route(url, methods=['GET'], translate=True, **kwargs):
     def decorator(func):
@@ -113,7 +112,8 @@ def index():
     query = query.options(joinedload(tables.TalkLink.talk, 'event'))
     query = query.options(joinedload(tables.TalkLink.talk, 'event', 'series'))
     query = query.options(subqueryload(tables.TalkLink.talk, 'talk_speakers'))
-    query = query.options(joinedload(tables.TalkLink.talk, 'talk_speakers', 'speaker'))
+    query = query.options(joinedload(tables.TalkLink.talk, 'talk_speakers',
+                                     'speaker'))
     query = query.order_by(desc(tables.Event.date), tables.Talk.index)
     videos = []
     for link in query[:12]:
@@ -133,6 +133,7 @@ def min_max_years(query):
     query = query.with_entities(func.min(year_col), func.max(year_col))
     first_year, last_year = query.one()
     return first_year, last_year
+
 
 def years_with_events(series_slug):
     query = db.session.query(tables.Event)
@@ -219,18 +220,23 @@ def series(series_slug, year=None, all=None):
     query = query.options(contains_eager(tables.Series.events))
     query = query.options(joinedload(tables.Series.events, 'talks'))
     query = query.options(joinedload(tables.Series.events, 'venue'))
-    query = query.options(joinedload(tables.Series.events, 'talks', 'talk_speakers'))
-    query = query.options(subqueryload(tables.Series.events, 'talks', 'talk_speakers', 'speaker'))
+    query = query.options(joinedload(tables.Series.events, 'talks',
+                                     'talk_speakers'))
+    query = query.options(subqueryload(tables.Series.events, 'talks',
+                                       'talk_speakers', 'speaker'))
     query = query.options(subqueryload(tables.Series.events, 'talks', 'links'))
     query = query.order_by(tables.Event.date.desc())
 
     if not all:
         if year is None:
             # The 'New' page displays the current year as well as the last one
-            query = query.filter(tables.Event.date >= datetime.date(today.year - 1, 1, 1))
+            query = query.filter(tables.Event.date >=
+                                 datetime.date(today.year - 1, 1, 1))
         else:
-            query = query.filter(tables.Event.date >= datetime.date(year, 1, 1))
-            query = query.filter(tables.Event.date < datetime.date(year + 1, 1, 1))
+            query = query.filter(tables.Event.date >=
+                                 datetime.date(year, 1, 1))
+            query = query.filter(tables.Event.date <
+                                 datetime.date(year + 1, 1, 1))
 
     try:
         series = query.one()
@@ -266,8 +272,9 @@ def series(series_slug, year=None, all=None):
             featured_event = past_events.pop(0)
 
     organizer_info = json.loads(series.organizer_info)
-    return render_template('series.html', series=series, today=today, year=year,
-                           future_events=future_events, past_events=past_events,
+    return render_template('series.html', series=series, today=today,
+                           year=year, future_events=future_events,
+                           past_events=past_events,
                            featured_event=featured_event,
                            organizer_info=organizer_info, all=all,
                            first_year=first_year, last_year=last_year,
@@ -306,7 +313,8 @@ def event(series_slug, date_slug):
     query = query.options(joinedload(tables.Event.venue))
     query = query.options(joinedload(tables.Event.talks, 'talk_speakers'))
     query = query.options(subqueryload(tables.Event.links))
-    query = query.options(subqueryload(tables.Event.talks, 'talk_speakers', 'speaker'))
+    query = query.options(subqueryload(tables.Event.talks, 'talk_speakers',
+                                       'speaker'))
     query = query.options(subqueryload(tables.Event.talks, 'links'))
 
     try:
@@ -319,8 +327,8 @@ def event(series_slug, date_slug):
         return redirect(url_for('event', series_slug=series_slug,
                                 date_slug=proper_date_slug))
 
-    github_link = "https://github.com/pyvec/pyvo-data/blob/master/{filepath}" \
-            .format(filepath=event._source)
+    github_link = ("https://github.com/pyvec/pyvo-data/blob/master/"
+                   "{filepath}".format(filepath=event._source))
 
     return render_template('event.html', event=event, today=today,
                            github_link=github_link)
@@ -339,7 +347,7 @@ def event_qrcode(series_slug, date_slug):
         qr_byte_io = BytesIO()
         qr_img.save(qr_byte_io, 'PNG')
         qr_byte_io.seek(0)
-        cache.set(url, qr_byte_io, timeout=5*60)
+        cache.set(url, qr_byte_io, timeout=5 * 60)
 
     return Response(qr_byte_io, mimetype='image/png')
 
@@ -375,6 +383,7 @@ def api_venue_geojson(venueslug):
         ]
     })
 
+
 def make_ics(query, url, *, recurrence_series=()):
     today = datetime.date.today()
 
@@ -405,8 +414,8 @@ def make_ics(query, url, *, recurrence_series=()):
                                        geo_obj.longitude)
         calendar.events.append(cal_event)
 
-        if (event.series in last_series_date
-                and last_series_date[event.series] < event.date):
+        if (event.series in last_series_date and
+                last_series_date[event.series] < event.date):
             last_series_date[event.series] = event.date
 
     for series in recurrence_series:
@@ -426,6 +435,7 @@ def make_ics(query, url, *, recurrence_series=()):
             calendar.events.append(cal_event)
 
     return calendar
+
 
 def make_feed(query, url):
     query = query.options(joinedload(tables.Event.city))
@@ -447,7 +457,8 @@ def make_feed(query, url):
         fe.summary(event.description)
         fe.published(event.start)
         fe.updated(event.start)
-        # XXX: Put talks into fe.dscription(), videos in link(..., rel='related')
+        # XXX: Put talks into fe.dscription(),
+        # videos in link(..., rel='related')
     return fg
 
 
@@ -516,11 +527,13 @@ def reload_hook():
     head_commit = output.decode('ascii').strip()
 
     if old_head_commit == head_commit:
-        return jsonify({'result': 'OK', 'HEAD': head_commit, 'note': 'unchanged'})
+        return jsonify({'result': 'OK', 'HEAD': head_commit,
+                        'note': 'unchanged'})
 
     db_reload(datadir)
 
     return jsonify({'result': 'OK', 'HEAD': head_commit})
+
 
 @route('/', subdomain='<subdomain>')
 def subdomain_redirect(subdomain):
@@ -534,6 +547,7 @@ def subdomain_redirect(subdomain):
     subdomain = ALIASES.get(subdomain, subdomain)
     return redirect(url_for('series', series_slug=subdomain))
 
+
 @route('/feedback')
 def feedback_form_redirect():
     feedback_form_url = (
@@ -541,6 +555,7 @@ def feedback_form_redirect():
         '1FAIpQLSdgnx9ljKYuC2FDWhCHDu8uHteN4uozHejbGfw2iEyt97q6fQ/viewform'
     )
     return redirect(feedback_form_url)
+
 
 @route('/zaloz')
 def zaloz_redirect():

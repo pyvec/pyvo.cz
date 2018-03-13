@@ -14,6 +14,7 @@ __all__ = ('mail_link', 'nl2br', 'monthname', 'shortdayname', 'shortmonth',
 
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
+
 def mail_link(address):
     address = address.replace('a', '&#97;')
     address = address.replace('c', '&#99;')
@@ -24,8 +25,8 @@ def mail_link(address):
 
 
 def nl2br(value):
-    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', '<br>\n') \
-        for p in _paragraph_re.split(escape(value)))
+    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', '<br>\n')
+                          for p in _paragraph_re.split(escape(value)))
     result = Markup(result)
     return result
 
@@ -136,9 +137,11 @@ def markdown(text):
     result = Markup(convert_markdown(text))
     return result
 
+
 def get_site_name(link):
     base_url = urlparse(link).netloc
     return re.sub(r'^www.', '', base_url)
+
 
 def mapy_cz_url(venue):
     template = ('http://mapy.cz/zakladni?q={venue.name}&amp;' +

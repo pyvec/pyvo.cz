@@ -41,7 +41,8 @@ if not os.path.exists(datadir):
 
 if arguments['--debug']:
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.jinja_env.auto_reload = True  # Workaround for https://github.com/pallets/flask/issues/1907
+    # Workaround for https://github.com/pallets/flask/issues/1907
+    app.jinja_env.auto_reload = True
     app.run(debug=True, host=host, port=port)
 else:
     app.run(debug=False, host=host or '0.0.0.0', port=port)

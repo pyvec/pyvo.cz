@@ -12,6 +12,7 @@ from .views import routes
 
 DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'pyvo-data')
 
+
 def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
                host=None, port=5000):
     datadir = os.path.abspath(datadir)
