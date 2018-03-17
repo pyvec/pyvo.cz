@@ -28,7 +28,7 @@ def data_file_names():
                 fullname = os.path.join(dirname, filename)
                 if filename not in dirs and fullname.endswith((
                         '.png', '.svg', '.jpg', '.css', '.html',
-                        )):
+                )):
                     yield os.path.relpath(fullname, 'pyvocz')
 
 

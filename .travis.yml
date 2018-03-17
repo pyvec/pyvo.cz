@@ -5,9 +5,11 @@ python:
 
 install:
   - pip install -e.
-  - pip install pytest pytest-flask lxml requests cssselect
+  - pip install pytest pytest-flask lxml requests cssselect flake8
   - git clone --depth 1 https://github.com/pyvec/pyvo-data pyvocz/pyvo-data
 
-script: py.test test_pyvocz
+script:
+  - py.test test_pyvocz
+  - flake8 --exclude=pyvocz/pyvo-data/
 
 sudo: false
