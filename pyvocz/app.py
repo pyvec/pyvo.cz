@@ -22,6 +22,10 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
     app.config.setdefault('SQLALCHEMY_ECHO', echo)
     app.config.setdefault('PYVO_DATADIR', datadir)
     app.config.setdefault('PYVO_PULL_PASSWORD', pull_password)
+
+    # pyvo.cz does no modifications
+    app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
+
     if host:
         server_name = host
         if port != 80:
