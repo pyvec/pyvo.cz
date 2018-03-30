@@ -560,3 +560,11 @@ def feedback_form_redirect():
 @route('/zaloz')
 def zaloz_redirect():
     return redirect('https://pyvec-guide.readthedocs.io/guides/meetup.html')
+
+
+@route('/googleb01eac5297e2560c.html')
+def google_verification():
+    # Verifies pyvo.cz's claim to its YouTube channel:
+    #  https://www.youtube.com/channel/UCaT4I7hjX9iH1YFvNvuu84A
+    # Should not be removed.
+    return 'google-site-verification: googleb01eac5297e2560c.html'
