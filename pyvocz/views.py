@@ -389,8 +389,8 @@ def make_ics(query, url, *, recurrence_series=()):
 
     query = query.options(joinedload(tables.Event.city))
     query = query.options(joinedload(tables.Event.venue))
-    calendar = ics.Calendar()
 
+    events = []
     last_series_date = {}
 
     for event in query:
@@ -412,7 +412,7 @@ def make_ics(query, url, *, recurrence_series=()):
         )
         cal_event.geo = '{}:{}'.format(geo_obj.latitude,
                                        geo_obj.longitude)
-        calendar.events.append(cal_event)
+        events.append(cal_event)
 
         if (event.series in last_series_date and
                 last_series_date[event.series] < event.date):
@@ -432,9 +432,9 @@ def make_ics(query, url, *, recurrence_series=()):
                 begin=occurence,
                 uid='{}-{}@pyvo.cz'.format(series.slug, occurence.date()),
             )
-            calendar.events.append(cal_event)
+            events.append(cal_event)
 
-    return calendar
+    return ics.Calendar(events=events)
 
 
 def make_feed(query, url):
