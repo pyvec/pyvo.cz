@@ -1,0 +1,78 @@
+% Typeset using lualatex
+
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{luainputenc}
+\usepackage[pdfborder={0 0 0}]{hyperref}
+
+\usepackage[czech]{babel}
+
+\usepackage[nodayofweek]{datetime}
+
+\usepackage{fouriernc}
+\usepackage{tgpagella}
+\usepackage[activate=true]{microtype}
+\usepackage{amssymb}
+\usepackage{fontspec}
+
+\usepackage[a4paper,margin=2cm]{geometry}
+
+\setmainfont[Numbers=OldStyle]{TeX Gyre Pagella}
+
+\pagestyle{empty}
+
+\parskip=1ex
+\parindent=0pt
+
+\renewcommand{\labelitemi}{\scriptsize$\square$}
+
+\newcommand\consentform{
+
+Souhlasím se zveřejněním následujících osobních údajů souvisejících s přednáškou
+
+
+\bigskip
+
+\rule{\textwidth}{0.2pt}
+
+odprezentovanou dne \rule{0.5cm}{0.2pt}. \rule{0.5cm}{0.2pt}. \rule{1.5cm}{0.2pt}:
+
+\begin{itemize}
+\item celé jméno přednášejícího
+\item audiovizuální záznam přednášky
+\item kontaktní údaje zveřejněné v prezentaci
+\item další: \rule{0.5\textwidth}{0.2pt}
+\end{itemize}
+
+(Nehodící se škrtni.)
+
+Informace budou vystaveny na stránkách \texttt{https://pyvo.cz}
+a \texttt{https://youtube.com}.
+
+Osobní údaje spravuje Pyvec, o.s., Ječná 507/6, 12000 Praha 2.
+(Více informací na \texttt{http://pyvec.org}.)
+
+Souhlas můžu kdykoli zrušit nebo můžu požadovat smazání těchto informací
+e-mailem (\texttt{info@pyvec.org}) nebo poštou na výše uvedenou adresu.
+
+Více informací o zveřejňování informací a záznamů o přednáškách je na
+\texttt{https://pyvo.cz/en/personal-info/}.
+
+\bigskip\bigskip
+
+\hfill\rule{0.5\textwidth}{0.2pt}
+
+}
+
+\newcommand\separator{
+\vfill
+\noindent\hspace{-1\pagewidth}\rule{3\pagewidth}{0.2pt}
+\vfill
+}
+
+\begin{document}
+
+\consentform
+\separator
+\consentform
+
+\end{document}
