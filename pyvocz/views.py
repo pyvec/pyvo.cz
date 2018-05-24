@@ -562,6 +562,11 @@ def zaloz_redirect():
     return redirect('https://pyvec-guide.readthedocs.io/guides/meetup.html')
 
 
+@route('/personal-info/')
+def personal_info():
+    return render_template('personal-info.html')
+
+
 @route('/googleb01eac5297e2560c.html')
 def google_verification():
     # Verifies pyvo.cz's claim to its YouTube channel:

@@ -1,0 +1,146 @@
+{% extends "_base.html" %}
+
+{% block bodycontent %}
+<div class="container">
+
+{% if g.lang_code == 'cs' %}
+
+<h1>Pyvo.cz a osobní údaje</h1>
+
+<p>
+    Stránky pyvo.cz zveřejňuje informace o programátorských srazech.
+    Součástí třechto informací jsou údaje o proběhlých a plánovaných
+    přednáškách a přednášejících,
+    a to včetně veřejných <em>audio/video záznamů</em> odborných přednášek
+    zveřejňovaných na stránkách youtube.com.
+</p>
+<p>
+    Veškeré údaje, které pro tento účel spravujeme a zpracováváme,
+    jsou <em>volně k dispozici</em> na webových stránkách
+    <a href="https://pyvo.cz">pyvo.cz</a>;
+    v případě videí na youtube.com.
+</p>
+<p>
+    Jejich součástí mohou být i následující osobní údaje:
+</p>
+<ul>
+    <li>
+        Celé jméno přednášejícího,
+    </li>
+    <li>
+        Audiovideální záznam přednášejícího nebo jiných návštěvníků akce,
+    </li>
+    <li>
+        Kontaktní nebo jiné údaje o přednášejícím, ktreré jsou obsaženy
+        v prezentaci („slajdech“) nebo popisu přednášky,
+        kterou přednášející poskytl organizátorům.
+    </li>
+</ul>
+<p>
+    Tyto údaje zpracovávají i následující společnosti:
+</p>
+<ul>
+    <li>
+        <strong>GitHub</strong>
+        (88 Colin P Kelly Jr St, San Francisco, CA 9410 USA)
+    </li>
+    <li>
+        <strong>YouTube, LLC</strong>
+        (901 Cherry Ave. San Bruno, CA 94066 USA)
+    </li>
+    <li>
+        <strong>Roští.cz, s.r.o.</strong>
+        (Veverkova 1343, 500 02 Hradec Králové; IČ: 04173571)
+    </li>
+</ul>
+<p>
+    Vezměte, prosíme, na vědomí, že podle zákona o ochraně osobních údajů máte právo:
+</p>
+<ul>
+    <li>Vzít kdykoliv zpět souhlas se zpracováním údajů</li>
+    <li>Požadovat po nás informaci, jaké vaše osobní údaje zpracováváme; požadovat po nás vysvětlení ohledně zpracování osobních údajů</li>
+    <li>Vyžádat si u nás přístup k těmto údajům a tyto nechat aktualizovat nebo opravit</li>
+    <li>Požadovat po nás výmaz těchto osobních údajů</li>
+    <li>V případě pochybností o dodržování povinností souvisejících se zpracováním osobních údajů obrátit se na nás nebo na Úřad pro ochranu osobních údajů.</li>
+</ul>
+<p>
+    Veškeré žádosti a dotazy prosím posílejte na e-mail
+    <a href="mailto:info@pyvec.cz">info@pyvec.cz</a>
+    nebo poštou na <a href="http://pyvec.org/">Pyvec, o.s.</a>,
+    Ječná 507/6, 12000 Praha 2.
+</p>
+
+{% elif g.lang_code == 'en' %}
+
+<h1>Pyvo.cz and personal information</h1>
+
+<p>
+    The pyvo.cz website contains public information about meetings of
+    computer programmers.
+    This includes information about past and upcoming presentations and presenters,
+    including public <em>audio/video</em> recordings of presentations
+    hosted at youtube.com.
+</p>
+<p>
+    All information we collect and manage for these purposes is
+    <em>publicly available</em> on the <a href="https://pyvo.cz">pyvo.cz</a>
+    website and on youtube.com.
+</p>
+<p>
+    This contains the following types of personal information:
+</p>
+<ul>
+    <li>
+        Full name of presenter(s),
+    </li>
+    <li>
+        Audio/video recording of the presenter and/or other attendees,
+    </li>
+    <li>
+        Contact information, and other information about the presenter
+        included in the presentation (slides) or in the talk description
+        provided to the organizers.
+    </li>
+</ul>
+<p>
+    The data is handled also by the following companies:
+</p>
+<ul>
+    <li>
+        <strong>GitHub</strong>
+        (88 Colin P Kelly Jr St, San Francisco, CA 9410 USA)
+    </li>
+    <li>
+        <strong>YouTube, LLC</strong>
+        (901 Cherry Ave. San Bruno, CA 94066 USA)
+    </li>
+    <li>
+        <strong>Roští.cz, s.r.o.</strong>
+        (Veverkova 1343, 500 02 Hradec Králové; IČ: 04173571)
+    </li>
+</ul>
+<p>
+    Please note that you have the right to:
+</p>
+<ul>
+    <li>Cancel your consent to our handling of your personal information</li>
+    <li>Demand information on what personal information we handle and how we handle it</li>
+    <li>Demand access to the information and demand that we correct it if it's wrong</li>
+    <li>Demand that we remove your personal information</li>
+    <li>In case of doubt about our compliance with any regulations related to handling personal data, contact us or the Czech Office for Personal Data Protection</li>
+</ul>
+<p>
+    Please send all requests by e-mail to
+    <a href="mailto:info@pyvec.cz">info@pyvec.cz</a>
+    or by post to <a href="http://pyvec.org/">Pyvec, o.s.</a>,
+    Ječná 507/6, 12000 Praha 2.
+</p>
+
+{% else %}
+
+    Error: Unknown language {{ {}[g.lang_code] }}
+
+{% endif %}
+
+</div>
+{% endblock bodycontent %}
