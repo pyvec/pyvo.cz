@@ -115,7 +115,16 @@
                             </div>
                             <ul class="talk-links">
                                 {% for link in talk.links %}
-                                    <li><a href="{{ link.url }}">{{ link.hostname }}</a></li>
+                                    <li>
+                                        {%- if link.kind == 'video' -%}
+                                            Video:
+                                        {%- elif link.kind == 'slides' -%}
+                                            {{ tr('Slajdy', 'Slides') }}:
+                                        {%- elif link.kind == 'notes' -%}
+                                            {{ tr('Poznámky', 'Notes') }}:
+                                        {%- endif %}
+                                        <a href="{{ link.url }}">{{ link.hostname }}</a>
+                                    </li>
                                 {% endfor %}
                             </ul>
                         {% endif %}
