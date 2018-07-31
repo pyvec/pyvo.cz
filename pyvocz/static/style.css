@@ -380,6 +380,12 @@ div.map .map-city-liberec {
     top: 25px;
 }
 
+div.map .map-city-hradec-kralove {
+    display: block;
+    left: 190px;
+    top: 67px;
+}
+
 div.map .map-city.past { opacity: 0.75; }
 div.map .map-city.past a { color: black; }
 div.map .map-city.today a { color: black; text-shadow: 0px 0px 3px white, 0 0 2px white; }
