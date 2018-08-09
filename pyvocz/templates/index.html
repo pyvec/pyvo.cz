@@ -73,8 +73,8 @@
             {# 2 columns is OK #}
             {% set num_columns = 2 %}
         {% else %}
-            {# if neither is possible, use 3 (with padding, see below) #}
-            {% set num_columns = 3 %}
+            {# if neither is possible, use 2 (with padding, see below) #}
+            {% set num_columns = 2 %}
         {% endif %}
         <div class="events-display columns-{{ num_columns }}">
             {% for event in featured_events %}
