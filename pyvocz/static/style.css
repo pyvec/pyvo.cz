@@ -878,6 +878,18 @@ body.eventpage .talk-entry .youtube-link {
     margin: 0 0 1em;
 }
 
+.notice {
+  background: #337ab7;
+  color: #fff;
+  padding: 0.5em;
+  text-align: center;
+}
+ .notice a {
+  color: #fff;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
 /******************** Event page adjustments incl. print ********************/
 
 .eventpage div.container div.edit-on-github {
