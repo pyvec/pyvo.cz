@@ -40,18 +40,22 @@
                                 {% if day['day'] == today %}today{% endif %}
                                 {% if loop.index > 5 or (day['holiday']) %}nowork{% endif %}
                                 {% if day['events'] %}has-event{% endif %}
+                                {% if (day['events'] | length) > 1 %}
+                                    multiple-events
+                                {% endif %}
                                 "
                             >
                                 {% if day['events'] %}
-                                    {% set event = day['events'][0] %}
-                                    <a href="{{ url_for('event', series_slug=event.series.slug,
-                                                        date_slug=event.slug) }}">
-                                        <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}"
-                                            width="20"
-                                            alt="{{day['day'] | shortday}} – {{ event.title }}"
-                                            title="{{day['day'] | shortday}} – {{ event.title }}"
-                                        >
-                                    </a>
+                                    {% for event in day['events'] %}
+                                        <a href="{{ url_for('event', series_slug=event.series.slug,
+                                                            date_slug=event.slug) }}">
+                                            <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}"
+                                                width="20"
+                                                alt="{{day['day'] | shortday}} – {{ event.title }}"
+                                                title="{{day['day'] | shortday}} – {{ event.title }}"
+                                            >
+                                        </a>
+                                    {% endfor %}
                                 {% elif day['next_occurences'] %}
                                     {% set series = day['next_occurences'][0] %}
                                     <a href="{{ url_for('series', series_slug=series.slug,

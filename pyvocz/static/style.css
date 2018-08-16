@@ -481,6 +481,8 @@ div.map .map-city.future a { color: black; }
     color: #C2AE84;
     text-align: center;
     min-width: 2em;
+    max-width: 1.4em;
+    box-sizing: content-box;
 }
 
 .calendar table tr .nowork {
@@ -496,6 +498,15 @@ div.map .map-city.future a { color: black; }
     width: 1.3em;
     position: relative;
     top: 2px;
+}
+
+.calendar table td.multiple-events {
+    border: 1px solid #C2AE84;
+}
+
+.calendar table .multiple-events img {
+    width: 0.75em;
+    top: 0;
 }
 
 .export-links ul,
