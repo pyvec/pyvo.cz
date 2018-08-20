@@ -21,6 +21,48 @@
     {% endif %}
 {% endmacro %}
 
+{% macro _calendar_day(day, is_nowork, is_today) %}
+    {% if day['alien'] %}
+        <td {% if is_nowork %}class="nowork"{% endif %}>&nbsp;</td>
+    {% else %}
+        <td class="
+            {% if is_today %}today{% endif %}
+            {% if is_nowork or (day['holiday']) %}nowork{% endif %}
+            {% if day['events'] %}has-event{% endif %}
+            {% if (day['events'] | length) > 1 %}
+                multiple-events
+            {% endif %}
+            "
+        >
+            {% if day['events'] %}
+                {% for event in day['events'] %}
+                    <a href="{{ url_for('event', series_slug=event.series.slug,
+                                        date_slug=event.slug) }}">
+                        <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}"
+                            width="20"
+                            alt="{{day['day'] | shortday}} – {{ event.title }}"
+                            title="{{day['day'] | shortday}} – {{ event.title }}"
+                        >
+                    </a>
+                {% endfor %}
+            {% elif day['next_occurences'] %}
+                {% set series = day['next_occurences'][0] %}
+                <a href="{{ url_for('series', series_slug=series.slug,
+                                    _anchor='future') }}">
+                    <img src="{{ url_for('static', filename='coatofarms/'+series.home_city_slug+'-gray.svg') }}"
+                        width="20"
+                        alt="{{day['day'] | shortday}} – {{ tr('možný termín pro', 'possible date for') }} {{ series.name }}"
+                        title="{{day['day'] | shortday}} – {{ tr('možný termín pro', 'possible date for') }} {{ series.name}}"
+                        style="opacity:0.2;"
+                    >
+                </a>
+            {% else %}
+                {{ day['day'].day }}
+            {% endif %}
+        </td>
+    {% endif %}
+{% endmacro %}
+
 {% macro calendar_month(year, month, weeks, today) %}
     <table>
         <caption>{{ month | monthname }}</caption>
@@ -33,41 +75,11 @@
             {% if (week[0]['day'].year, week[0]['day'].month) <= (year, month) %}
                 <tr>
                     {% for day in week %}
-                        {% if day['alien'] %}
-                            <td {% if loop.index > 5 %}class="nowork"{% endif %}>&nbsp;</td>
-                        {% else %}
-                            <td class="
-                                {% if day['day'] == today %}today{% endif %}
-                                {% if loop.index > 5 or (day['holiday']) %}nowork{% endif %}
-                                {% if day['events'] %}has-event{% endif %}
-                                "
-                            >
-                                {% if day['events'] %}
-                                    {% set event = day['events'][0] %}
-                                    <a href="{{ url_for('event', series_slug=event.series.slug,
-                                                        date_slug=event.slug) }}">
-                                        <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}"
-                                            width="20"
-                                            alt="{{day['day'] | shortday}} – {{ event.title }}"
-                                            title="{{day['day'] | shortday}} – {{ event.title }}"
-                                        >
-                                    </a>
-                                {% elif day['next_occurences'] %}
-                                    {% set series = day['next_occurences'][0] %}
-                                    <a href="{{ url_for('series', series_slug=series.slug,
-                                                        _anchor='future') }}">
-                                        <img src="{{ url_for('static', filename='coatofarms/'+series.home_city_slug+'-gray.svg') }}"
-                                            width="20"
-                                            alt="{{day['day'] | shortday}} – {{ tr('možný termín pro', 'possible date for') }} {{ series.name }}"
-                                            title="{{day['day'] | shortday}} – {{ tr('možný termín pro', 'possible date for') }} {{ series.name}}"
-                                            style="opacity:0.2;"
-                                        >
-                                    </a>
-                                {% else %}
-                                    {{ day['day'].day }}
-                                {% endif %}
-                            </td>
-                        {% endif %}
+                        {{ _calendar_day(
+                            day,
+                            is_nowork=loop.index>5,
+                            is_today=day['day'] == today,
+                        ) }}
                     {% endfor %}
                 </tr>
             {% endif %}
