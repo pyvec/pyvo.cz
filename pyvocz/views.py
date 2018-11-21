@@ -11,7 +11,7 @@ import qrcode
 from sqlalchemy import func, or_, desc, extract
 from sqlalchemy.orm import joinedload, subqueryload, contains_eager
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from flask import request, Response, url_for, redirect
+from flask import request, Response, url_for, redirect, g
 from flask import render_template, jsonify
 from flask import current_app as app
 from werkzeug.exceptions import abort
@@ -427,9 +427,13 @@ def make_ics(query, url, *, recurrence_series=()):
         # but ics doesn't allow that yet:
         # https://github.com/C4ptainCrunch/ics.py/issues/14
         # Just show the 6 next events.
+        if g.lang_code == 'cs':
+            name_template = '({} – nepotvrzeno; tradiční termín srazu)'
+        else:
+            name_template = '({} – tentative date)'
         for occurence in series.next_occurrences(n=6, since=since):
             cal_event = ics.Event(
-                name='({}?)'.format(series.name),
+                name=name_template.format(series.name),
                 begin=occurence,
                 uid='{}-{}@pyvo.cz'.format(series.slug, occurence.date()),
             )
