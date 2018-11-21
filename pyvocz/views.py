@@ -411,6 +411,12 @@ def make_ics(query, url, *, recurrence_series=()):
             location=location,
             begin=event.start,
             uid='{}-{}@pyvo.cz'.format(event.series_slug, event.date),
+            url=url_for(
+                'event', series_slug=event.series.slug,
+                date_slug=event.slug,
+                _external=True,
+            ),
+            description=event.description,
         )
         cal_event.geo = '{}:{}'.format(geo_obj.latitude,
                                        geo_obj.longitude)
