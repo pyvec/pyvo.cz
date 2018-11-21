@@ -8,6 +8,7 @@ from io import BytesIO
 import ics
 import qrcode
 
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import func, or_, desc, extract
 from sqlalchemy.orm import joinedload, subqueryload, contains_eager
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -419,19 +420,24 @@ def make_ics(query, url, *, recurrence_series=()):
                 last_series_date[event.series] < event.date):
             last_series_date[event.series] = event.date
 
+    # XXX: We should use the Series recurrence rule directly,
+    # but ics doesn't allow that yet:
+    # https://github.com/C4ptainCrunch/ics.py/issues/14
+    # Just show the events for the next 6 months (with the limit at a month
+    # boundary).
+    occurence_limit = (today + relativedelta(months=+6)).replace(day=1)
+
     for series in recurrence_series:
         since = last_series_date.get(series, today)
         since += datetime.timedelta(days=1)
 
-        # XXX: We should use the Series recurrence rule directly,
-        # but ics doesn't allow that yet:
-        # https://github.com/C4ptainCrunch/ics.py/issues/14
-        # Just show the 6 next events.
         if g.lang_code == 'cs':
             name_template = '({} – nepotvrzeno; tradiční termín srazu)'
         else:
             name_template = '({} – tentative date)'
-        for occurence in series.next_occurrences(n=6, since=since):
+        for occurence in series.next_occurrences(since=since):
+            if occurence.date() > occurence_limit:
+                break
             cal_event = ics.Event(
                 name=name_template.format(series.name),
                 begin=occurence,
