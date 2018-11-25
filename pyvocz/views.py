@@ -438,6 +438,7 @@ def make_ics(query, url, *, recurrence_series=()):
                 name='({}?)'.format(series.name),
                 begin=occurence,
                 uid='{}-{}@pyvo.cz'.format(series.slug, occurence.date()),
+                categories=['tentative-date'],
             )
             events.append(cal_event)
 
