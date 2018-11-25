@@ -97,7 +97,13 @@ def index():
     query = query.order_by(*order_args)
     query = query.options(joinedload(tables.Event.series))
     query = query.options(joinedload(tables.Event.venue))
-    featured_events = query.all()
+    # Only show one event per series
+    seen_series = set()
+    featured_events = []
+    for event in query.all():
+        if event.series not in seen_series:
+            seen_series.add(event.series)
+            featured_events.append(event)
 
     # Video query
 
