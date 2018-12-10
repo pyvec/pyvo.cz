@@ -8,10 +8,11 @@ from io import BytesIO
 import ics
 import qrcode
 
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import func, or_, desc, extract
 from sqlalchemy.orm import joinedload, subqueryload, contains_eager
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from flask import request, Response, url_for, redirect
+from flask import request, Response, url_for, redirect, g
 from flask import render_template, jsonify
 from flask import current_app as app
 from werkzeug.exceptions import abort
@@ -416,6 +417,12 @@ def make_ics(query, url, *, recurrence_series=()):
             location=location,
             begin=event.start,
             uid='{}-{}@pyvo.cz'.format(event.series_slug, event.date),
+            url=url_for(
+                'event', series_slug=event.series.slug,
+                date_slug=event.slug,
+                _external=True,
+            ),
+            description=event.description,
         )
         cal_event.geo = '{}:{}'.format(geo_obj.latitude,
                                        geo_obj.longitude)
@@ -425,17 +432,26 @@ def make_ics(query, url, *, recurrence_series=()):
                 last_series_date[event.series] < event.date):
             last_series_date[event.series] = event.date
 
+    # XXX: We should use the Series recurrence rule directly,
+    # but ics doesn't allow that yet:
+    # https://github.com/C4ptainCrunch/ics.py/issues/14
+    # Just show the events for the next 6 months (with the limit at a month
+    # boundary).
+    occurence_limit = (today + relativedelta(months=+6)).replace(day=1)
+
     for series in recurrence_series:
         since = last_series_date.get(series, today)
         since += datetime.timedelta(days=1)
 
-        # XXX: We should use the Series recurrence rule directly,
-        # but ics doesn't allow that yet:
-        # https://github.com/C4ptainCrunch/ics.py/issues/14
-        # Just show the 6 next events.
-        for occurence in series.next_occurrences(n=6, since=since):
+        if g.lang_code == 'cs':
+            name_template = '({} – nepotvrzeno; tradiční termín srazu)'
+        else:
+            name_template = '({} – tentative date)'
+        for occurence in series.next_occurrences(since=since):
+            if occurence.date() > occurence_limit:
+                break
             cal_event = ics.Event(
-                name='({}?)'.format(series.name),
+                name=name_template.format(series.name),
                 begin=occurence,
                 uid='{}-{}@pyvo.cz'.format(series.slug, occurence.date()),
                 categories=['tentative-date'],

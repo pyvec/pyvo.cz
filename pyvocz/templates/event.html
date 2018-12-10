@@ -110,9 +110,11 @@
                             </div>
                         {% endif %}
                         {% if talk.links %}
-                            <div class="talk-links-intro">
-                                {{ tr('Jinde na webu:', 'Elsewhere on the Web:') }}
-                            </div>
+                            {% if not talk.is_lightning %}
+                                <div class="talk-links-intro">
+                                    {{ tr('Jinde na webu:', 'Elsewhere on the Web:') }}
+                                </div>
+                            {% endif %}
                             <ul class="talk-links">
                                 {% for link in talk.links %}
                                     <li>
