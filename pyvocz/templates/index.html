@@ -357,10 +357,35 @@
         <h2>{{ tr('Kamarádi', 'Friends') }}</h2>
         <ul>
             <li>
+                <a href="https://pyworking.cz/">PyWorking</a> – 
                 {% if g.lang_code == 'cs' %}
-                    <a href="https://pycon.sk/">PyCon SK</a> – Slovenská konference a srazy
+                    „Hands-on“ setkání a workshopy
                 {% else %}
-                    <a href="https://pycon.sk/">PyCon SK</a> – Slovak Python User Group
+                    „Hands-on“ meetups and workshops
+                {% endif %}
+            </li>
+            <li>
+                <a href="https://cz.pycon.org/">PyCon CZ</a> – 
+                {% if g.lang_code == 'cs' %}
+                    Česká konference o Pythonu
+                {% else %}
+                    Czech Python conference
+                {% endif %}
+            </li>
+            <li>
+                <a href="https://www.meetup.com/pyconsk/">Bratislava Python Meetup</a> –
+                {% if g.lang_code == 'cs' %}
+                    Slovenské konference a srazy
+                {% else %}
+                    Slovak Python user group
+                {% endif %}
+            </li>
+            <li>
+                <a href="https://pycon.sk/">PyCon SK</a> – 
+                {% if g.lang_code == 'cs' %}
+                    Slovenská konference o Pythonu
+                {% else %}
+                    Slovak Python conference
                 {% endif %}
             </li>
             <li>
@@ -372,16 +397,8 @@
                 {% endif %}
             </li>
             <li>
-                <a href="http://pysilesia.org/">PySilesia</a> –
                 {% if g.lang_code == 'cs' %}
-                    Srazy Pythonistů z Katowic a okolí
-                {% else %}
-                    Katowice Python meetups
-                {% endif %}
-            </li>
-            <li>
-                {% if g.lang_code == 'cs' %}
-                    <a href="http://rubyslava.sk/">Rubyslava</a> – Bratislavské združenie priateľov elegantného programovania všeho druhu.
+                    <a href="http://rubyslava.sk/">Rubyslava</a> – Bratislavské združenie priateľov elegantného programovania všeho druhu
                 {% else %}
                     <a href="http://rubyslava.sk/english.html">Rubyslava</a> – Language-agnostic meetups in Bratislava
                 {% endif %}
@@ -392,6 +409,22 @@
                     Vídeňský sraz kolem jazyka Ruby
                 {% else %}
                     Viennese Ruby meetups
+                {% endif %}
+            </li>
+            <li>
+                <a href="http://www.meetup.com/Praguerb/">Prague.rb</a> –
+                {% if g.lang_code == 'cs' %}
+                    Pražské Ruby srazy
+                {% else %}
+                    Ruby meetups in Prague
+                {% endif %}
+            </li>
+            <li>
+                <a href="https://pehapkari.cz/">Péhápkáři</a> –
+                {% if g.lang_code == 'cs' %}
+                    České srazy kolem jazyka PHP
+                {% else %}
+                    Czech PHP meetups
                 {% endif %}
             </li>
         </ul>
