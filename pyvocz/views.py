@@ -224,15 +224,21 @@ def series(series_slug, year=None, all=None):
 
     query = db.session.query(tables.Series)
     query = query.filter(tables.Series.slug == series_slug)
-    query = query.join(tables.Series.events)
-    query = query.options(contains_eager(tables.Series.events))
-    query = query.options(joinedload(tables.Series.events, 'talks'))
-    query = query.options(joinedload(tables.Series.events, 'venue'))
-    query = query.options(joinedload(tables.Series.events, 'talks',
+
+    try:
+        series = query.one()
+    except NoResultFound:
+        abort(404)
+
+    query = db.session.query(tables.Event)
+    query = query.filter(tables.Event.series == series)
+    query = query.options(joinedload(tables.Event, 'talks'))
+    query = query.options(joinedload(tables.Event, 'venue'))
+    query = query.options(joinedload(tables.Event, 'talks',
                                      'talk_speakers'))
-    query = query.options(subqueryload(tables.Series.events, 'talks',
+    query = query.options(subqueryload(tables.Event, 'talks',
                                        'talk_speakers', 'speaker'))
-    query = query.options(subqueryload(tables.Series.events, 'talks', 'links'))
+    query = query.options(subqueryload(tables.Event, 'talks', 'links'))
     query = query.order_by(tables.Event.date.desc())
 
     if not all:
@@ -246,26 +252,13 @@ def series(series_slug, year=None, all=None):
             query = query.filter(tables.Event.date <
                                  datetime.date(year + 1, 1, 1))
 
-    try:
-        series = query.one()
-        has_events = True
-    except NoResultFound:
-        has_events = False
-
-        # The series has no events during the selected timeframe so at least
-        # load general information on the series so we can properly display
-        # the heading.
-        query = db.session.query(tables.Series)
-        query = query.filter(tables.Series.slug == series_slug)
-        try:
-            series = query.one()
-        except NoResultFound:
-            abort(404)
+    events = list(query)
+    has_events = bool(events)
 
     # Split events between future and past
     # (today's event, if any, is considered future)
-    past_events = [e for e in series.events if e.date < today]
-    future_events = [e for e in series.events if e.date >= today]
+    past_events = [e for e in events if e.date < today]
+    future_events = [e for e in events if e.date >= today]
 
     # Events are ordered closest first;
     #  for future ones this means ascending order
