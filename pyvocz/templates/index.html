@@ -232,6 +232,17 @@
                     {% endif %}
                 <p>
             </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/learning-python.svg') }}" alt=""></span>
+                <p>
+                    {% if g.lang_code == 'cs' %}
+                        Když se předem domluvíš, můžeš si na Pyvu vyzvednou některou z knih z naší komunitní
+                         <a href="https://books.pyvo.cz">knihovničky</a>.
+                    {% else %}
+                        If you arrange it in advance, you can pick up a book from our <a href="https://books.pyvo.cz">community library</a> at Pyvo.
+                    {% endif %}
+                <p>
+            </li>
             <!--
             <li>
                 <img src="{{ url_for('static', filename='images/heart.png') }}" alt=""></span>
@@ -357,7 +368,7 @@
         <h2>{{ tr('Kamarádi', 'Friends') }}</h2>
         <ul>
             <li>
-                <a href="https://pyworking.cz/">PyWorking</a> – 
+                <a href="https://pyworking.cz/">PyWorking</a> –
                 {% if g.lang_code == 'cs' %}
                     „Hands-on“ setkání a workshopy
                 {% else %}
@@ -365,7 +376,7 @@
                 {% endif %}
             </li>
             <li>
-                <a href="https://cz.pycon.org/">PyCon CZ</a> – 
+                <a href="https://cz.pycon.org/">PyCon CZ</a> –
                 {% if g.lang_code == 'cs' %}
                     Česká konference o Pythonu
                 {% else %}
@@ -381,7 +392,7 @@
                 {% endif %}
             </li>
             <li>
-                <a href="https://pycon.sk/">PyCon SK</a> – 
+                <a href="https://pycon.sk/">PyCon SK</a> –
                 {% if g.lang_code == 'cs' %}
                     Slovenská konference o Pythonu
                 {% else %}
