@@ -34,7 +34,7 @@ def data_file_names():
 
 setup_args = dict(
     name='pyvocz',
-    version='0.2',
+    version='0.3',
     packages=['pyvocz'],
 
     description="""Website with information about Pyvo meetups (pyvo.cz)""",
@@ -51,15 +51,15 @@ setup_args = dict(
     ],
 
     install_requires=[
-        'pyvodb >= 0.3.4, < 0.4',
-        'flask >= 0.10, < 1.0',
-        'flask-sqlalchemy >= 2.0, <3.0',
+        'pyvodb >= 1.0, < 2.0',
+        'flask >= 1.1, < 2.0',
+        'flask-sqlalchemy >= 2.4, <3.0',
         'docopt >= 0.6, < 1.0',
         'ics >= 0.3.1, < 1.0',
         'feedgen >= 0.3.1, < 1.0',
-        'markdown >= 2.6.7, < 3.0',
-        'Pillow >= 5.0.0, < 6.0.0',
-        'qrcode >= 5.3, < 6.0',
+        'markdown >= 3.1.1, < 4.0',
+        'Pillow >= 6.1.0, < 7.0.0',
+        'qrcode >= 6.1, < 7.0',
     ],
 
     package_data={'pyvocz': list(data_file_names())},
