@@ -417,8 +417,7 @@ def make_ics(query, url, *, recurrence_series=()):
             ),
             description=event.description,
         )
-        cal_event.geo = '{}:{}'.format(geo_obj.latitude,
-                                       geo_obj.longitude)
+        cal_event.geo = float(geo_obj.latitude), float(geo_obj.longitude)
         events.append(cal_event)
 
         if (event.series in last_series_date and
