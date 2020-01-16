@@ -31,7 +31,6 @@ FEATURED_SERIES = (
     'ostrava-pyvo',
     'olomouc-pyvo',
     'plzen-pyvo',
-    'liberec-pyvo',
     'hradec-pyvo',
 )
 
