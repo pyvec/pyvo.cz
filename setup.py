@@ -60,6 +60,7 @@ setup_args = dict(
         'markdown >= 3.1.1, < 4.0',
         'Pillow >= 6.1.0, < 7.0.0',
         'qrcode >= 6.1, < 7.0',
+        'cachelib >= 0.1, <1.0',
     ],
 
     package_data={'pyvocz': list(data_file_names())},
