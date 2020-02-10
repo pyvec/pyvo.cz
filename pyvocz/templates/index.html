@@ -122,12 +122,20 @@
                     <div class="event-inner">
                         <h3>
                             <img src="{{ url_for('static', filename='coatofarms/unknown.svg') }}" width="50">
-                            A další…?
+                            {{ tr('A další…?', 'And more…?') }}
                         </h3>
-                        Chybí ti tu tvoje město?
-                        Přijď na návštěvu na některé zavedené Pyvo, a pak
-                        <a href="http://pyvec-guide.readthedocs.io/guides/meetup.html">založ</a>
-                        sraz i u vás!
+                        {% if g.lang_code == 'cs' %}
+                            Chybí ti tu tvoje město?
+                            Přijď na návštěvu na některé zavedené Pyvo, a pak
+                            <a href="http://pyvec-guide.readthedocs.io/guides/meetup.html">založ</a>
+                            sraz i u vás!
+                        {% else %}
+                            Is your city missing?
+                            Come to another Pyvo to check out how meetups work,
+                            then organize your own!
+                            <br>
+                            If you read Czech, check out our <a href="http://pyvec-guide.readthedocs.io/guides/meetup.html">documentation</a> on how to do it.
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}
@@ -150,9 +158,15 @@
             {% endif %}
         </div>
         <div class="muted" style="opacity:0.4;">
-            Děkujeme městům Plzeň, Olomouc a Brno, která nám
-            <a href="https://github.com/pyvec/pyvo.cz/issues/70">dala souhlas</a>
-            s použitím městských znaků!
+            {% if g.lang_code == 'cs' %}
+                Děkujeme městům Plzeň, Olomouc a Brno, která nám
+                <a href="https://github.com/pyvec/pyvo.cz/issues/70">dala souhlas</a>
+                s použitím městských znaků!
+            {% else %}
+                Thank you to the cities of Plzeň, Olomouc and Brno, whose councils
+                <a href="https://github.com/pyvec/pyvo.cz/issues/70">agreed</a>
+                to let us use their coats of arms!
+            {% endif %}
         </div>
     </div>
 
