@@ -34,7 +34,7 @@ def data_file_names():
 
 setup_args = dict(
     name='pyvocz',
-    version='0.3',
+    version='0.4',
     packages=['pyvocz'],
 
     description="""Website with information about Pyvo meetups (pyvo.cz)""",
