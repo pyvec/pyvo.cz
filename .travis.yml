@@ -4,10 +4,9 @@ python:
   - "3.6"
 
 install:
-  - pip install -e.
-  - pip install pytest pytest-flask lxml requests cssselect
+  - pip install -e.[test]
   - git clone --depth 1 https://github.com/pyvec/pyvo-data pyvocz/pyvo-data
 
-script: py.test -vv test_pyvocz
+script: python -m pytest -vv test_pyvocz
 
 sudo: false

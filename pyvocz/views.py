@@ -16,7 +16,7 @@ from flask import request, Response, url_for, redirect, g
 from flask import render_template, jsonify
 from flask import current_app as app
 from werkzeug.exceptions import abort
-from werkzeug.contrib.cache import SimpleCache
+from cachelib import SimpleCache
 
 from pyvodb import tables
 from pyvodb.calendar import get_calendar
