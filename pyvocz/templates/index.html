@@ -132,6 +132,23 @@
                 </div>
             {% endif %}
         </div>
+        <div>
+            {% if past_events %}
+                <ul>
+                    {% for event in past_events %}
+                        <li>
+                            <a href="{{ url_for('series', series_slug=event.series.slug) }}">
+                                {{ event.series.name }}
+                            </a>
+                            {{ tr('bylo naposledy', 'last took place') }}
+                            <a href="{{ event | event_url }}">
+                                <time datetime="{{event.date}}">{{event.date | longdate}}</time>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
         <div class="muted" style="opacity:0.4;">
             Děkujeme městům Plzeň, Olomouc a Brno, která nám
             <a href="https://github.com/pyvec/pyvo.cz/issues/70">dala souhlas</a>

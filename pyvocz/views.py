@@ -89,11 +89,17 @@ def index():
     query = query.options(joinedload(tables.Event.venue))
     # Only show one event per series
     seen_series = set()
+    # Split series into "featured" (recent) and "past" which last took
+    # place 6+ months ago.
     featured_events = []
+    past_events = []
     for event in query.all():
         if event.series not in seen_series:
             seen_series.add(event.series)
-            featured_events.append(event)
+            if event.date + datetime.timedelta(days=31*6) >= today:
+                featured_events.append(event)
+            else:
+                past_events.append(event)
 
     # Video query
 
@@ -122,6 +128,7 @@ def index():
                             first_month=today.month - 1, num_months=3)
 
     return render_template('index.html', featured_events=featured_events,
+                           past_events=past_events,
                            today=today, videos=videos, calendar=calendar)
 
 
