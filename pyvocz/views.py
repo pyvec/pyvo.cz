@@ -25,16 +25,6 @@ from . import filters
 from .db import db, db_reload
 
 
-FEATURED_SERIES = (
-    'brno-pyvo',
-    'praha-pyvo',
-    'ostrava-pyvo',
-    'olomouc-pyvo',
-    'plzen-pyvo',
-    'liberec-pyvo',
-    'hradec-pyvo',
-)
-
 BACKCOMPAT_SERIES_ALIASES = {
     'brno': 'brno-pyvo',
     'praha': 'praha-pyvo',
@@ -94,17 +84,22 @@ def index():
     # Select all featured series, along with their best event
     query = db.session.query(tables.Event)
     query = query.join(tables.Series, tables.Event.date == subquery)
-    query = query.filter(tables.Event.series_slug.in_(FEATURED_SERIES))
     query = query.order_by(*order_args)
     query = query.options(joinedload(tables.Event.series))
     query = query.options(joinedload(tables.Event.venue))
     # Only show one event per series
     seen_series = set()
+    # Split series into "featured" (recent) and "past" which last took
+    # place 6+ months ago.
     featured_events = []
+    past_events = []
     for event in query.all():
         if event.series not in seen_series:
             seen_series.add(event.series)
-            featured_events.append(event)
+            if event.date + datetime.timedelta(days=31*6) >= today:
+                featured_events.append(event)
+            else:
+                past_events.append(event)
 
     # Video query
 
@@ -129,10 +124,11 @@ def index():
             videos.append(link)
 
     calendar = get_calendar(db.session, first_year=today.year,
-                            series_slugs=FEATURED_SERIES,
+                            series_slugs=[e.series.slug for e in featured_events],
                             first_month=today.month - 1, num_months=3)
 
     return render_template('index.html', featured_events=featured_events,
+                           past_events=past_events,
                            today=today, videos=videos, calendar=calendar)
 
 
@@ -164,7 +160,7 @@ def calendar(year=None):
         abort(404)
 
     calendar = get_calendar(db.session, first_year=start.year,
-                            series_slugs=FEATURED_SERIES,
+                            series_slugs=db.session.query(tables.Series.slug),
                             first_month=start.month, num_months=12)
 
     first_year, last_year = min_max_years(db.session.query(tables.Event))
@@ -503,11 +499,9 @@ def feed_response(query, feed_type, *, recurrence_series=()):
 @route('/api/pyvo.<feed_type>')
 def api_feed(feed_type):
     query = db.session.query(tables.Series)
-    query = query.filter(tables.Series.slug.in_(FEATURED_SERIES))
     series = query.all()
 
     query = db.session.query(tables.Event)
-    query = query.filter(tables.Event.series_slug.in_(FEATURED_SERIES))
     return feed_response(query, feed_type, recurrence_series=series)
 
 
