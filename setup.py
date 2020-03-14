@@ -18,7 +18,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-tests_require = ['pytest', 'pytest-flask', 'lxml', 'requests', 'cssselect']
+tests_require = ['pytest >= 5.4.1', 'pytest-flask', 'lxml', 'requests', 'cssselect']
 
 
 def data_file_names():
