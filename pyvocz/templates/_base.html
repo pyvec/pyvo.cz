@@ -39,6 +39,21 @@
       </div>
       {% endif %}
       -->
+      {% if g.lang_code == 'cs' %}
+      <div class="notice">
+          <p>
+              Vzhledem k aktuální situaci a mimořádným opatřením vydaným v souvislosti s onemocněním COVID-19 rušíme až do odvolnání pravidelné brněnské Pyvo.
+              Jakmile se situace změní, srazy opět obnovíme. Děkujeme za pochopení.
+          </p>
+      </div>
+      {% else %}
+      <div class="notice">
+          <p>
+              Due to the current situation and special precautionary measures issued in connection with the disease COVID-19 we cancel the regular Pyvo in Brno until further notice.
+              As soon as the situation changes, the regular meetings will be restored. Thank you for understanding.
+          </p>
+      </div>
+      {% endif %}
 
         <div class="nav-container">
             <nav class="container">
