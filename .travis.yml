@@ -5,6 +5,7 @@ python:
 
 install:
   - pip install -e.[test]
+  - pip freeze
   - git clone --depth 1 https://github.com/pyvec/pyvo-data pyvocz/pyvo-data
 
 script: python -m pytest -vv test_pyvocz
