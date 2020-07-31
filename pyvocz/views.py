@@ -583,3 +583,9 @@ def google_verification():
     #  https://www.youtube.com/channel/UCaT4I7hjX9iH1YFvNvuu84A
     # Should not be removed.
     return 'google-site-verification: googleb01eac5297e2560c.html'
+
+@route('/nepyvo/')
+@route('/nepyvo/<path:_any_path>')
+def nepyvo_redirect(_any_path=None):
+    # Nepyvo meetups are now organized on Facebook. Redirect old URLs.
+    return redirect('https://www.facebook.com/groups/894454654024779/')
