@@ -54,11 +54,21 @@ class Location:
 
 @attrs(auto_attribs=True, slots=True)
 class Venue:
+    """A venue to old events in"""
     name: str
+
+    # Unique identifier for use in URLs
     slug: str
+
+    # City of the venue
     city: str
+
+    # Address of the venue
     address: str
+
+    # Notes about the venue, e.g. directions to get there
     notes: Optional[str]
+
     location: Location
     home_city: "City" = None
 
@@ -89,10 +99,18 @@ class Venue:
 
 @attrs(auto_attribs=True, slots=True)
 class City:
+    """A city that holds events"""
+
+    # Name of the city
     name: str
+
+    # Unique identifier for use in URLs
     slug: str
-    location: Location
+
+    # Venues that take place in (or near) this city
     venues: Dict[str, Venue]
+
+    location: Location
 
     @classmethod
     def load(cls, data, slug):
@@ -147,7 +165,10 @@ class Talk:
     description: Optional[str]
     links: List[TalkLink]
     speakers: List[Speaker]
+
+    # True if this is a lightning talk
     is_lightning: bool
+
     event: "Event" = None
 
     @classmethod
@@ -180,18 +201,34 @@ class EventLink:
 
 @attrs(auto_attribs=True, slots=True)
 class Event:
+    """An event."""
+
+    # General name of the event. Often, this is the same as the series name
     name: str
-    venue: Venue
+
+    # Venue where the event takes place
+    venue: Optional[Venue]
+
+    # Serial number of the event (if kept track of)
     number: Optional[int]
+
+    # Topic (or sub-title) of the event
     topic: Optional[str]
+
+    # Name of the city (which might be different than the series city)
     city: str
-    start: datetime.datetime
-    date: datetime.date
-    start_time: datetime.time
+
+    # Description in Markdown format
     description: str
+
+    start: datetime.datetime
     talks: List[Talk]
     links: List[str]
-    _source: Optional[str]
+
+    # Path where the data was loaded from (relative to data directory root)
+    _source: Optional[Path]
+
+    # The series this event belongs to
     series: "Series" = None
 
     @classmethod
@@ -216,8 +253,6 @@ class Event:
             topic=data.get('topic'),
             city=root.cities[data['city']],
             start=start,
-            date=start.date(),
-            start_time=start.time(),
             description=data.get('description'),
             talks=[Talk.load(t) for t in data.get('talks', ())],
             links=[EventLink(l) for l in data.get('urls', ())],
@@ -243,6 +278,14 @@ class Event:
         """Identifier for use in URLs. Unique within the series"""
         return self.date.strftime('%Y-%m')
 
+    @property
+    def date(self):
+        return self.start.date()
+
+    @property
+    def start_time(self):
+        return self.start.time()
+
 
 @attrs(auto_attribs=True)
 class Organizer:
@@ -254,19 +297,38 @@ class Organizer:
 
 @attrs(auto_attribs=True)
 class Series:
+    """A series of events"""
+
+    # Name of the series, like "Brněnské Pyvo"
     name: str
+
+    # Unique identifier for use in URLs
     slug: str
-    events: List[Event]
+
+    # City this series usually takes place at
     home_city: City
+
+    # Descriptions of the entire series
     description_cs: Optional[str]
     description_en: Optional[str]
-    organizers: List[dict]
-    _source: Optional[str]
 
+    events: List[Event]
+
+    # Info about organizers
+    organizers: List[dict]
+ 
+    # RFC 2445 recurrence rule for regular event dates
     recurrence_rule: Optional[Any]
+
+    # Basic type of the series' recurrence scheme
     recurrence_scheme: Optional[str]
+
+    # Human-readable description of the recurrence rule
     recurrence_description_cs: Optional[str]
     recurrence_description_en: Optional[str]
+
+    # Path where the data was loaded from (relative to data directory root)
+    _source: Optional[Path]
 
     @classmethod
     def load(cls, data, slug, root):
