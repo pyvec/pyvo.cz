@@ -7,24 +7,22 @@ from flask import Flask, g, url_for, redirect, request
 from jinja2 import StrictUndefined
 
 from . import filters
-from .db import db, db_setup
 from .views import routes
+from .data import load_data
 
 DEFAULT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'pyvo-data')
 
 
-def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
+def create_app(datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
                host=None, port=5000):
     datadir = os.path.abspath(datadir)
 
     app = Flask(__name__)
-    app.config.setdefault('SQLALCHEMY_DATABASE_URI', db_uri)
-    app.config.setdefault('SQLALCHEMY_ECHO', echo)
     app.config.setdefault('PYVO_DATADIR', datadir)
     app.config.setdefault('PYVO_PULL_PASSWORD', pull_password)
+    app.config.setdefault('PROPAGATE_EXCEPTIONS', True)
 
-    # pyvo.cz does no modifications
-    app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
+    app.db = load_data(datadir)
 
     if host:
         server_name = host
@@ -33,7 +31,6 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
         app.config['SERVER_NAME'] = server_name
     app.jinja_env.undefined = StrictUndefined
     app.jinja_env.globals['get_today'] = datetime.date.today
-    db.init_app(app)
 
     for filter_name in filters.__all__:
         app.jinja_env.filters[filter_name] = getattr(filters, filter_name)
@@ -54,8 +51,6 @@ def create_app(db_uri, datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
 
     @app.before_first_request
     def setup():
-        db_setup(datadir)
-
         # Use a random cache tag for each deployment
         tag = binascii.hexlify(os.urandom(16))
         app.jinja_env.globals['_static_cache_tag'] = tag

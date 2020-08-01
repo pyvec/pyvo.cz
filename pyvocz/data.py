@@ -1,0 +1,386 @@
+from pathlib import Path
+from typing import Dict, List, Optional, Any
+import datetime
+import re
+from urllib.parse import urlparse
+import itertools
+
+from  attr import attrs, attrib
+import yaml
+from dateutil import tz, rrule, relativedelta
+
+
+CET = tz.gettz('Europe/Prague')
+YOUTUBE_RE = re.compile(r'''(?x)https?://
+                        (?:
+                            (?:www\.youtube\.com/watch\?v=)|
+                            (?:youtu\.be/)
+                        )
+                        ([-0-9a-zA-Z_]+)''')
+
+def load_data(datadir):
+    path = Path(datadir)
+    with (path / 'meta.yaml').open() as f:
+        meta = Meta(**yaml.safe_load(f))
+    data = dict_from_path(path, path, exclude=meta.ignored_files)
+
+    return Root(data)
+
+
+def dict_from_path(path, base, *, exclude=()):
+    if path.is_file():
+        with path.open() as f:
+            result = yaml.safe_load(f)
+            result['_source'] = path.relative_to(base)
+            return result
+    else:
+        result = {}
+        for child in Path(path).iterdir():
+            if child.name not in exclude and not child.name.startswith('.'):
+                result[child.stem] = dict_from_path(child, base)
+        return result
+
+@attrs(auto_attribs=True)
+class Meta:
+    version: int
+    ignored_files: List[Path]
+
+
+@attrs(auto_attribs=True, slots=True)
+class Location:
+    latitude: str
+    longitude: str
+
+
+@attrs(auto_attribs=True, slots=True)
+class Venue:
+    name: str
+    slug: str
+    city: str
+    address: str
+    notes: Optional[str]
+    location: Location
+    home_city: "City" = None
+
+    @classmethod
+    def load(cls, data, slug):
+        return cls(
+            name=data['name'],
+            city=data['city'],
+            slug=slug,
+            address=data.get('address'),
+            location=Location(**data['location']),
+            notes=data.get('notes'),
+        )
+
+    @property
+    def short_address(self):
+        if self.address is not None:
+            return self.address.splitlines()[0]
+
+    @property
+    def latitude(self):
+        return self.location.latitude
+
+    @property
+    def longitude(self):
+        return self.location.longitude
+
+
+@attrs(auto_attribs=True, slots=True)
+class City:
+    name: str
+    slug: str
+    location: Location
+    venues: Dict[str, Venue]
+
+    @classmethod
+    def load(cls, data, slug):
+        self = cls(
+            name=data['city']['name'],
+            slug=slug,
+            location=Location(**data['city']['location']),
+            venues={
+                slug: Venue.load(v, slug)
+                for slug, v in data.get('venues', {}).items()
+            },
+        )
+        for venue in self.venues.values():
+            venue.home_city = self
+        return self
+
+@attrs(auto_attribs=True, slots=True)
+class TalkLink:
+    kind: str
+    url: str
+    talk: "Talk" = None
+
+    @classmethod
+    def load(cls, data):
+        if len(data) > 1:
+            raise ValueError('coverage dict too long')
+        for kind, url in data.items():
+            return cls(
+                kind=kind,
+                url=url,
+            )
+
+    @property
+    def hostname(self):
+        return urlparse(self.url).hostname
+
+    @property
+    def youtube_id(self):
+        match = YOUTUBE_RE.match(self.url)
+        if match:
+            return match.group(1)
+
+
+@attrs(auto_attribs=True, slots=True)
+class Speaker:
+    name: str
+
+
+@attrs(auto_attribs=True, slots=True)
+class Talk:
+    title: str
+    description: Optional[str]
+    links: List[TalkLink]
+    speakers: List[Speaker]
+    is_lightning: bool
+    event: "Event" = None
+
+    @classmethod
+    def load(cls, data):
+        self = cls(
+            title=data['title'],
+            description=data.get('description'),
+            speakers=[Speaker(s) for s in data.get('speakers', ())],
+            links=
+                [TalkLink(None, c) for c in data.get('urls', [])] +
+                [TalkLink.load(c) for c in data.get('coverage', [])],
+            is_lightning=data.get('lightning', False),
+        )
+        for link in self.links:
+            link.talk = self
+        return self
+
+    @property
+    def youtube_id(self):
+        for link in self.links:
+            yid = link.youtube_id
+            if yid:
+                return yid
+
+
+@attrs(auto_attribs=True, slots=True)
+class EventLink:
+    url: str
+
+
+@attrs(auto_attribs=True, slots=True)
+class Event:
+    name: str
+    venue: Venue
+    number: Optional[int]
+    topic: Optional[str]
+    city: str
+    start: datetime.datetime
+    date: datetime.date
+    start_time: datetime.time
+    description: str
+    talks: List[Talk]
+    links: List[str]
+    _source: Optional[str]
+    series: "Series" = None
+
+    @classmethod
+    def load(cls, data, slug, root):
+        venue_ident = data.get('venue')
+        if venue_ident:
+            venue = root.venues[data['venue']]
+        else:
+            venue = None
+
+        start = data['start']
+        if not hasattr(start, 'time'):
+            start = datetime.datetime.combine(
+                start, datetime.time(hour=19, tzinfo=root.default_timezone),
+            )
+        start = start.replace(tzinfo=CET)
+
+        self = cls(
+            name=data['name'],
+            venue=venue,
+            number=data.get('number'),
+            topic=data.get('topic'),
+            city=root.cities[data['city']],
+            start=start,
+            date=start.date(),
+            start_time=start.time(),
+            description=data.get('description'),
+            talks=[Talk.load(t) for t in data.get('talks', ())],
+            links=[EventLink(l) for l in data.get('urls', ())],
+            source=data['_source'],
+        )
+        for talk in self.talks:
+            talk.event = self
+        return self
+
+    @property
+    def title(self):
+        parts = [self.name]
+        if self.number is not None:
+            parts.append('#{}'.format(self.number))
+        elif self.topic:
+            parts.append('–')
+        if self.topic:
+            parts.append(self.topic)
+        return ' '.join(parts)
+
+    @property
+    def slug(self):
+        """Identifier for use in URLs. Unique within the series"""
+        return self.date.strftime('%Y-%m')
+
+
+@attrs(auto_attribs=True)
+class Organizer:
+    name: str
+    phone: str = None
+    mail: str = None
+    web: str = None
+
+
+@attrs(auto_attribs=True)
+class Series:
+    name: str
+    slug: str
+    events: List[Event]
+    home_city: City
+    description_cs: Optional[str]
+    description_en: Optional[str]
+    organizers: List[dict]
+    _source: Optional[str]
+
+    recurrence_rule: Optional[Any]
+    recurrence_scheme: Optional[str]
+    recurrence_description_cs: Optional[str]
+    recurrence_description_en: Optional[str]
+
+    @classmethod
+    def load(cls, data, slug, root):
+        recurrence = data['series'].get('recurrence')
+        if recurrence:
+            rrule_str = recurrence['rrule']
+            rrule.rrulestr(rrule_str)  # check rrule syntax
+            recurrence_attrs = {
+                'recurrence_rule': rrule_str,
+                'recurrence_scheme': recurrence['scheme'],
+                'recurrence_description_cs': recurrence['description']['cs'],
+                'recurrence_description_en': recurrence['description']['en'],
+            }
+        else:
+            recurrence_attrs = {
+                'recurrence_rule': None,
+                'recurrence_scheme': None,
+                'recurrence_description_cs': None,
+                'recurrence_description_en': None,
+            }
+
+        self = cls(
+            events=sorted(
+                (
+                    Event.load(e, slug, root)
+                    for slug, e in data.get('events', {}).items()
+                ),
+                key=lambda e: e.start
+            ),
+            slug=slug,
+            name=data['series']['name'],
+            home_city=root.cities[data['series']['city']],
+            description_cs=data['series']['description']['cs'],
+            description_en=data['series']['description']['en'],
+            organizers=[dict(o) for o in data['series']['organizer-info']],
+            source=data['series']['_source'],
+            **recurrence_attrs,
+        )
+        for event in self.events:
+            event.series = self
+        return self
+
+    def next_occurrences(self, n=None, since=None):
+        """Yield the next planned occurrences after the date "since"
+
+        The `since` argument can be either a date or datetime onject.
+        If not given, it defaults to the date of the last event that's
+        already planned.
+
+        If `n` is given, the result is limited to that many dates;
+        otherwise, infinite results may be generated.
+        Note that less than `n` results may be yielded.
+        """
+        scheme = self.recurrence_scheme
+        if scheme is None:
+            return ()
+
+        last_planned_event = self.events[-1]
+
+        if since is None or since < last_planned_event.date:
+            since = last_planned_event.date
+
+        start = getattr(since, 'date', since)
+
+        start += relativedelta.relativedelta(days=+1)
+
+        if (scheme == 'monthly'
+                and last_planned_event
+                and last_planned_event.date.year == start.year
+                and last_planned_event.date.month == start.month):
+            # Monthly events try to have one event per month, so exclude
+            # the current month if there was already a meetup
+            start += relativedelta.relativedelta(months=+1)
+            start = start.replace(day=1)
+
+        start = datetime.datetime.combine(start, datetime.time(tzinfo=CET))
+        result = rrule.rrulestr(self.recurrence_rule, dtstart=start)
+        if n is not None:
+            result = itertools.islice(result, n)
+        return result
+
+
+class Root:
+    def __init__(self, data):
+        if data['meta']['version'] != 2:
+            raise ValueError('Can only load version 2')
+
+        self.default_timezone = tz.gettz('Europe/Prague')
+
+        # XXX: jsonschema validation
+
+        self.cities = {
+            slug: City.load(c, slug)
+            for slug, c in data['cities'].items()
+        }
+        self.venues = {}
+        for city in self.cities.values():
+            for slug, venue in city.venues.items():
+                if slug in self.venues:
+                    raise ValueError(f'duplicate venue slug: {slug}')
+                self.venues[slug] = venue
+        self.series = {
+            slug: Series.load(s, slug, self)
+            for slug, s in data['series'].items()
+        }
+        self.events = sorted(
+            (
+                event
+                for series in self.series.values()
+                for event in series.events
+            ),
+            key=lambda e: e.start,
+        )
+
+if __name__ == '__main__':
+    # XXX for quick local testing
+    load_data('../pyvo-data')
