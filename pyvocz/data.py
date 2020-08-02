@@ -10,6 +10,8 @@ from  attr import attrs
 import yaml
 from dateutil import tz, rrule, relativedelta
 
+from .typecheck import typecheck
+
 
 CET = tz.gettz('Europe/Prague')
 YOUTUBE_RE = re.compile(r'''(?x)https?://
@@ -454,73 +456,5 @@ class Root:
             series=series,
             events=events,
         )
-        validate_hinted_attrs(self)
+        typecheck(self)
         return self
-
-
-class Indenter:
-    depth = 0
-
-    def __enter__(self):
-        self.depth += 1
-        return self
-
-    def __exit__(self, *args):
-        self.depth -= 1
-
-    def print(self, *args, sep=' ', end='\n'):
-        print('  ' * self.depth + sep.join(args), end=end)
-        return self
-
-
-def validate_hinted_attrs(obj, indent=None, memo=None):
-    tp = type(obj)
-    if indent is None:
-        indent = Indenter()
-    if memo is None:
-        memo = set()
-    if id(obj) in memo:
-        indent.print(f'already validated this {tp.__name__}')
-        return
-    memo.add(id(obj))
-    for attr_name, attr_type in typing.get_type_hints(tp).items():
-        value = getattr(obj, attr_name)
-        with indent.print(f'validating {attr_name} of a {tp.__name__}: {attr_type}'):
-            validate_type(value, attr_type, indent, memo)
-
-
-def validate_type(value, expected_type, indent, memo):
-    origin = getattr(expected_type, '__origin__', None)
-    if origin in (dict, Dict):
-        validate_type(value, dict, indent, memo)
-        key_type, val_type = expected_type.__args__
-        if key_type != str:
-            raise RuntimeError('assuming Dict keys are dicts')
-        for key, val in value.items():
-            with indent.print(f"validating for key '{key}'"):
-                validate_type(key, key_type, indent, memo)
-                validate_type(val, val_type, indent, memo)
-    elif origin in (list, List):
-        validate_type(value, list, indent, memo)
-        [item_type] = expected_type.__args__
-        for i, item in enumerate(value):
-            with indent.print(f"validating item [{i}]"):
-                validate_type(item, item_type, indent, memo)
-    elif origin == typing.Union:
-        exception_to_raise = None
-        for option in expected_type.__args__:
-            try:
-                validate_type(value, option, indent, memo)
-            except TypeError as e:
-                if exception_to_raise is None:
-                    exception_to_raise = e
-            else:
-                return
-        else:
-            raise exception_to_raise
-    elif expected_type == typing.Any:
-        pass
-    else:
-        if not isinstance(value, expected_type):
-            raise TypeError(f'{value} is not a {expected_type}')
-        validate_hinted_attrs(value, indent, memo)
