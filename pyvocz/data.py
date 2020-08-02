@@ -5,7 +5,8 @@ import re
 from urllib.parse import urlparse
 import itertools
 
-from  attr import attrs, attrib
+import attr
+from  attr import attrs
 import yaml
 from dateutil import tz, rrule, relativedelta
 
@@ -24,7 +25,7 @@ def load_data(datadir):
         meta = Meta(**yaml.safe_load(f))
     data = dict_from_path(path, path, exclude=meta.ignored_files)
 
-    return Root(data)
+    return Root.load(data)
 
 
 def dict_from_path(path, base, *, exclude=()):
@@ -64,7 +65,7 @@ class Venue:
     city: str
 
     # Address of the venue
-    address: str
+    address: Optional[str]
 
     # Notes about the venue, e.g. directions to get there
     notes: Optional[str]
@@ -129,7 +130,7 @@ class City:
 
 @attrs(auto_attribs=True, slots=True)
 class TalkLink:
-    kind: str
+    kind: Optional[str]
     url: str
     talk: "Talk" = None
 
@@ -215,15 +216,15 @@ class Event:
     # Topic (or sub-title) of the event
     topic: Optional[str]
 
-    # Name of the city (which might be different than the series city)
-    city: str
+    # City where the event takes place
+    city: City
 
     # Description in Markdown format
-    description: str
+    description: Optional[str]
 
     start: datetime.datetime
     talks: List[Talk]
-    links: List[str]
+    links: List[EventLink]
 
     # Path where the data was loaded from (relative to data directory root)
     _source: Optional[Path]
@@ -232,18 +233,16 @@ class Event:
     series: "Series" = None
 
     @classmethod
-    def load(cls, data, slug, root):
+    def load(cls, data, slug, *, cities, venues):
         venue_ident = data.get('venue')
         if venue_ident:
-            venue = root.venues[data['venue']]
+            venue = venues[data['venue']]
         else:
             venue = None
 
         start = data['start']
         if not hasattr(start, 'time'):
-            start = datetime.datetime.combine(
-                start, datetime.time(hour=19, tzinfo=root.default_timezone),
-            )
+            start = datetime.datetime.combine(start, datetime.time(hour=19))
         start = start.replace(tzinfo=CET)
 
         self = cls(
@@ -251,7 +250,7 @@ class Event:
             venue=venue,
             number=data.get('number'),
             topic=data.get('topic'),
-            city=root.cities[data['city']],
+            city=cities[data['city']],
             start=start,
             description=data.get('description'),
             talks=[Talk.load(t) for t in data.get('talks', ())],
@@ -331,7 +330,7 @@ class Series:
     _source: Optional[Path]
 
     @classmethod
-    def load(cls, data, slug, root):
+    def load(cls, data, slug, *, cities, venues):
         recurrence = data['series'].get('recurrence')
         if recurrence:
             rrule_str = recurrence['rrule']
@@ -353,14 +352,14 @@ class Series:
         self = cls(
             events=sorted(
                 (
-                    Event.load(e, slug, root)
+                    Event.load(e, slug, cities=cities, venues=venues)
                     for slug, e in data.get('events', {}).items()
                 ),
                 key=lambda e: e.start
             ),
             slug=slug,
             name=data['series']['name'],
-            home_city=root.cities[data['series']['city']],
+            home_city=cities[data['series']['city']],
             description_cs=data['series']['description']['cs'],
             description_en=data['series']['description']['en'],
             organizers=[dict(o) for o in data['series']['organizer-info']],
@@ -411,38 +410,117 @@ class Series:
         return result
 
 
+@attrs(auto_attribs=True)
 class Root:
-    def __init__(self, data):
+    cities: Dict[str, City]
+    venues: Dict[str, Venue]
+    series: Dict[str, Series]
+
+    # List of all events, sorted by date
+    events: List[Event]
+
+    default_timezone = tz.gettz('Europe/Prague')
+
+    @classmethod
+    def load(cls, data):
         if data['meta']['version'] != 2:
             raise ValueError('Can only load version 2')
 
-        self.default_timezone = tz.gettz('Europe/Prague')
-
-        # XXX: jsonschema validation
-
-        self.cities = {
+        cities = {
             slug: City.load(c, slug)
             for slug, c in data['cities'].items()
         }
-        self.venues = {}
-        for city in self.cities.values():
+        venues = {}
+        for city in cities.values():
             for slug, venue in city.venues.items():
-                if slug in self.venues:
+                if slug in venues:
                     raise ValueError(f'duplicate venue slug: {slug}')
-                self.venues[slug] = venue
-        self.series = {
-            slug: Series.load(s, slug, self)
+                venues[slug] = venue
+        series = {
+            slug: Series.load(s, slug, cities=cities, venues=venues)
             for slug, s in data['series'].items()
         }
-        self.events = sorted(
+        events = sorted(
             (
                 event
-                for series in self.series.values()
-                for event in series.events
+                for the_series in series.values()
+                for event in the_series.events
             ),
             key=lambda e: e.start,
         )
+        self = cls(
+            cities=cities,
+            venues=venues,
+            series=series,
+            events=events,
+        )
+        validate_hinted_attrs(self)
+        return self
 
-if __name__ == '__main__':
-    # XXX for quick local testing
-    load_data('../pyvo-data')
+
+class Indenter:
+    depth = 0
+
+    def __enter__(self):
+        self.depth += 1
+        return self
+
+    def __exit__(self, *args):
+        self.depth -= 1
+
+    def print(self, *args, sep=' ', end='\n'):
+        print('  ' * self.depth + sep.join(args), end=end)
+        return self
+
+
+def validate_hinted_attrs(obj, indent=None, memo=None):
+    tp = type(obj)
+    if indent is None:
+        indent = Indenter()
+    if memo is None:
+        memo = set()
+    if id(obj) in memo:
+        indent.print(f'already validated this {tp.__name__}')
+        return
+    memo.add(id(obj))
+    for attr_name, attr_type in typing.get_type_hints(tp).items():
+        value = getattr(obj, attr_name)
+        with indent.print(f'validating {attr_name} of a {tp.__name__}: {attr_type}'):
+            validate_type(value, attr_type, indent, memo)
+
+
+def validate_type(value, expected_type, indent, memo):
+    origin = getattr(expected_type, '__origin__', None)
+    if origin in (dict, Dict):
+        validate_type(value, dict, indent, memo)
+        key_type, val_type = expected_type.__args__
+        if key_type != str:
+            raise RuntimeError('assuming Dict keys are dicts')
+        for key, val in value.items():
+            with indent.print(f"validating for key '{key}'"):
+                validate_type(key, key_type, indent, memo)
+                validate_type(val, val_type, indent, memo)
+    elif origin in (list, List):
+        validate_type(value, list, indent, memo)
+        [item_type] = expected_type.__args__
+        for i, item in enumerate(value):
+            with indent.print(f"validating item [{i}]"):
+                validate_type(item, item_type, indent, memo)
+    elif origin == typing.Union:
+        exception_to_raise = None
+        for option in expected_type.__args__:
+            try:
+                validate_type(value, option, indent, memo)
+            except TypeError as e:
+                if exception_to_raise is None:
+                    exception_to_raise = e
+            else:
+                return
+        else:
+            raise exception_to_raise
+    elif expected_type == typing.Any:
+        pass
+    else:
+        if not isinstance(value, expected_type):
+            raise TypeError(f'{value} is not a {expected_type}')
+        validate_hinted_attrs(value, indent, memo)
