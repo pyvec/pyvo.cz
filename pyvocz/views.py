@@ -23,6 +23,7 @@ from pyvodb.calendar import get_calendar
 
 from . import filters
 from .db import db, db_reload
+from .event_add import event_add_link
 
 
 BACKCOMPAT_SERIES_ALIASES = {
@@ -269,14 +270,17 @@ def series(series_slug, year=None, all=None):
             featured_event = past_events.pop(0)
 
     organizer_info = json.loads(series.organizer_info)
-    return render_template('series.html', series=series, today=today,
-                           year=year, future_events=future_events,
-                           past_events=past_events,
-                           featured_event=featured_event,
-                           organizer_info=organizer_info, all=all,
-                           first_year=first_year, last_year=last_year,
-                           all_years=all_years, paginate_prev=paginate_prev,
-                           paginate_next=paginate_next, has_events=has_events)
+    return render_template(
+        'series.html', series=series, today=today,
+        year=year, future_events=future_events,
+        past_events=past_events,
+        featured_event=featured_event,
+        organizer_info=organizer_info, all=all,
+        first_year=first_year, last_year=last_year,
+        all_years=all_years, paginate_prev=paginate_prev,
+        paginate_next=paginate_next, has_events=has_events,
+        event_add_link=event_add_link,
+    )
 
 
 @route('/<series_slug>/<date_slug>/')
