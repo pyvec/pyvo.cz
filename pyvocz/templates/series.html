@@ -45,6 +45,15 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="event-add-link col-lg-12">
+            Organizátoři můžou na GitHubu
+            <a href="{{ event_add_link(series) }}">
+                přidat informace o dalším srazu</a
+            >.
+        </a>
+    </div>
+
     {% if year==None %}
         <div id="featured-meetup">
             {% if featured_event %}
