@@ -25,7 +25,7 @@ def check_external_links(pytestconfig):
 def app(pytestconfig):
     src = DEFAULT_DATA_DIR
     if pytestconfig.getoption('all_data'):
-        yield create_app(db_uri='sqlite://', datadir=src, echo=False)
+        yield create_app(datadir=src, echo=False)
     else:
         with tempfile.TemporaryDirectory() as tempdir:
             for name in """
@@ -70,4 +70,4 @@ def app(pytestconfig):
                         os.path.join(src, name),
                         os.path.join(tempdir, name),
                     )
-            yield create_app(db_uri='sqlite://', datadir=tempdir, echo=False)
+            yield create_app(datadir=tempdir, echo=False)

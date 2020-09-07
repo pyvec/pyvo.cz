@@ -2,6 +2,7 @@ import datetime
 import subprocess
 import json
 import re
+from bisect import bisect
 
 from io import BytesIO
 
@@ -9,20 +10,14 @@ import ics
 import qrcode
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import func, or_, desc, extract
-from sqlalchemy.orm import joinedload, subqueryload, contains_eager
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from flask import request, Response, url_for, redirect, g
+from flask import request, Response, url_for, redirect, g, abort
 from flask import render_template, jsonify
 from flask import current_app as app
-from werkzeug.exceptions import abort
 from cachelib import SimpleCache
 
-from pyvodb import tables
-from pyvodb.calendar import get_calendar
-
 from . import filters
-from .db import db, db_reload
+from .calendar import get_calendar
+from .data import load_data
 from .event_add import event_add_link
 
 
@@ -65,93 +60,64 @@ def route(url, methods=['GET'], translate=True, **kwargs):
 
 @route('/')
 def index():
-    today = datetime.date.today()
+    db = app.db
+    now = datetime.datetime.now(tz=db.default_timezone)
+    today = now.date()
 
-    # Latest talk query
-
-    # order to show meetups in: upcoming first, then by distance from today
-    _jd = func.julianday
-    order_args = (_jd(tables.Event.date) < _jd(today),
-                  func.abs(_jd(tables.Event.date) - _jd(today)))
-
-    # Make a subquery to select the best event from a series
-    # (according to the order above)
-    subquery = db.session.query(tables.Event.date)
-    subquery = subquery.filter(tables.Event.series_slug == tables.Series.slug)
-    subquery = subquery.order_by(*order_args)
-    subquery = subquery.limit(1).correlate(tables.Series)
-    subquery = subquery.subquery()
-
-    # Select all featured series, along with their best event
-    query = db.session.query(tables.Event)
-    query = query.join(tables.Series, tables.Event.date == subquery)
-    query = query.order_by(*order_args)
-    query = query.options(joinedload(tables.Event.series))
-    query = query.options(joinedload(tables.Event.venue))
-    # Only show one event per series
-    seen_series = set()
+    # Series with latest events
     # Split series into "featured" (recent) and "past" which last took
     # place 6+ months ago.
+
     featured_events = []
     past_events = []
-    for event in query.all():
-        if event.series not in seen_series:
-            seen_series.add(event.series)
-            if event.date + datetime.timedelta(days=31*6) >= today:
-                featured_events.append(event)
+    for series in db.series.values():
+        keys = [event.date for event in series.events]
+        best_event_index = bisect(keys, today)
+        if best_event_index >= len(keys):
+            last_event = series.events[-1]
+            if (today - last_event.date).days > 31*6:
+                past_events.append(last_event)
             else:
-                past_events.append(event)
+                featured_events.append(last_event)
+        else:
+            featured_events.append(series.events[best_event_index])
 
-    # Video query
+    # order to show meetups in: upcoming first, then by distance from today
+    featured_events.sort(key=lambda e: (e.date < today, today - e.date))
+    past_events.sort(key=lambda e: e.date, reverse=True)
 
-    query = db.session.query(tables.TalkLink)
-    query = query.filter(or_(
-        tables.TalkLink.url.startswith('http://www.youtube.com'),
-        tables.TalkLink.url.startswith('https://www.youtube.com'),
-    ))
-    query = query.join(tables.TalkLink.talk)
-    query = query.join(tables.Talk.event)
-    query = query.filter(tables.TalkLink.kind == 'video')
-    query = query.options(joinedload(tables.TalkLink.talk))
-    query = query.options(joinedload(tables.TalkLink.talk, 'event'))
-    query = query.options(joinedload(tables.TalkLink.talk, 'event', 'series'))
-    query = query.options(subqueryload(tables.TalkLink.talk, 'talk_speakers'))
-    query = query.options(joinedload(tables.TalkLink.talk, 'talk_speakers',
-                                     'speaker'))
-    query = query.order_by(desc(tables.Event.date), tables.Talk.index)
-    videos = []
-    for link in query[:12]:
-        if link.youtube_id:
-            videos.append(link)
+    videos = get_videos(db.events)
 
-    calendar = get_calendar(db.session, first_year=today.year,
-                            series_slugs=[e.series.slug for e in featured_events],
-                            first_month=today.month - 1, num_months=3)
+    calendar = get_calendar(
+        db, first_year=today.year, first_month=today.month - 1, num_months=3,
+    )
 
     return render_template('index.html', featured_events=featured_events,
                            past_events=past_events,
                            today=today, videos=videos, calendar=calendar)
 
 
-def min_max_years(query):
-    year_col = func.extract('year', tables.Event.date)
-    query = query.with_entities(func.min(year_col), func.max(year_col))
-    first_year, last_year = query.one()
-    return first_year, last_year
+def get_videos(events, max_len=12):
+    """Get `max_len` latest videos"""
+    videos = []
+    for event in reversed(events):
+        for talk in event.talks:
+            for link in talk.links:
+                if link.kind == 'video':
+                    videos.append(link)
+                    if len(videos) >= max_len:
+                        return videos
+    return videos
 
 
-def years_with_events(series_slug):
-    query = db.session.query(tables.Event)
-    query = query.filter(tables.Event.series_slug == series_slug)
-    year_col = func.extract('year', tables.Event.date)
-    query = query.with_entities(year_col)
-    query = query.order_by(year_col)
-    return [x[0] for x in query.distinct()]
+def min_max_years(events):
+    return events[0].date.year, events[-1].date.year
 
 
 @route('/calendar/', defaults={'year': None})
 @route('/calendar/<int:year>/')
 def calendar(year=None):
+    db = app.db
     today = datetime.date.today()
     if year is None:
         year = today.year
@@ -160,21 +126,25 @@ def calendar(year=None):
     except ValueError:
         abort(404)
 
-    calendar = get_calendar(db.session, first_year=start.year,
-                            series_slugs=db.session.query(tables.Series.slug),
-                            first_month=start.month, num_months=12)
+    calendar = get_calendar(
+        db, first_year=start.year, first_month=start.month,
+        series_slugs=db.series.keys(), num_months=12,
+    )
 
-    first_year, last_year = min_max_years(db.session.query(tables.Event))
+    first_year, last_year = min_max_years(db.events)
 
-    return render_template('calendar.html', today=today, calendar=calendar,
-                           year=year,
-                           first_year=first_year, last_year=last_year)
+    return render_template(
+        'calendar.html', today=today, calendar=calendar, year=year,
+        first_year=first_year, last_year=last_year,
+    )
 
 
 @route('/<series_slug>/')
 @route('/<series_slug>/<int:year>/')
 @route('/<series_slug>/<any(all):all>/')
 def series(series_slug, year=None, all=None):
+    db = app.db
+
     if series_slug in BACKCOMPAT_SERIES_ALIASES:
         url = url_for('series',
                       series_slug=BACKCOMPAT_SERIES_ALIASES[series_slug])
@@ -182,10 +152,18 @@ def series(series_slug, year=None, all=None):
 
     today = datetime.date.today()
 
+    series = db.series.get(series_slug)
+    if not series:
+        abort(404)
+
     # List of years to show in the pagination
     # If there are no years with events, put the current year there at least
-    all_years = years_with_events(series_slug) or [today.year]
-    first_year, last_year = min(all_years), max(all_years)
+    all_years = sorted(set(event.date.year for event in series.events))
+    if all_years:
+        first_year = min(all_years)
+        last_year = max(all_years)
+    else:
+        first_year = last_year = today.year
 
     if last_year == today.year and len(all_years) > 1:
         # The current year is displayed on the 'New' page (year=None)
@@ -199,6 +177,15 @@ def series(series_slug, year=None, all=None):
         if year not in all_years:
             # Otherwise, if there are no events in requested year, return 404.
             abort(404)
+
+    events = list(reversed(series.events))
+
+    if not all:
+        if year is None:
+            # The 'New' page displays the current year as well as the last one
+            events = [e for e in events if e.date.year >= today.year - 1]
+        else:
+            events = [e for e in events if e.date.year == year]
 
     if all is not None:
         paginate_prev = {'year': first_year}
@@ -219,37 +206,6 @@ def series(series_slug, year=None, all=None):
         else:
             paginate_prev = {'year': None}
 
-    query = db.session.query(tables.Series)
-    query = query.filter(tables.Series.slug == series_slug)
-
-    try:
-        series = query.one()
-    except NoResultFound:
-        abort(404)
-
-    query = db.session.query(tables.Event)
-    query = query.filter(tables.Event.series == series)
-    query = query.options(joinedload(tables.Event, 'talks'))
-    query = query.options(joinedload(tables.Event, 'venue'))
-    query = query.options(joinedload(tables.Event, 'talks',
-                                     'talk_speakers'))
-    query = query.options(subqueryload(tables.Event, 'talks',
-                                       'talk_speakers', 'speaker'))
-    query = query.options(subqueryload(tables.Event, 'talks', 'links'))
-    query = query.order_by(tables.Event.date.desc())
-
-    if not all:
-        if year is None:
-            # The 'New' page displays the current year as well as the last one
-            query = query.filter(tables.Event.date >=
-                                 datetime.date(today.year - 1, 1, 1))
-        else:
-            query = query.filter(tables.Event.date >=
-                                 datetime.date(year, 1, 1))
-            query = query.filter(tables.Event.date <
-                                 datetime.date(year + 1, 1, 1))
-
-    events = list(query)
     has_events = bool(events)
 
     # Split events between future and past
@@ -269,13 +225,12 @@ def series(series_slug, year=None, all=None):
         elif past_events:
             featured_event = past_events.pop(0)
 
-    organizer_info = json.loads(series.organizer_info)
     return render_template(
         'series.html', series=series, today=today,
         year=year, future_events=future_events,
         past_events=past_events,
         featured_event=featured_event,
-        organizer_info=organizer_info, all=all,
+        organizer_info=series.organizers, all=all,
         first_year=first_year, last_year=last_year,
         all_years=all_years, paginate_prev=paginate_prev,
         paginate_next=paginate_next, has_events=has_events,
@@ -285,6 +240,7 @@ def series(series_slug, year=None, all=None):
 
 @route('/<series_slug>/<date_slug>/')
 def event(series_slug, date_slug):
+    db = app.db
     if series_slug in BACKCOMPAT_SERIES_ALIASES:
         url = url_for('event',
                       series_slug=BACKCOMPAT_SERIES_ALIASES[series_slug],
@@ -293,9 +249,9 @@ def event(series_slug, date_slug):
 
     today = datetime.date.today()
 
-    query = db.session.query(tables.Event)
-    query = query.join(tables.Series)
-    query = query.filter(tables.Series.slug == series_slug)
+    series = db.series.get(series_slug)
+    if not series:
+        abort(404)
 
     match = re.match(r'^(\d{4})-(\d{1,2})$', date_slug)
     if not match:
@@ -303,32 +259,25 @@ def event(series_slug, date_slug):
             number = int(date_slug)
         except ValueError:
             abort(404)
-        query = query.filter(tables.Event.number == number)
+        events = [e for e in series.events if e.number == number]
     else:
         year = int(match.group(1))
         month = int(match.group(2))
-        query = query.filter(extract('year', tables.Event.date) == year)
-        query = query.filter(extract('month', tables.Event.date) == month)
+        events = [
+            e for e in series.events
+            if e.date.year == year and e.date.month == month
+        ]
 
-    query = query.options(joinedload(tables.Event.talks))
-    query = query.options(joinedload(tables.Event.venue))
-    query = query.options(joinedload(tables.Event.talks, 'talk_speakers'))
-    query = query.options(subqueryload(tables.Event.links))
-    query = query.options(subqueryload(tables.Event.talks, 'talk_speakers',
-                                       'speaker'))
-    query = query.options(subqueryload(tables.Event.talks, 'links'))
-
-    try:
-        event = query.one()
-    except (NoResultFound, MultipleResultsFound):
+    if len(events) != 1:
         abort(404)
+    [event] = events
 
     proper_date_slug = '{0.year:4}-{0.month:02}'.format(event.date)
     if date_slug != proper_date_slug:
         return redirect(url_for('event', series_slug=series_slug,
                                 date_slug=proper_date_slug))
 
-    github_link = ("https://github.com/pyvec/pyvo-data/blob/master/"
+    github_link = ("https://github.com/pyvec/pyvo-data/blob/master/./"
                    "{filepath}".format(filepath=event._source))
 
     return render_template('event.html', event=event, today=today,
@@ -360,11 +309,9 @@ def coc():
 
 @route('/api/venues/<venueslug>/geo/', translate=False)
 def api_venue_geojson(venueslug):
-    query = db.session.query(tables.Venue)
-    query = query.filter(tables.Venue.slug == venueslug)
-    try:
-        venue = query.one()
-    except NoResultFound:
+    db = app.db
+    venue = db.venues.get(venueslug)
+    if not venue:
         abort(404)
 
     return jsonify({
@@ -385,16 +332,13 @@ def api_venue_geojson(venueslug):
     })
 
 
-def make_ics(query, url, *, recurrence_series=()):
+def make_ics(events, url, *, recurrence_series=()):
     today = datetime.date.today()
-
-    query = query.options(joinedload(tables.Event.city))
-    query = query.options(joinedload(tables.Event.venue))
 
     events = []
     last_series_date = {}
 
-    for event in query:
+    for event in events:
         if event.venue:
             location = '{}, {}, {}'.format(
                 event.venue.name,
@@ -421,8 +365,8 @@ def make_ics(query, url, *, recurrence_series=()):
         events.append(cal_event)
 
         if (event.series in last_series_date and
-                last_series_date[event.series] < event.date):
-            last_series_date[event.series] = event.date
+                last_series_date[event.series.slug] < event.date):
+            last_series_date[event.series.slug] = event.date
 
     # XXX: We should use the Series recurrence rule directly,
     # but ics doesn't allow that yet:
@@ -432,7 +376,7 @@ def make_ics(query, url, *, recurrence_series=()):
     occurence_limit = (today + relativedelta(months=+6)).replace(day=1)
 
     for series in recurrence_series:
-        since = last_series_date.get(series, today)
+        since = last_series_date.get(series.slug, today)
         since += datetime.timedelta(days=1)
 
         if g.lang_code == 'cs':
@@ -453,10 +397,7 @@ def make_ics(query, url, *, recurrence_series=()):
     return ics.Calendar(events=events)
 
 
-def make_feed(query, url):
-    query = query.options(joinedload(tables.Event.city))
-    query = query.options(joinedload(tables.Event.venue))
-    query = query.order_by(desc(tables.Event.date))
+def make_feed(events, url):
     from feedgen.feed import FeedGenerator
     fg = FeedGenerator()
     fg.id('http://pyvo.cz')
@@ -464,7 +405,7 @@ def make_feed(query, url):
     fg.logo(url_for('static', filename='images/krygl.png', _external=True))
     fg.link(href=url, rel='self')
     fg.subtitle('Srazy Pyvo.cz')
-    for event in query:
+    for event in events:
         fe = fg.add_entry()
         url = filters.event_url(event, _external=True)
         fe.id(url)
@@ -478,17 +419,18 @@ def make_feed(query, url):
     return fg
 
 
-def feed_response(query, feed_type, *, recurrence_series=()):
+def feed_response(events, feed_type, *, recurrence_series=()):
     MIMETYPES = {
         'rss': 'application/rss+xml',
         'atom': 'application/atom+xml',
         'ics': 'text/calendar',
     }
     FEED_MAKERS = {
-        'rss': lambda: make_feed(query, request.url).rss_str(pretty=True),
-        'atom': lambda: make_feed(query, request.url).atom_str(pretty=True),
-        'ics': lambda: str(make_ics(query, request.url,
-                                    recurrence_series=recurrence_series)),
+        'rss': lambda: make_feed(events, request.url).rss_str(pretty=True),
+        'atom': lambda: make_feed(events, request.url).atom_str(pretty=True),
+        'ics': lambda: str(make_ics(
+            events, request.url, recurrence_series=recurrence_series),
+        ),
     }
 
     try:
@@ -502,20 +444,20 @@ def feed_response(query, feed_type, *, recurrence_series=()):
 
 @route('/api/pyvo.<feed_type>')
 def api_feed(feed_type):
-    query = db.session.query(tables.Series)
-    series = query.all()
-
-    query = db.session.query(tables.Event)
-    return feed_response(query, feed_type, recurrence_series=series)
+    db = app.db
+    return feed_response(
+        db.events, feed_type, recurrence_series=db.series.values(),
+    )
 
 
 @route('/api/series/<series_slug>.<feed_type>')
 def api_series_feed(series_slug, feed_type):
-    series = db.session.query(tables.Series).get(series_slug)
+    db = app.db
+    series = db.series.get(series_slug)
+    if not series:
+        abort(4040)
 
-    query = db.session.query(tables.Event)
-    query = query.filter(tables.Event.series == series)
-    return feed_response(query, feed_type, recurrence_series=[series])
+    return feed_response(series.events, feed_type, recurrence_series=[series])
 
 
 @route('/api/reload_hook', methods=['POST'])
@@ -544,7 +486,7 @@ def reload_hook():
         return jsonify({'result': 'OK', 'HEAD': head_commit,
                         'note': 'unchanged'})
 
-    db_reload(datadir)
+    app.db = load_data(datadir)
 
     return jsonify({'result': 'OK', 'HEAD': head_commit})
 

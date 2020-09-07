@@ -36,7 +36,7 @@
             <img src="{{ url_for('static', filename='images/czech_republic.svg') }}" alt="">
             <ul>
             {% for event in featured_events %}
-                <li class="map-city map-city-{{event.series.home_city_slug}}
+                <li class="map-city map-city-{{event.series.home_city.slug}}
                     {% if event.date == today %}
                         today
                     {% elif event.date < today %}
@@ -52,7 +52,7 @@
                         {% else %}
                             <div class="date"><time datetime="{{event.date}}">{{event.date | shortday}}</time></div>
                         {% endif %}
-                        <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}"
+                        <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city.slug+'.svg') }}"
                              width="30"
                              alt=""
                              title="{{event.date | shortday}} – {{event.title}}"
@@ -82,7 +82,7 @@
                     <div class="event-inner">
                         <h3>
                             <a href="{{ url_for('series', series_slug=event.series.slug) }}">
-                                <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city_slug+'.svg') }}" width="50">
+                                <img src="{{ url_for('static', filename='coatofarms/'+event.series.home_city.slug+'.svg') }}" width="50">
                                 {{event.series.name}}
                             </a>
                         </h3>

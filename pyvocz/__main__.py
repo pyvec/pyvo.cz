@@ -5,7 +5,6 @@ Usage: pyvocz [options]
 
 Options:
   --debug       Run in debug mode
-  --db=URI      SQLAlchemy database URI
   --data=DIR    Data directory
   --host=HOST   Host to serve on (enables subdomain redirects)
   --port=PORT   Port to serve on
@@ -26,13 +25,12 @@ from pyvocz.app import create_app, DEFAULT_DATA_DIR
 arguments = docopt.docopt(__doc__)
 
 
-db_uri = arguments['--db'] or 'sqlite://'
 datadir = arguments['--data'] or DEFAULT_DATA_DIR
 pull_password = arguments['--pull-password']
 port = int(arguments['--port'] or 5000)
 host = arguments['--host']
 
-app = create_app(db_uri=db_uri, datadir=datadir, pull_password=pull_password,
+app = create_app(datadir=datadir, pull_password=pull_password,
                  host=host, port=port)
 
 if not os.path.exists(datadir):
