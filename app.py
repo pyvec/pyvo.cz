@@ -58,6 +58,6 @@ else:
         pull_password = password_file.read().strip()
 
 
-application = create_app(db, datadir=datadir, echo=False,
+application = create_app(datadir=datadir, echo=False,
                          pull_password=pull_password,
                          host=host, port=port)
