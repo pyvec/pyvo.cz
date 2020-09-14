@@ -457,7 +457,7 @@ def api_series_feed(series_slug, feed_type):
     db = app.db
     series = db.series.get(series_slug)
     if not series:
-        abort(4040)
+        abort(404)
 
     return feed_response(series.events, feed_type, recurrence_series=[series])
 
