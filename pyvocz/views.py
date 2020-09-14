@@ -332,13 +332,13 @@ def api_venue_geojson(venueslug):
     })
 
 
-def make_ics(events, url, *, recurrence_series=()):
+def make_ics(events_in, url, *, recurrence_series=()):
     today = datetime.date.today()
 
     events = []
     last_series_date = {}
 
-    for event in events:
+    for event in events_in:
         if event.venue:
             location = '{}, {}, {}'.format(
                 event.venue.name,
@@ -348,12 +348,12 @@ def make_ics(events, url, *, recurrence_series=()):
             geo_obj = event.venue
         else:
             location = event.city.name
-            geo_obj = event.city
+            geo_obj = event.city.location
         cal_event = ics.Event(
             name=event.title,
             location=location,
             begin=event.start,
-            uid='{}-{}@pyvo.cz'.format(event.series_slug, event.date),
+            uid='{}-{}@pyvo.cz'.format(event.series.slug, event.date),
             url=url_for(
                 'event', series_slug=event.series.slug,
                 date_slug=event.slug,
@@ -364,8 +364,10 @@ def make_ics(events, url, *, recurrence_series=()):
         cal_event.geo = float(geo_obj.latitude), float(geo_obj.longitude)
         events.append(cal_event)
 
-        if (event.series in last_series_date and
-                last_series_date[event.series.slug] < event.date):
+        if (
+            event.series.slug in last_series_date
+            and last_series_date[event.series.slug] < event.date
+        ):
             last_series_date[event.series.slug] = event.date
 
     # XXX: We should use the Series recurrence rule directly,
