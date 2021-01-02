@@ -21,7 +21,7 @@ def check_external_links(pytestconfig):
     return pytestconfig.getoption('check_external_links')
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def app(pytestconfig):
     src = DEFAULT_DATA_DIR
     if pytestconfig.getoption('all_data'):
