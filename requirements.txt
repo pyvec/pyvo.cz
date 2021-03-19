@@ -8,7 +8,7 @@ feedgen==0.9.0
 Flask==1.1.2
 ics==0.7
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 lxml==4.5.2
 Markdown==3.2.2
 MarkupSafe==1.1.1
