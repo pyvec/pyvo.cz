@@ -1,8 +1,7 @@
 import re
 
 from flask import g, url_for
-from jinja2 import escape
-from markupsafe import Markup
+from markupsafe import Markup, escape
 from markdown import markdown as convert_markdown
 from urllib.parse import urlparse
 import textwrap
