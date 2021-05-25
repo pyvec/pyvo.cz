@@ -51,18 +51,18 @@ setup_args = dict(
     ],
 
     install_requires=[
-        'flask >= 1.1, < 2.0',
+        'flask >= 2.0, < 3.0',
         'docopt >= 0.6, < 1.0',
         'ics >= 0.6, < 1.0',
         'feedgen >= 0.3.1, < 1.0',
         'markdown >= 3.1.1, < 4.0',
-        'Pillow >= 6.1.0, < 7.0.0',
+        'Pillow >= 8.2.0, < 9.0.0',
         'qrcode >= 6.1, < 7.0',
         'cachelib >= 0.1, <1.0',
-        'attrs >= 19.3.0, <20.0',
+        'attrs >= 21.2.0, <22.0',
         'czech_holidays >= 0.1.3, < 0.2',
         'python-dateutil >= 2.8, <3.0',
-        'PyYAML >= 5.1, < 6.0',
+        'PyYAML >= 5.3, < 6.0',
     ],
 
     package_data={'pyvocz': list(data_file_names())},
