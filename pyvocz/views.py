@@ -31,6 +31,18 @@ BACKCOMPAT_SERIES_ALIASES = {
 }
 
 
+REDIRECT_SERIES_ALIASES = {
+    'brnenske': 'brno-pyvo',
+    'ostravske': 'ostrava-pyvo',
+    'prazske': 'praha-pyvo',
+    'prague': 'praha-pyvo',
+    'plzenske': 'plzen-pyvo',
+    'pilsen': 'plzen-pyvo',
+    'olomoucke': 'olomouc-pyvo',
+    **BACKCOMPAT_SERIES_ALIASES,
+}
+
+
 # Be careful when using SimpleCache!
 # See: http://werkzeug.pocoo.org/docs/contrib/cache/
 #      #werkzeug.contrib.cache.SimpleCache
@@ -495,14 +507,7 @@ def reload_hook():
 
 @route('/', subdomain='<subdomain>')
 def subdomain_redirect(subdomain):
-    ALIASES = {
-        'brnenske': 'brno-pyvo',
-        'ostravske': 'ostrava-pyvo',
-        'prazske': 'praha-pyvo',
-        'prague': 'praha-pyvo',
-        **BACKCOMPAT_SERIES_ALIASES,
-    }
-    subdomain = ALIASES.get(subdomain, subdomain)
+    subdomain = REDIRECT_SERIES_ALIASES.get(subdomain, subdomain)
     return redirect(url_for('series', series_slug=subdomain))
 
 
