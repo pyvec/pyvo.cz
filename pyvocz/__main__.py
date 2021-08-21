@@ -30,12 +30,12 @@ pull_password = arguments['--pull-password']
 port = int(arguments['--port'] or 5000)
 host = arguments['--host']
 
-app = create_app(datadir=datadir, pull_password=pull_password,
-                 host=host, port=port)
-
 if not os.path.exists(datadir):
     subprocess.check_call(['git', 'clone',
                            'https://github.com/pyvec/pyvo-data', datadir])
+
+app = create_app(datadir=datadir, pull_password=pull_password,
+                 host=host, port=port)
 
 if arguments['--debug']:
     app.config['TEMPLATES_AUTO_RELOAD'] = True
