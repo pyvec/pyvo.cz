@@ -1,4 +1,4 @@
-arrow==0.14.7
+arrow==0.15.1
 attrs==21.2.0
 cachelib==0.1.1
 click==8.0.1
