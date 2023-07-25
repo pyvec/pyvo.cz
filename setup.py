@@ -34,7 +34,7 @@ def data_file_names():
 
 setup_args = dict(
     name='pyvocz',
-    version='0.4',
+    version='0.5',
     packages=['pyvocz'],
 
     description="""Website with information about Pyvo meetups (pyvo.cz)""",
@@ -47,7 +47,9 @@ setup_args = dict(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
 
     install_requires=[
