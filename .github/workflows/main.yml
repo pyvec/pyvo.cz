@@ -3,7 +3,7 @@ name: Main
 on:
   push:
     branches:
-    - dependency_updates
+    - master
   pull_request:
 
 jobs:
