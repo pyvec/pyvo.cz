@@ -1,7 +1,7 @@
 import datetime
 import collections
 
-from czech_holidays import czech_holidays
+from czech_holidays import Holidays
 from dateutil.relativedelta import relativedelta
 
 DAY = datetime.timedelta(days=1)
@@ -60,7 +60,7 @@ def get_calendar(
     return months
 
 def get_month(year, month, events, next_occurences=None):
-    holidays = {h: h for h in czech_holidays(year)}
+    holidays = {h: h for h in Holidays(year)}
     def mkday(day):
         alien = (day.month != month)
         return get_day(day, events=events, holidays=holidays, alien=alien,

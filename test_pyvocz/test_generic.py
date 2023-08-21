@@ -8,20 +8,10 @@ import requests
 
 IGNORED_URLS = {
     'http://localhost/static/',
-    'http://localhost/calendar/2010/',
-    'http://localhost/calendar/2011/',
-    'http://localhost/calendar/2012/',
-    'http://localhost/calendar/2013/',
-    'http://localhost/calendar/2014/',
-    'http://localhost/calendar/2015/',
     'http://localhost/calendar/2030/',
-    'http://localhost/en/calendar/2010/',
-    'http://localhost/en/calendar/2011/',
-    'http://localhost/en/calendar/2012/',
-    'http://localhost/en/calendar/2013/',
-    'http://localhost/en/calendar/2014/',
-    'http://localhost/en/calendar/2015/',
+    'http://localhost/calendar/2010/',
     'http://localhost/en/calendar/2030/',
+    'http://localhost/en/calendar/2010/',
 
 }
 

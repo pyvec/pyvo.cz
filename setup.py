@@ -63,7 +63,7 @@ setup_args = dict(
         'qrcode >= 7.0, < 8.0',
         'cachelib >= 0.1, <1.0',
         'attrs >= 23.0, <24.0',
-        'czech_holidays >= 1.0, < 2.0',
+        'czech_holidays >= 0.2.0, < 1.0',
         'python-dateutil >= 2.8, <3.0',
         'PyYAML >= 6.0, < 7.0',
     ],
