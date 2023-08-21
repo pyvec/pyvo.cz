@@ -32,6 +32,9 @@ def create_app(datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
     app.jinja_env.undefined = StrictUndefined
     app.jinja_env.globals['get_today'] = datetime.date.today
 
+    tag = binascii.hexlify(os.urandom(16))
+    app.jinja_env.globals['_static_cache_tag'] = tag
+
     for filter_name in filters.__all__:
         app.jinja_env.filters[filter_name] = getattr(filters, filter_name)
 
@@ -48,12 +51,6 @@ def create_app(datadir=DEFAULT_DATA_DIR, echo=True, pull_password=None,
         elif g.lang_code == 'en':
             return en
         raise ValueError(g.lang_code)
-
-    @app.before_first_request
-    def setup():
-        # Use a random cache tag for each deployment
-        tag = binascii.hexlify(os.urandom(16))
-        app.jinja_env.globals['_static_cache_tag'] = tag
 
     @app.url_value_preprocessor
     def pull_lang_code(endpoint, values):

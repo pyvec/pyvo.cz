@@ -12,6 +12,7 @@ IGNORED_URLS = {
     'http://localhost/calendar/2010/',
     'http://localhost/en/calendar/2030/',
     'http://localhost/en/calendar/2010/',
+
 }
 
 IGNORED_MIMETYPE_EXTENSIONS = {
