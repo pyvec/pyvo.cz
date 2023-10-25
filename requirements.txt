@@ -20,5 +20,5 @@ qrcode==7.4.2
 six==1.16.0
 TatSu==5.8.3
 typing-extensions==4.7.1
-Werkzeug==2.3.6
+Werkzeug==3.0.1
 zipp==3.16.2
