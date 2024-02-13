@@ -178,14 +178,28 @@ def series(series_slug, year=None, all=None):
             # Otherwise, if there are no events in requested year, return 404.
             abort(404)
 
-    events = list(reversed(series.events))
+    all_events = list(reversed(series.events))
 
-    if not all:
+    if all:
+        events = all_events
+    else:
         if year is None:
             # The 'New' page displays the current year as well as the last one
-            events = [e for e in events if e.date.year >= today.year - 1]
+            events = [e for e in all_events if e.date.year >= today.year - 1]
         else:
-            events = [e for e in events if e.date.year == year]
+            events = [e for e in all_events if e.date.year == year]
+
+    # Split events between future and past
+    # (today's event, if any, is considered future)
+    past_events = [e for e in events if e.date < today]
+    future_events = [e for e in events if e.date >= today]
+
+    new_history = True
+    if not all and year is None:
+        # On the home page of the series, if there are no recent enough
+        # past events, show up to 5 last ones.
+        new_history = False
+        past_events = [e for e in all_events if e.date < today][:5]
 
     if all is not None:
         paginate_prev = {'year': first_year}
@@ -207,11 +221,6 @@ def series(series_slug, year=None, all=None):
             paginate_prev = {'year': None}
 
     has_events = bool(events)
-
-    # Split events between future and past
-    # (today's event, if any, is considered future)
-    past_events = [e for e in events if e.date < today]
-    future_events = [e for e in events if e.date >= today]
 
     # Events are ordered closest first;
     #  for future ones this means ascending order
@@ -235,6 +244,7 @@ def series(series_slug, year=None, all=None):
         all_years=all_years, paginate_prev=paginate_prev,
         paginate_next=paginate_next, has_events=has_events,
         event_add_link=event_add_link,
+        new_history=new_history,
     )
 
 
