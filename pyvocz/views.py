@@ -406,7 +406,7 @@ def make_ics(events_in, url, *, recurrence_series=()):
             )
             events.append(cal_event)
 
-    return ics.Calendar(events=events)
+    return ics.Calendar(events=events).serialize()
 
 
 def make_feed(events, url):
